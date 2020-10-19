@@ -1,0 +1,186 @@
+---
+title: "DataPreprocessing"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(plotrix)
+library(plotly)
+library(tools)
+
+
+```
+
+```{r, echo=FALSE}
+root_dir <- getwd()
+project_directory<-dirname(root_dir)
+data_dir <- file.path(project_directory, 'raw-data')
+curated_data_dir <- file.path(project_directory, 'curated-data')
+
+data_file_name<-'StandardPart_Data.csv'
+# data_file_name<-'StandardPart_DATA_LABELS.csv'
+
+
+Standard_data<-read.csv(file.path(data_dir,data_file_name),stringsAsFactors = FALSE)
+Standard_data <- Standard_data[-c(1:80, 82:94), ]
+
+Standard_data$email[1]="ljohnsson12@gmail.com"
+Standard_data$confirm_email[1]="ljohnsson12@gmail.com"
+
+missing_email<-Standard_data[c('111','120','129', '148', '154', '161', '186', '194', '233', '246','347'),]
+
+Standard_data<- subset(Standard_data, Standard_data$standard_part_complete==2)
+
+Standard_data<-rbind(Standard_data, missing_email)
+
+Standard_data <- Standard_data[-c(3, 5:9, 12), ]
+Standard_data_index <- Standard_data[, -c(2:5)]
+old_name<-colnames(Standard_data_index)
+# Standard_data <- Standard_data[-c(82:95), ]
+```
+
+```{r, echo=FALSE}
+# data_file_name<-'StandardPart_Data.csv'
+data_file_name<-'StandardPart_DATA_LABELS.csv'
+
+
+Standard_data<-read.csv(file.path(data_dir,data_file_name),stringsAsFactors = FALSE)
+Standard_data <- Standard_data[-c(1:80, 82:94), ]
+
+Standard_data$Please.provide.your.email.address.The.system.will.use.this.email.address.to.send.you.an.acknowledgment..as.well.as.the.Amazon.gift.certificate..in.case.you.are.the.raffle.winner.[1]="ljohnsson12@gmail.com"
+Standard_data$Please.confirm.your.email.address[1]="ljohnsson12@gmail.com"
+
+missing_email<-Standard_data[c('111','120','129', '148', '154', '161', '186', '194', '233', '246','347'),]
+Standard_data<- subset(Standard_data, Standard_data$Complete.=="Complete")
+
+Standard_data<-rbind(Standard_data, missing_email)
+
+Standard_data <- Standard_data[-c(3, 5:9, 12), ]
+Standard_data_label <- Standard_data[, -c(2:5)]
+colnames(Standard_data_label)<- old_name
+```
+
+```{r}
+missing_email<-Standard_data[c('111','120','129', '148', '154', '161', '186', '194', '233', '246','347'),]
+```
+
+
+```{r, echo=FALSE}
+# final_data<-Standard_data_label[, c(1:80)]
+# final_data<-cbind(final_data, Standard_data_index[,c(81:135)])
+
+final_data<-Standard_data_label[, c(1:44)]
+final_data<-cbind(final_data, Standard_data_index[,c(45:49)])
+final_data<-cbind(final_data, Standard_data_label[,c(50:69)])
+final_data<-cbind(final_data, Standard_data_index[,c(70:135)])
+
+for (i in 1:nrow(final_data)) {
+  
+  # if (final_data$departmental_affiliation[i] == "Other") {
+  #   final_data$departmental_affiliation[i] = final_data$please_write_down_the_depa[i]
+  # }
+  if (final_data$how_many_months_of_your_sa[i] == "Other") {
+    final_data$how_many_months_of_your_sa[i] = final_data$please_specify_the_months[i]
+  }
+  
+  if (final_data$funding_agency[i] == "Other") {
+    final_data$funding_agency[i] = final_data$specify_the_name[i]
+  }
+  
+  if (final_data$where_you_typically_wor[i] == "Other") {
+    final_data$where_you_typically_wor[i] = final_data$please_specify_your_work_p[i]
+  }
+  
+  if (final_data$wha_average_number[i] == "â‰¥ 10") {
+    final_data$wha_average_number[i] = ">= 10"
+  }
+  
+  if (final_data$what_is_the_average_number[i] == "â‰¥ 10") {
+    final_data$what_is_the_average_number[i] = ">= 10"
+  }
+  
+  if (final_data$funding_agency[i] == "Education Advancement Foundation (a private foundation)" | final_data$funding_agency[i] =="Industry, private foundations") {
+    final_data$funding_agency[i] = "Private Foundation"
+  }
+  if (final_data$funding_agency[i] == "trb"){
+    final_data$funding_agency[i] = "TRB"
+  }
+  
+  if (final_data$test[i]=="Hands-on [... plus experiments/analysis]"){
+    final_data$test[i]="Hands-on"
+  }else{
+    final_data$test[i]="Hands-off"
+  }
+  
+}
+
+final_data$ti_research<-gsub("[^0-9.-]", "", final_data$ti_research)
+final_data$ti_teaching<-gsub("[^0-9.-]", "", final_data$ti_teaching)
+final_data$ti_administration<-gsub("[^0-9.-]", "", final_data$ti_administration)
+final_data$ti_service_outreach<-gsub("[^0-9.-]", "", final_data$ti_service_outreach)
+
+
+final_data$proposal_research<-gsub("[^0-9.-]", "", final_data$proposal_research)
+final_data$proposal_teaching<-gsub("[^0-9.-]", "", final_data$proposal_teaching)
+final_data$proposal_administration<-gsub("[^0-9.-]", "", final_data$proposal_administration)
+final_data$proposal_service_outreach<-gsub("[^0-9.-]", "", final_data$proposal_service_outreach)
+
+final_data$week_research<-gsub("[^0-9.-]", "", final_data$week_research)
+final_data$week_teaching<-gsub("[^0-9.-]", "", final_data$week_teaching)
+final_data$week_administration<-gsub("[^0-9.-]", "", final_data$week_administration)
+final_data$week_service_outreach<-gsub("[^0-9.-]", "", final_data$week_service_outreach)
+
+final_data$research<-gsub("[^0-9.-]", "", final_data$research)
+final_data$research1<-gsub("[^0-9.-]", "", final_data$research1)
+final_data$teaching<-gsub("[^0-9.-]", "", final_data$teaching)
+final_data$teaching1<-gsub("[^0-9.-]", "", final_data$teaching1)
+final_data$administration<-gsub("[^0-9.-]", "", final_data$administration)
+final_data$administration1<-gsub("[^0-9.-]", "", final_data$administration1)
+final_data$serviceoutreach<-gsub("[^0-9.-]", "", final_data$serviceoutreach)
+final_data$service_outreach1<-gsub("[^0-9.-]", "", final_data$service_outreach1)
+final_data$where_you_typically_wor<-toTitleCase(final_data$where_you_typically_wor)
+
+
+final_data$disrupted_part[1]=5
+final_data$disrupted_part[2]=NA
+final_data$disrupted_part[3]=NA
+
+final_data$my_physical_activity[2]=5
+final_data$my_physical_activity[3]=5
+
+
+# research_style1 = 'Hands-on [... plus experiments/analysis]'
+# research_style2 = 'Hands-off [management/reading/writing]'
+# 
+# 
+# final_data$test <-
+#   case_when(
+#     str_detect(final_data$test, research_style1) ~ "Hands-on",
+#     str_detect(final_data$test, research_style2) ~
+#       "Hands-off"
+#   )
+
+# colnames(final_data)
+
+final_data<-final_data  %>%  dplyr::rename(record_id = "ï..record_id")
+
+# final_data <- final_data[-c(89), ]
+# # final_data <- final_data[-c(89), ]
+final_data <- final_data[rownames(final_data) != "230",]
+final_data <- final_data[rownames(final_data) != "288",]
+final_data <- final_data[rownames(final_data) != "302",]
+final_data$google_scholar_h_index[97]=18
+
+```
+
+
+
+```{r}
+file_name='StandardPart.csv'
+write.csv(final_data,file.path(curated_data_dir, file_name), row.names = FALSE)
+```
+
