@@ -1,0 +1,33 @@
+---
+title: "Consent"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+```
+
+
+```{r}
+# script_dir <- dirname(rstudioapi::getSourceEditorContext()$path)
+root_dir <- getwd()
+project_directory<-dirname(root_dir)
+data_dir <- file.path(project_directory, 'raw-data')
+curated_data_dir <- file.path(project_directory, 'curated-data')
+
+data_file_name<-'Consent.csv'
+
+consent_data<-read.csv(file.path(data_dir,data_file_name),stringsAsFactors = FALSE)
+
+# names(consent_data)
+colnames(consent_data)<-c(1:14)
+consent_data <- consent_data[-c(1:67), ]
+consent_data<- consent_data %>%
+  select(1, 8, 10, 13)
+colnames(consent_data)<-c("SubjectID", "Email", "WorkDay", "DeadlineDay")
+
+file_name='MailerLite.csv'
+write.csv(consent_data,file.path(curated_data_dir, file_name), row.names = FALSE)
+```
+
