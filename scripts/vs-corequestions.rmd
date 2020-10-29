@@ -17,11 +17,6 @@ library(ggpubr)
 library(cowplot)
 library(reshape2)
 library(plyr)
-# # library("tm")
-# # library("SnowballC")
-# # library("wordcloud")
-# # library("RColorBrewer")
-# library(ggwordcloud)
 library(ggplot2)
 ```
 

@@ -531,8 +531,6 @@ Conf_A_Astar<- subset(Conf_A_Astar, CR=="3" | CR=="4")
 M_Conf_A_Astar <- cor(Conf_A_Astar[,c(2:26)],use="complete.obs")
 res4 <- cor.mtest(Conf_A_Astar[,c(2:26)], conf.level = .95)
 
-# significance_plot<-
-# pdf(file = "corplot.pdf")
   corrplot(M_Conf_A_Astar, p.mat = res4$p, method = "color", type = "upper",
            title="Psychometrics-core questions correlation on A-A* conference papers",
          sig.level = c(.001, .01, .05), pch.cex = .9,diag = FALSE,
