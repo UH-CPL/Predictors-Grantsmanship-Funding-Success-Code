@@ -105,7 +105,7 @@ faculty_rank<-ggplot(temp, aes(x = "" , y = cou, fill = item)) +
          units = "in")
 ```
 
-```{r}
+```{r, echo=FALSE}
   temp <- count(StandardPart$gender)
   colnames(temp) <- c("item", "cou")
   temp <- temp[!(temp$item == ""),]
@@ -175,7 +175,7 @@ Gender<-ggplot(temp, aes(x = "" , y = cou, fill = item)) +
 
 
 
-```{r}
+```{r, echo=FALSE}
   temp <- count(StandardPart$departmental_affiliation)
   colnames(temp) <- c("item", "cou")
   temp <- temp[!(temp$item == ""),]

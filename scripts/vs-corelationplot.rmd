@@ -16,40 +16,74 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r, echo=FALSE}
 root_dir <- getwd()
-project_directory<-dirname(root_dir)
+project_directory <- dirname(root_dir)
 data_dir <- file.path(project_directory, 'raw-data')
 curated_data_dir <- file.path(project_directory, 'curated-data')
 plot_dir <- file.path(project_directory, 'Plots')
-data_file_name<-'StandardPart_psychometric.csv'
-data_file_name_std<-'StandardPart.csv'
+data_file_name <- 'StandardPart_psychometric.csv'
+data_file_name_std <- 'StandardPart.csv'
 
 
-Data<-read.csv(file.path(curated_data_dir,data_file_name),stringsAsFactors = FALSE)
-Raw_Data<-read.csv(file.path(curated_data_dir,data_file_name_std),stringsAsFactors = FALSE)
-colnames(Data)<- c("Rank", "Mental", "Physical", "Temporal", "Performance", "Effort", "Frustration", "NASA","TA", "EXT", "AGR", "CS", "NT", "OP", "AV", "EM", "Task")
+Data <-
+  read.csv(file.path(curated_data_dir, data_file_name),
+           stringsAsFactors = FALSE)
+Raw_Data <-
+  read.csv(file.path(curated_data_dir, data_file_name_std),
+           stringsAsFactors = FALSE)
+colnames(Data) <-
+  c(
+    "Rank",
+    "Mental",
+    "Physical",
+    "Temporal",
+    "Performance",
+    "Effort",
+    "Frustration",
+    "NASA",
+    "TA",
+    "EXT",
+    "AGR",
+    "CS",
+    "NT",
+    "OP",
+    "AV",
+    "EM",
+    "Task"
+  )
 ```
 
 
 ```{r, echo=FALSE}
-Corelation_DF<-data.frame(Data[,c(1,8:17)], Raw_Data[,c(6,15:17,22,26,29:33,43,44)])
-Corelation_DF<-Corelation_DF  %>%  dplyr::rename(H="google_scholar_h_index",
-                                           # S_D_E="how_many_months_of_your_sa",     ## salary depends on external grants
-                                           # RO_F_EG="what_is_your_current_level",   ## Research operations funded by external grants
-                                           RS="test",                         ## Research Style
-                                           WH="in_a_typical_workday_how_m",    ## Typical week working hours
-                                           TWR="ti_research",              ## Typical week Research
-                                           BR="in_a_typical_day_how_often",     ## Break Frequency
-                                           # Email="how_do_you_usually_handle",      ## Email respnse style
-                                           NP="what_is_the_average_number",   ## Average Number of Proposal per year
-                                           SR="hy",                           ## Success Rate in the proposal
-                                           AP="how_far_in_advance_do_you",# Composing Proposal
-                                           AR="what_is_the_length_of_supp",   ## Length of supporting research
-                                           DWH="in_the_week_leading_to_a_p",   ## Work load a week before Proposal Deadline
-                                           DWR="week_research",            ## Research percentage a week before Proposal
-                                           # Research_DD="proposal_research",        ## Research percentage in the Proposal deadlines day
-                                           T="when_you_typically_subm",     ## Submit Proposal
-                                           DS="stress_level_in_a_fundi"     ## Stress leven on Proposal Deadline
-                                           )
+Corelation_DF <-
+  data.frame(Data[, c(1, 8:17)], Raw_Data[, c(6, 15:17, 22, 26, 29:33, 43, 44)])
+Corelation_DF <-
+  Corelation_DF  %>%  dplyr::rename(
+    H = "google_scholar_h_index",
+    RS = "test",
+    ## Research Style
+    WH = "in_a_typical_workday_how_m",
+    ## Typical week working hours
+    TWR = "ti_research",
+    ## Typical week Research
+    BR = "in_a_typical_day_how_often",
+    ## Break Frequency
+    NP = "what_is_the_average_number",
+    ## Average Number of Proposal per year
+    SR = "hy",
+    ## Success Rate in the proposal
+    AP = "how_far_in_advance_do_you",
+    # Composing Proposal
+    AR = "what_is_the_length_of_supp",
+    ## Length of supporting research
+    DWH = "in_the_week_leading_to_a_p",
+    ## Work load a week before Proposal Deadline
+    DWR = "week_research",
+    ## Research percentage a week before Proposal
+    # Research_DD="proposal_research",        ## Research percentage in the Proposal deadlines day
+    T = "when_you_typically_subm",
+    ## Submit Proposal
+    DS = "stress_level_in_a_fundi"     ## Stress leven on Proposal Deadline
+  )
 
 ```
 
@@ -57,155 +91,158 @@ Corelation_DF<-Corelation_DF  %>%  dplyr::rename(H="google_scholar_h_index",
 
 ```{r, echo=FALSE}
 # count(Corelation_DF$Stress_PD)
-for(i in 1:nrow(Corelation_DF)){
-  
+for (i in 1:nrow(Corelation_DF)) {
   #####-------Research Style-------------####################
-  if (Corelation_DF$RS[i]=="Hands-off"){
-    Corelation_DF$RS[i]=1
-  }else{
-    Corelation_DF$RS[i]=2
+  if (Corelation_DF$RS[i] == "Hands-off") {
+    Corelation_DF$RS[i] = 1
+  } else{
+    Corelation_DF$RS[i] = 2
   }
-
+  
   ##########-----Typical Week working Hours-------------#############
-  if (Corelation_DF$WH[i]=="< 30"){
-    Corelation_DF$WH[i]=1
-  } else if (Corelation_DF$WH[i]=="30-40"){
-    Corelation_DF$WH[i]=2
-  } else if (Corelation_DF$WH[i]=="40-50"){
-    Corelation_DF$WH[i]=3
+  if (Corelation_DF$WH[i] == "< 30") {
+    Corelation_DF$WH[i] = 1
+  } else if (Corelation_DF$WH[i] == "30-40") {
+    Corelation_DF$WH[i] = 2
+  } else if (Corelation_DF$WH[i] == "40-50") {
+    Corelation_DF$WH[i] = 3
   } else {
-    Corelation_DF$WH[i]=4
-  }
-
-  if (Corelation_DF$BR[i]=="Every hour"){
-    Corelation_DF$BR[i]=1
-  } else if (Corelation_DF$BR[i]=="Every 1-2 hours"){
-    Corelation_DF$BR[i]=2
-  } else if (Corelation_DF$BR[i]=="Every 3-4 hours"){
-    Corelation_DF$BR[i]=3
-  } else {
-    Corelation_DF$BR[i]=4
+    Corelation_DF$WH[i] = 4
   }
   
-
-  if (Corelation_DF$NP[i]=="1-2"){
-    Corelation_DF$NP[i]=1
-  } else if (Corelation_DF$NP[i]=="3-4"){
-    Corelation_DF$NP[i]=2
-  } else if (Corelation_DF$NP[i]=="5-6"){
-    Corelation_DF$NP[i]=3
-  } else if (Corelation_DF$NP[i]=="7-9"){
-    Corelation_DF$NP[i]=3
-  } else if(Corelation_DF$NP[i]=="") {
-    Corelation_DF$NP[i]=NA
+  if (Corelation_DF$BR[i] == "Every hour") {
+    Corelation_DF$BR[i] = 1
+  } else if (Corelation_DF$BR[i] == "Every 1-2 hours") {
+    Corelation_DF$BR[i] = 2
+  } else if (Corelation_DF$BR[i] == "Every 3-4 hours") {
+    Corelation_DF$BR[i] = 3
   } else {
-    Corelation_DF$NP[i]=3
-  }
-  
-  if (Corelation_DF$SR[i]=="< 10%"){
-    Corelation_DF$SR[i]=1
-  } else if (Corelation_DF$SR[i]=="10-20%"){
-    Corelation_DF$SR[i]=1
-  } else if (Corelation_DF$SR[i]=="20-30%"){
-    Corelation_DF$SR[i]=1
-  } else if (Corelation_DF$SR[i]=="30-50%"){
-    Corelation_DF$SR[i]=2
-  } else if (Corelation_DF$SR[i]=="50-75%"){
-    Corelation_DF$SR[i]=3
-  } else if (Corelation_DF$SR[i]=="75-90%"){
-    Corelation_DF$SR[i]=3
-  } else if (Corelation_DF$SR[i]==""){
-    Corelation_DF$SR[i]=NA
-  } else {
-    Corelation_DF$SR[i]=3
-  }
-  
-  if (Corelation_DF$AP[i]=="1-2 weeks"){
-    Corelation_DF$AP[i]=1
-  } else if (Corelation_DF$AP[i]=="2-4 weeks"){
-    Corelation_DF$AP[i]=2
-  } else if (Corelation_DF$AP[i]=="1-2 months"){
-    Corelation_DF$AP[i]=3
-  } else if (Corelation_DF$AP[i]==""){
-    Corelation_DF$AP[i]=NA
-  } else {
-    Corelation_DF$AP[i]= 4
-  }
-  
-  if (Corelation_DF$AR[i]=="< 1 month"){
-    Corelation_DF$AR[i]=1
-  } else if(Corelation_DF$AR[i]=="1-3 months"){
-    Corelation_DF$AR[i]=2
-  } else if(Corelation_DF$AR[i]=="3-6 months"){
-    Corelation_DF$AR[i]=3
-  } else if(Corelation_DF$AR[i]=="6-12 months"){
-    Corelation_DF$AR[i]=4
-  } else if(Corelation_DF$AR[i]==""){
-    Corelation_DF$AR[i]=NA
-  } else {
-    Corelation_DF$AR[i]=5
+    Corelation_DF$BR[i] = 4
   }
   
   
-  if (Corelation_DF$DWH[i]=="Significantly less"){
-    Corelation_DF$DWH[i]=1
-  } else if (Corelation_DF$DWH[i]=="Less"){
-    Corelation_DF$DWH[i]=2
-  } else if (Corelation_DF$DWH[i]=="About the same"){
-    Corelation_DF$DWH[i]=3
-  } else if (Corelation_DF$DWH[i]=="More"){
-    Corelation_DF$DWH[i]=4
-  } else if (Corelation_DF$DWH[i]==""){
-    Corelation_DF$DWH[i]=NA
+  if (Corelation_DF$NP[i] == "1-2") {
+    Corelation_DF$NP[i] = 1
+  } else if (Corelation_DF$NP[i] == "3-4") {
+    Corelation_DF$NP[i] = 2
+  } else if (Corelation_DF$NP[i] == "5-6") {
+    Corelation_DF$NP[i] = 3
+  } else if (Corelation_DF$NP[i] == "7-9") {
+    Corelation_DF$NP[i] = 3
+  } else if (Corelation_DF$NP[i] == "") {
+    Corelation_DF$NP[i] = NA
   } else {
-    Corelation_DF$DWH[i]=5
+    Corelation_DF$NP[i] = 3
+  }
+  
+  if (Corelation_DF$SR[i] == "< 10%") {
+    Corelation_DF$SR[i] = 1
+  } else if (Corelation_DF$SR[i] == "10-20%") {
+    Corelation_DF$SR[i] = 1
+  } else if (Corelation_DF$SR[i] == "20-30%") {
+    Corelation_DF$SR[i] = 1
+  } else if (Corelation_DF$SR[i] == "30-50%") {
+    Corelation_DF$SR[i] = 2
+  } else if (Corelation_DF$SR[i] == "50-75%") {
+    Corelation_DF$SR[i] = 3
+  } else if (Corelation_DF$SR[i] == "75-90%") {
+    Corelation_DF$SR[i] = 3
+  } else if (Corelation_DF$SR[i] == "") {
+    Corelation_DF$SR[i] = NA
+  } else {
+    Corelation_DF$SR[i] = 3
+  }
+  
+  if (Corelation_DF$AP[i] == "1-2 weeks") {
+    Corelation_DF$AP[i] = 1
+  } else if (Corelation_DF$AP[i] == "2-4 weeks") {
+    Corelation_DF$AP[i] = 2
+  } else if (Corelation_DF$AP[i] == "1-2 months") {
+    Corelation_DF$AP[i] = 3
+  } else if (Corelation_DF$AP[i] == "") {
+    Corelation_DF$AP[i] = NA
+  } else {
+    Corelation_DF$AP[i] = 4
+  }
+  
+  if (Corelation_DF$AR[i] == "< 1 month") {
+    Corelation_DF$AR[i] = 1
+  } else if (Corelation_DF$AR[i] == "1-3 months") {
+    Corelation_DF$AR[i] = 2
+  } else if (Corelation_DF$AR[i] == "3-6 months") {
+    Corelation_DF$AR[i] = 3
+  } else if (Corelation_DF$AR[i] == "6-12 months") {
+    Corelation_DF$AR[i] = 4
+  } else if (Corelation_DF$AR[i] == "") {
+    Corelation_DF$AR[i] = NA
+  } else {
+    Corelation_DF$AR[i] = 5
   }
   
   
-  if (Corelation_DF$T[i]=="Minutes before deadline"){
-    Corelation_DF$T[i]= 1
-  } else if (Corelation_DF$T[i]=="1-3 hours before deadline"){
-    Corelation_DF$T[i]=1
-  } else if (Corelation_DF$T[i]=="3-6 hours before deadline"){
-    Corelation_DF$T[i]=2
-  } else if (Corelation_DF$T[i]=="1 day before deadline"){
-    Corelation_DF$T[i]=3
-  } else if (Corelation_DF$T[i]==""){
-    Corelation_DF$T[i]=NA
+  if (Corelation_DF$DWH[i] == "Significantly less") {
+    Corelation_DF$DWH[i] = 1
+  } else if (Corelation_DF$DWH[i] == "Less") {
+    Corelation_DF$DWH[i] = 2
+  } else if (Corelation_DF$DWH[i] == "About the same") {
+    Corelation_DF$DWH[i] = 3
+  } else if (Corelation_DF$DWH[i] == "More") {
+    Corelation_DF$DWH[i] = 4
+  } else if (Corelation_DF$DWH[i] == "") {
+    Corelation_DF$DWH[i] = NA
   } else {
-    Corelation_DF$T[i]=3
+    Corelation_DF$DWH[i] = 5
   }
   
   
-  if (Corelation_DF$DS[i]=="Extremely less"){
-    Corelation_DF$DS[i]=1
-  } else if (Corelation_DF$DS[i]=="Significantly less"){
+  if (Corelation_DF$T[i] == "Minutes before deadline") {
+    Corelation_DF$T[i] = 1
+  } else if (Corelation_DF$T[i] == "1-3 hours before deadline") {
+    Corelation_DF$T[i] = 1
+  } else if (Corelation_DF$T[i] == "3-6 hours before deadline") {
+    Corelation_DF$T[i] = 2
+  } else if (Corelation_DF$T[i] == "1 day before deadline") {
+    Corelation_DF$T[i] = 3
+  } else if (Corelation_DF$T[i] == "") {
+    Corelation_DF$T[i] = NA
+  } else {
+    Corelation_DF$T[i] = 3
+  }
+  
+  
+  if (Corelation_DF$DS[i] == "Extremely less") {
+    Corelation_DF$DS[i] = 1
+  } else if (Corelation_DF$DS[i] == "Significantly less") {
     # Corelation_DF$DS[i]=2
-    Corelation_DF$DS[i]=1
-  } else if (Corelation_DF$DS[i]=="Same"){
+    Corelation_DF$DS[i] = 1
+  } else if (Corelation_DF$DS[i] == "Same") {
     # Corelation_DF$DS[i]=3
-    Corelation_DF$DS[i]=2
-  } else if (Corelation_DF$DS[i]=="Significantly  more"){
+    Corelation_DF$DS[i] = 2
+  } else if (Corelation_DF$DS[i] == "Significantly  more") {
     # Corelation_DF$DS[i]=4
-    Corelation_DF$DS[i]=3
-  } else if (Corelation_DF$DS[i]=="Extremely  more"){
+    Corelation_DF$DS[i] = 3
+  } else if (Corelation_DF$DS[i] == "Extremely  more") {
     # Corelation_DF$DS[i]=5
-    Corelation_DF$DS[i]=3
+    Corelation_DF$DS[i] = 3
   } else {
-    Corelation_DF$DS[i]=NA
+    Corelation_DF$DS[i] = NA
   }
 }
 
-cols.num <- c("RS", "WH", "BR", "NP", "SR", "AP", "AR", "DWH", "T", "DS")
-Corelation_DF[cols.num] <- sapply(Corelation_DF[cols.num],as.numeric)
+cols.num <-
+  c("RS", "WH", "BR", "NP", "SR", "AP", "AR", "DWH", "T", "DS")
+Corelation_DF[cols.num] <-
+  sapply(Corelation_DF[cols.num], as.numeric)
 
-table(Corelation_DF$SR)
+# table(Corelation_DF$SR)
 ```
 
 
 ```{r, echo=FALSE}
-file_name='CorrelationData.csv'
-write.csv(Corelation_DF,file.path(curated_data_dir, file_name), row.names = FALSE)
+file_name = 'CorrelationData.csv'
+write.csv(Corelation_DF,
+          file.path(curated_data_dir, file_name),
+          row.names = FALSE)
 ```
 
 
@@ -262,10 +299,16 @@ mytheme = theme(
 )
 
 
-Cor_plot<-pm + mytheme
-      filename<-"Corelation_24.pdf"
-      full_path<-file.path(plot_dir, filename)
-      ggsave(full_path, Cor_plot, width = 11, height = 11, units = "in")
+Cor_plot <- pm + mytheme
+filename <- "Corelation_Proposals.pdf"
+full_path <- file.path(plot_dir, filename)
+ggsave(
+  full_path,
+  Cor_plot,
+  width = 11,
+  height = 11,
+  units = "in"
+)
 ```
 
 
@@ -274,14 +317,25 @@ Cor_plot<-pm + mytheme
 library(corrplot)
 
 # Corelation_DF$BR<-factor(Corelation_DF$BR)
-M_proposal <- cor(Corelation_DF[,c(2:24)],use="complete.obs")
-res1 <- cor.mtest(Corelation_DF[,c(2:24)], conf.level = .95)
+M_proposal <- cor(Corelation_DF[, c(2:24)], use = "complete.obs")
+res1 <- cor.mtest(Corelation_DF[, c(2:24)], conf.level = .95)
 
 # significance_plot<-
-  corrplot(M_proposal, p.mat = res1$p, method = "color", type = "upper",
-           title="Psychometrics-core questions correlation on proposals",
-         sig.level = c(.001, .01, .05), pch.cex = .9,diag = FALSE,
-         insig = "label_sig", pch.col = "black", col=colorRampPalette(c("brown1", "white", "dodgerblue"))(200), tl.col="black", mar=c(0,0,1,0))
+corrplot(
+  M_proposal,
+  p.mat = res1$p,
+  method = "color",
+  type = "upper",
+  title = "Psychometrics-core questions correlation on proposals",
+  sig.level = c(.001, .01, .05),
+  pch.cex = .9,
+  diag = FALSE,
+  insig = "label_sig",
+  pch.col = "black",
+  col = colorRampPalette(c("brown1", "white", "dodgerblue"))(200),
+  tl.col = "black",
+  mar = c(0, 0, 1, 0)
+)
 ```
 
 
@@ -493,66 +547,112 @@ Corelation_DF_Conf$departmental_affiliation<-NULL
 
 ```{r,echo=FALSE}
 library(corrplot)
-M_Conf <- cor(Corelation_DF_Conf[,c(2:26)],use="complete.obs")
-res2 <- cor.mtest(Corelation_DF_Conf[,c(2:26)], conf.level = .95)
+M_Conf <- cor(Corelation_DF_Conf[, c(2:26)], use = "complete.obs")
+res2 <- cor.mtest(Corelation_DF_Conf[, c(2:26)], conf.level = .95)
 
-  corrplot(M_Conf, p.mat = res2$p, method = "color", type = "upper",
-           title="Psychometrics-core questions correlation on conference papers",
-         sig.level = c(.001, .01, .05), pch.cex = .9,diag = FALSE,
-         insig = "label_sig", pch.col = "black", col=colorRampPalette(c("brown1", "white", "dodgerblue"))(200), tl.col="black", mar=c(0,0,1,0))
+corrplot(
+  M_Conf,
+  p.mat = res2$p,
+  method = "color",
+  type = "upper",
+  title = "Psychometrics-core questions correlation on conference papers",
+  sig.level = c(.001, .01, .05),
+  pch.cex = .9,
+  diag = FALSE,
+  insig = "label_sig",
+  pch.col = "black",
+  col = colorRampPalette(c("brown1", "white", "dodgerblue"))(200),
+  tl.col = "black",
+  mar = c(0, 0, 1, 0)
+)
 
 ```
 
 
-```{r}
-Conf_C_Eng<- subset(Conf_C_Eng, departmental_affiliation=="Computer Science" | departmental_affiliation=="Engineering")
-Conf_C_Eng$departmental_affiliation<-NULL
+```{r, echo=FALSE}
+Conf_C_Eng <-
+  subset(
+    Conf_C_Eng,
+    departmental_affiliation == "Computer Science" |
+      departmental_affiliation == "Engineering"
+  )
+Conf_C_Eng$departmental_affiliation <- NULL
 
 
-M_Conf_c_eng <- cor(Conf_C_Eng[,c(2:26)],use="complete.obs")
-res3 <- cor.mtest(Conf_C_Eng[,c(2:26)], conf.level = .95)
+M_Conf_c_eng <- cor(Conf_C_Eng[, c(2:26)], use = "complete.obs")
+res3 <- cor.mtest(Conf_C_Eng[, c(2:26)], conf.level = .95)
 
 # significance_plot<-
 
 # par(mfrow = c(2, 2))
-  corrplot(M_Conf_c_eng, p.mat = res3$p, method = "color", type = "upper",
-           title="Psychometrics-core questions correlation on conference papers Com-Eng",
-         sig.level = c(.001, .01, .05), pch.cex = .9,diag = FALSE,
-         insig = "label_sig", pch.col = "black", col=colorRampPalette(c("brown1", "white", "dodgerblue"))(200), tl.col="black", mar=c(0,0,1,0))
-
-
-
+corrplot(
+  M_Conf_c_eng,
+  p.mat = res3$p,
+  method = "color",
+  type = "upper",
+  title = "Psychometrics-core questions correlation on conference papers Com-Eng",
+  sig.level = c(.001, .01, .05),
+  pch.cex = .9,
+  diag = FALSE,
+  insig = "label_sig",
+  pch.col = "black",
+  col = colorRampPalette(c("brown1", "white", "dodgerblue"))(200),
+  tl.col = "black",
+  mar = c(0, 0, 1, 0)
+)
 ```
 
 ```{r, echo=FALSE}
-Conf_A_Astar$departmental_affiliation<-NULL
-Conf_A_Astar<- subset(Conf_A_Astar, CR=="3" | CR=="4")
+Conf_A_Astar$departmental_affiliation <- NULL
+Conf_A_Astar <- subset(Conf_A_Astar, CR == "3" | CR == "4")
 
-M_Conf_A_Astar <- cor(Conf_A_Astar[,c(2:26)],use="complete.obs")
-res4 <- cor.mtest(Conf_A_Astar[,c(2:26)], conf.level = .95)
+M_Conf_A_Astar <- cor(Conf_A_Astar[, c(2:26)], use = "complete.obs")
+res4 <- cor.mtest(Conf_A_Astar[, c(2:26)], conf.level = .95)
 
-  corrplot(M_Conf_A_Astar, p.mat = res4$p, method = "color", type = "upper",
-           title="Psychometrics-core questions correlation on A-A* conference papers",
-         sig.level = c(.001, .01, .05), pch.cex = .9,diag = FALSE,
-         insig = "label_sig", pch.col = "black", col=colorRampPalette(c("brown1", "white", "dodgerblue"))(200), tl.col="black", mar=c(0,0,1,0))
-  # dev.off()
+corrplot(
+  M_Conf_A_Astar,
+  p.mat = res4$p,
+  method = "color",
+  type = "upper",
+  title = "Psychometrics-core questions correlation on A-A* conference papers",
+  sig.level = c(.001, .01, .05),
+  pch.cex = .9,
+  diag = FALSE,
+  insig = "label_sig",
+  pch.col = "black",
+  col = colorRampPalette(c("brown1", "white", "dodgerblue"))(200),
+  tl.col = "black",
+  mar = c(0, 0, 1, 0)
+)
+# dev.off()
 ```
 
 
 ```{r, echo=FALSE}
-Conf_B_C$departmental_affiliation<-NULL
-Conf_B_C<- subset(Conf_B_C, CR=="1" | CR=="2")
+Conf_B_C$departmental_affiliation <- NULL
+Conf_B_C <- subset(Conf_B_C, CR == "1" | CR == "2")
 
-M_Conf_B_C <- cor(Conf_B_C[,c(2:26)],use="complete.obs")
-res5 <- cor.mtest(Conf_B_C[,c(2:26)], conf.level = .95)
+M_Conf_B_C <- cor(Conf_B_C[, c(2:26)], use = "complete.obs")
+res5 <- cor.mtest(Conf_B_C[, c(2:26)], conf.level = .95)
 
 # significance_plot<-
 # pdf(file = "corplot.pdf")
-  corrplot(M_Conf_B_C, p.mat = res5$p, method = "color", type = "upper",
-           title="Psychometrics-core questions correlation on B-C conference papers",
-         sig.level = c(.001, .01, .05), pch.cex = .9,diag = FALSE,
-         insig = "label_sig", pch.col = "black", col=colorRampPalette(c("brown1", "white", "dodgerblue"))(200), tl.col="black", mar=c(0,0,1,0))
-  # dev.off()
+corrplot(
+  M_Conf_B_C,
+  p.mat = res5$p,
+  method = "color",
+  type = "upper",
+  title = "Psychometrics-core questions correlation on B-C conference papers",
+  sig.level = c(.001, .01, .05),
+  pch.cex = .9,
+  diag = FALSE,
+  insig = "label_sig",
+  pch.col = "black",
+  col = colorRampPalette(c("brown1", "white", "dodgerblue"))(200),
+  tl.col = "black",
+  mar = c(0, 0, 1, 0)
+)
+# dev.off()
 ```
 
 
@@ -560,35 +660,102 @@ res5 <- cor.mtest(Conf_B_C[,c(2:26)], conf.level = .95)
 
 par(mfrow = c(2, 2))
 
-corrplot(M_proposal, p.mat = res1$p, method = "color", type = "upper",
-           title="Proposals",
-         sig.level = c(.001, .01, .05), pch.cex = .9,diag = FALSE,
-         insig = "label_sig", pch.col = "black", col=colorRampPalette(c("brown1", "white", "dodgerblue"))(200), tl.col="black", mar=c(0,0,1,0))
-corrplot(M_Conf, p.mat = res2$p, method = "color", type = "upper",
-           title="Conference papers",
-         sig.level = c(.001, .01, .05), pch.cex = .9,diag = FALSE,
-         insig = "label_sig", pch.col = "black", col=colorRampPalette(c("brown1", "white", "dodgerblue"))(200), tl.col="black", mar=c(0,0,1,0))
-corrplot(M_Conf_A_Astar, p.mat = res4$p, method = "color", type = "upper",
-           title="A-A* conference papers",
-         sig.level = c(.001, .01, .05), pch.cex = .9,diag = FALSE,
-         insig = "label_sig", pch.col = "black", col=colorRampPalette(c("brown1", "white", "dodgerblue"))(200), tl.col="black", mar=c(0,0,1,0))
-corrplot(M_Conf_B_C, p.mat = res5$p, method = "color", type = "upper",
-           title="B-C conference papers",
-         sig.level = c(.001, .01, .05), pch.cex = .9,diag = FALSE,
-         insig = "label_sig", pch.col = "black", col=colorRampPalette(c("brown1", "white", "dodgerblue"))(200), tl.col="black", mar=c(0,0,1,0))
+corrplot(
+  M_proposal,
+  p.mat = res1$p,
+  method = "color",
+  type = "upper",
+  title = "Proposals",
+  sig.level = c(.001, .01, .05),
+  pch.cex = .9,
+  diag = FALSE,
+  insig = "label_sig",
+  pch.col = "black",
+  col = colorRampPalette(c("brown1", "white", "dodgerblue"))(200),
+  tl.col = "black",
+  mar = c(0, 0, 1, 0)
+)
+corrplot(
+  M_Conf,
+  p.mat = res2$p,
+  method = "color",
+  type = "upper",
+  title = "Conference papers",
+  sig.level = c(.001, .01, .05),
+  pch.cex = .9,
+  diag = FALSE,
+  insig = "label_sig",
+  pch.col = "black",
+  col = colorRampPalette(c("brown1", "white", "dodgerblue"))(200),
+  tl.col = "black",
+  mar = c(0, 0, 1, 0)
+)
+corrplot(
+  M_Conf_A_Astar,
+  p.mat = res4$p,
+  method = "color",
+  type = "upper",
+  title = "A-A* conference papers",
+  sig.level = c(.001, .01, .05),
+  pch.cex = .9,
+  diag = FALSE,
+  insig = "label_sig",
+  pch.col = "black",
+  col = colorRampPalette(c("brown1", "white", "dodgerblue"))(200),
+  tl.col = "black",
+  mar = c(0, 0, 1, 0)
+)
+corrplot(
+  M_Conf_B_C,
+  p.mat = res5$p,
+  method = "color",
+  type = "upper",
+  title = "B-C conference papers",
+  sig.level = c(.001, .01, .05),
+  pch.cex = .9,
+  diag = FALSE,
+  insig = "label_sig",
+  pch.col = "black",
+  col = colorRampPalette(c("brown1", "white", "dodgerblue"))(200),
+  tl.col = "black",
+  mar = c(0, 0, 1, 0)
+)
 
 ```
 
 
 ```{r, echo=FALSE}
-par(mfrow=c(2,1))
-  corrplot(M_Conf, p.mat = res2$p, method = "color", type = "upper",
-           title="Psychometrics-core questions correlation on conference papers",
-         sig.level = c(.001, .01, .05), pch.cex = .9,diag = FALSE,
-         insig = "label_sig", pch.col = "black", col=colorRampPalette(c("brown1", "white", "dodgerblue"))(200), tl.col="black", mar=c(0,0,1,0))
-    corrplot(M_Conf_c_eng, p.mat = res3$p, method = "color", type = "upper",
-           title="Psychometrics-core questions correlation on conference papers Com-Eng",
-         sig.level = c(.001, .01, .05), pch.cex = .9,diag = FALSE,
-         insig = "label_sig", pch.col = "black", col=colorRampPalette(c("brown1", "white", "dodgerblue"))(200), tl.col="black", mar=c(0,0,1,0))
+
+par(mfrow = c(2, 1))
+corrplot(
+  M_Conf,
+  p.mat = res2$p,
+  method = "color",
+  type = "upper",
+  title = "Psychometrics-core questions correlation on conference papers",
+  sig.level = c(.001, .01, .05),
+  pch.cex = .9,
+  diag = FALSE,
+  insig = "label_sig",
+  pch.col = "black",
+  col = colorRampPalette(c("brown1", "white", "dodgerblue"))(200),
+  tl.col = "black",
+  mar = c(0, 0, 1, 0)
+)
+corrplot(
+  M_Conf_c_eng,
+  p.mat = res3$p,
+  method = "color",
+  type = "upper",
+  title = "Psychometrics-core questions correlation on conference papers Com-Eng",
+  sig.level = c(.001, .01, .05),
+  pch.cex = .9,
+  diag = FALSE,
+  insig = "label_sig",
+  pch.col = "black",
+  col = colorRampPalette(c("brown1", "white", "dodgerblue"))(200),
+  tl.col = "black",
+  mar = c(0, 0, 1, 0)
+)
 ```
 

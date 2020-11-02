@@ -39,68 +39,71 @@ library(rms)
 
 
 ```{r, echo=FALSE}
+
 root_dir <- getwd()
-project_directory<-dirname(root_dir)
+project_directory <- dirname(root_dir)
 data_dir <- file.path(project_directory, 'raw-data')
 curated_data_dir <- file.path(project_directory, 'curated-data')
 plot_dir <- file.path(project_directory, 'Plots')
-data_file_name<-'CorrelationData.csv'
-data_file_name_std<-'StandardPart.csv'
+data_file_name <- 'CorrelationData.csv'
+data_file_name_std <- 'StandardPart.csv'
 
 
-Data<-read.csv(file.path(curated_data_dir,data_file_name),stringsAsFactors = FALSE)
-Data<-Data[complete.cases(Data),]
+Data <-
+  read.csv(file.path(curated_data_dir, data_file_name),
+           stringsAsFactors = FALSE)
+Data <- Data[complete.cases(Data), ]
 ```
 
 ```{r,echo=FALSE, warning=FALSE}
-success_rate <- ggplot(Data, aes(x = SR)) +
-  geom_histogram(binwidth = .5, stat = "count") + theme_minimal() +
-  ylim(0, 60) +
-  ylab("Count") + xlab("Success rate") + scale_x_discrete(
-    limits = c("1", "2", "3", "4", "5", "6", "7"),
-    labels = c("< 10%",
-               "10-20%",
-               "20-30%",
-               "30-50%",
-               "50-75%",
-               "75-90%",
-               "> 90%")
-  ) + ggtitle("Proposals success rate") + theme(plot.title = element_text(hjust = 0.5))
-print(success_rate)
-
-
 # success_rate <- ggplot(Data, aes(x = SR)) +
 #   geom_histogram(binwidth = .5, stat = "count") + theme_minimal() +
-#   ylim(0, 160) +
+#   ylim(0, 60) +
 #   ylab("Count") + xlab("Success rate") + scale_x_discrete(
-#     limits = c("1", "2", "3"),
-#     labels = c("10-30%",
+#     limits = c("1", "2", "3", "4", "5", "6", "7"),
+#     labels = c("< 10%",
+#                "10-20%",
+#                "20-30%",
 #                "30-50%",
-#                "50-100%")
+#                "50-75%",
+#                "75-90%",
+#                "> 90%")
 #   ) + ggtitle("Proposals success rate") + theme(plot.title = element_text(hjust = 0.5))
 # print(success_rate)
+
+
+success_rate <- ggplot(Data, aes(x = SR)) +
+  geom_histogram(binwidth = .5, stat = "count") + theme_minimal() +
+  ylim(0, 180) +
+  ylab("Count") + xlab("Success rate") + scale_x_discrete(
+    limits = c("1", "2", "3"),
+    labels = c("10-30%",
+               "30-50%",
+               "50-100%")
+  ) + ggtitle("Proposals success rate") + theme(plot.title = element_text(hjust = 0.5))
+print(success_rate)
 ```
 
 
 
 
 ```{r, echo=FALSE}
-Data$SR<-factor(Data$SR)
-hindex=Data$H
+Data$SR <- factor(Data$SR)
+hindex = Data$H
 
-lm_DF<-as.data.frame((Data[,2:24]))
+lm_DF <- as.data.frame((Data[, 2:24]))
 
 
-lm_DF$Rank<-as.factor(Data$Rank)
-lm_DF$RS<-factor(lm_DF$RS)
-lm_DF$WH<-factor(lm_DF$WH)
-lm_DF$NP<-factor(lm_DF$NP)
-lm_DF$H<-lm_DF$H+0.001
-lm_DF$H<-log(lm_DF$H)
+lm_DF$Rank <- as.factor(Data$Rank)
+lm_DF$RS <- factor(lm_DF$RS)
+lm_DF$WH <- factor(lm_DF$WH)
+lm_DF$NP <- factor(lm_DF$NP)
+lm_DF$H <- lm_DF$H + 0.001
+lm_DF$H <- log(lm_DF$H)
 
-lm_DF$DWH<- factor(lm_DF$DWH)
-lm_DF$T<- factor(lm_DF$T)
-lm_DF$DS<- factor(lm_DF$DS)
+lm_DF$DWH <- factor(lm_DF$DWH)
+lm_DF$T <- factor(lm_DF$T)
+lm_DF$DS <- factor(lm_DF$DS)
 
 
 
@@ -111,13 +114,13 @@ lm_DF$DS<- factor(lm_DF$DS)
 \newpage
 ## Model with NP1 as reference
 ```{r, echo=FALSE, warning=FALSE}
-base_model=polr(SR ~ H + NP + AGR, data = lm_DF, Hess = TRUE)
+base_model = polr(SR ~ H + NP + AGR, data = lm_DF, Hess = TRUE)
 # base_model=lrm(SR ~ H + NP + AGR, data = lm_DF)
 summary(base_model)
 
 ctable <- coef(summary(base_model))
 p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
-ctable <- cbind(ctable, "p value" = round(p,4))
+ctable <- cbind(ctable, "p value" = round(p, 4))
 ctable
 ```
 
@@ -156,12 +159,12 @@ ctable
 \newpage
 ## Model with NP3 as reference 
 ```{r, echo=FALSE, warning=FALSE}
-lm_DF$NP<-relevel(lm_DF$NP, ref = "3")
-base_model=polr(SR ~ H + NP + AGR, data = lm_DF, Hess = TRUE)
+lm_DF$NP <- relevel(lm_DF$NP, ref = "3")
+base_model = polr(SR ~ H + NP + AGR, data = lm_DF, Hess = TRUE)
 summary(base_model)
 ctable <- coef(summary(base_model))
 p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
-ctable <- cbind(ctable, "p value" = round(p,4))
+ctable <- cbind(ctable, "p value" = round(p, 4))
 ctable
 ```
 
@@ -189,16 +192,17 @@ ctable
 ## Model with all variables NP1, DWH5 and DS1 as reference
 ```{r, echo=FALSE, warning=FALSE}
 
-lm_DF$NP<-relevel(lm_DF$NP, ref = "1")
-lm_DF$DWH<-relevel(lm_DF$DWH, ref = "5")
+lm_DF$NP <- relevel(lm_DF$NP, ref = "1")
+lm_DF$DWH <- relevel(lm_DF$DWH, ref = "5")
 
-mod_fitcv<-polr(SR ~ H + AGR + NP + DWH  + DS, data = lm_DF , Hess = TRUE)
+mod_fitcv <-
+  polr(SR ~ H + AGR + NP + DWH  + DS, data = lm_DF , Hess = TRUE)
 # mod_fitcv<-polr(SR ~ DS, data = lm_DF , Hess = TRUE)
 summary(mod_fitcv)
 
 ctable <- coef(summary(mod_fitcv))
 p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
-ctable <- cbind(ctable, "p value" = round(p,4))
+ctable <- cbind(ctable, "p value" = round(p, 4))
 ctable
 ```
 
@@ -208,16 +212,17 @@ ctable
 ```{r, echo=FALSE, warning=FALSE}
 
 # lm_DF$DS<-relevel(lm_DF$DS, ref = "1")
-lm_DF$NP<-relevel(lm_DF$NP, ref = "3")
-lm_DF$DWH<-relevel(lm_DF$DWH, ref = "1")
+lm_DF$NP <- relevel(lm_DF$NP, ref = "3")
+lm_DF$DWH <- relevel(lm_DF$DWH, ref = "1")
 
-mod_fitcv<-polr(SR ~ H + AGR + NP + DWH  + DS, data = lm_DF , Hess = TRUE)
+mod_fitcv <-
+  polr(SR ~ H + AGR + NP + DWH  + DS, data = lm_DF , Hess = TRUE)
 # mod_fitcv<-polr(SR ~ DS, data = lm_DF , Hess = TRUE)
 summary(mod_fitcv)
 
 ctable <- coef(summary(mod_fitcv))
 p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
-ctable <- cbind(ctable, "p value" = round(p,4))
+ctable <- cbind(ctable, "p value" = round(p, 4))
 ctable
 ```
 
