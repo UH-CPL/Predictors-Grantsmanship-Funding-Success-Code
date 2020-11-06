@@ -548,7 +548,7 @@ tyopical_week <-
     common.legend = TRUE,
     legend = "bottom"
   )
-filename <- "TypicalWeek.pdf"
+filename <- "TypicalWeek_WD.pdf"
 full_path <- file.path(plot_dir, filename)
 ggsave(
   full_path,
@@ -634,7 +634,7 @@ work_distribution_before_PD <-
     common.legend = TRUE,
     legend = "bottom"
   )
-filename <- "Work_dist_week_b4_PD.pdf"
+filename <- "WD_Proposal_Deadline_Week_Before.pdf"
 full_path <- file.path(plot_dir, filename)
 ggsave(
   full_path,
@@ -677,7 +677,7 @@ proposal_day_work_distribution <-
     common.legend = TRUE,
     legend = "bottom"
   )
-filename <- "PD_work_distributions.pdf"
+filename <- "WD_Proposal_Deadline_Day.pdf"
 full_path <- file.path(plot_dir, filename)
 ggsave(
   full_path,
@@ -757,7 +757,7 @@ conf_day_work_dist_b4_week <-
     common.legend = TRUE,
     legend = "bottom"
   )
-filename <- "CD_work_distributions_week_b4.pdf"
+filename <- "WD_Conferance_Deadline_week_before.pdf"
 full_path <- file.path(plot_dir, filename)
 ggsave(
   full_path,
@@ -800,7 +800,7 @@ paper_work_distribution <-
     common.legend = TRUE,
     legend = "bottom"
   )
-filename <- "CD_work_distribution.pdf"
+filename <- "WD_Conferance_Deadline_Day.pdf"
 full_path <- file.path(plot_dir, filename)
 ggsave(
   full_path,
@@ -824,9 +824,6 @@ Proposal_Disruption <-
     'my_interpersonal_relations'
   )], id.vars = 1)
 Proposal_Disruption$value <- as.numeric(Proposal_Disruption$value)
-# proposal_Distupted_plot <-
-#   Draw_Disrupted_plot(Proposal_Disruption,
-#                       "Disruption of different aspects of life on Proposal Deadlines")
 
 
 proposal_Distupted_ina_bar <-
@@ -868,7 +865,7 @@ plot_proposal_disrupted = ggarrange(
   common.legend = TRUE,
   legend = "bottom"
 )
-filename <- "ProposalDisruption.pdf"
+filename <- "Proposal_Disruption.pdf"
 full_path <- file.path(plot_dir, filename)
 ggsave(
   full_path,
@@ -920,7 +917,7 @@ plot_paper_disrupted = ggarrange(
   common.legend = TRUE,
   legend = "bottom"
 )
-filename <- "PaperDisruption.pdf"
+filename <- "Paper_Disruption.pdf"
 full_path <- file.path(plot_dir, filename)
 ggsave(
   full_path,

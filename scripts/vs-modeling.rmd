@@ -56,32 +56,32 @@ Data <- Data[complete.cases(Data), ]
 ```
 
 ```{r,echo=FALSE, warning=FALSE}
-# success_rate <- ggplot(Data, aes(x = SR)) +
-#   geom_histogram(binwidth = .5, stat = "count") + theme_minimal() +
-#   ylim(0, 60) +
-#   ylab("Count") + xlab("Success rate") + scale_x_discrete(
-#     limits = c("1", "2", "3", "4", "5", "6", "7"),
-#     labels = c("< 10%",
-#                "10-20%",
-#                "20-30%",
-#                "30-50%",
-#                "50-75%",
-#                "75-90%",
-#                "> 90%")
-#   ) + ggtitle("Proposals success rate") + theme(plot.title = element_text(hjust = 0.5))
-# print(success_rate)
-
-
 success_rate <- ggplot(Data, aes(x = SR)) +
   geom_histogram(binwidth = .5, stat = "count") + theme_minimal() +
-  ylim(0, 180) +
+  ylim(0, 60) +
   ylab("Count") + xlab("Success rate") + scale_x_discrete(
-    limits = c("1", "2", "3"),
-    labels = c("10-30%",
+    limits = c("1", "2", "3", "4", "5", "6", "7"),
+    labels = c("< 10%",
+               "10-20%",
+               "20-30%",
                "30-50%",
-               "50-100%")
+               "50-75%",
+               "75-90%",
+               "> 90%")
   ) + ggtitle("Proposals success rate") + theme(plot.title = element_text(hjust = 0.5))
 print(success_rate)
+
+
+# success_rate <- ggplot(Data, aes(x = SR)) +
+#   geom_histogram(binwidth = .5, stat = "count") + theme_minimal() +
+#   ylim(0, 180) +
+#   ylab("Count") + xlab("Success rate") + scale_x_discrete(
+#     limits = c("1", "2", "3"),
+#     labels = c("10-30%",
+#                "30-50%",
+#                "50-100%")
+#   ) + ggtitle("Proposals success rate") + theme(plot.title = element_text(hjust = 0.5))
+# print(success_rate)
 ```
 
 
@@ -114,7 +114,7 @@ lm_DF$DS <- factor(lm_DF$DS)
 \newpage
 ## Model with NP1 as reference
 ```{r, echo=FALSE, warning=FALSE}
-base_model = polr(SR ~ H + NP + AGR, data = lm_DF, Hess = TRUE)
+base_model = polr(SR ~ H + NP + RS + AGR + TA + DWH + DS, data = lm_DF, Hess = TRUE)
 # base_model=lrm(SR ~ H + NP + AGR, data = lm_DF)
 summary(base_model)
 
@@ -160,7 +160,7 @@ ctable
 ## Model with NP3 as reference 
 ```{r, echo=FALSE, warning=FALSE}
 lm_DF$NP <- relevel(lm_DF$NP, ref = "3")
-base_model = polr(SR ~ H + NP + AGR, data = lm_DF, Hess = TRUE)
+base_model = polr(SR ~ H + NP + RS + AGR + TA + DWH + DS, data = lm_DF, Hess = TRUE)
 summary(base_model)
 ctable <- coef(summary(base_model))
 p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
