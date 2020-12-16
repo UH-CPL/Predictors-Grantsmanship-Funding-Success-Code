@@ -58,7 +58,7 @@ Data <- Data[complete.cases(Data), ]
 ```{r,echo=FALSE, warning=FALSE}
 success_rate <- ggplot(Data, aes(x = SR)) +
   geom_histogram(binwidth = .5, stat = "count") + theme_minimal() +
-  ylim(0, 60) +
+  ylim(0, 100) +
   ylab("Count") + xlab("Success rate") + scale_x_discrete(
     limits = c("1", "2", "3", "4", "5", "6", "7"),
     labels = c("< 10%",
@@ -114,7 +114,8 @@ lm_DF$DS <- factor(lm_DF$DS)
 \newpage
 ## Model with NP1 as reference
 ```{r, echo=FALSE, warning=FALSE}
-base_model = polr(SR ~ H + NP + RS + AGR + TA + DWH + DS, data = lm_DF, Hess = TRUE)
+# lm_DF$SR <- relevel(lm_DF$SR, ref = 7)
+base_model = polr(SR ~ H + NP + AGR + TA + RS + DWH + DS, data = lm_DF, Hess = TRUE)
 # base_model=lrm(SR ~ H + NP + AGR, data = lm_DF)
 summary(base_model)
 
@@ -160,7 +161,7 @@ ctable
 ## Model with NP3 as reference 
 ```{r, echo=FALSE, warning=FALSE}
 lm_DF$NP <- relevel(lm_DF$NP, ref = "3")
-base_model = polr(SR ~ H + NP + RS + AGR + TA + DWH + DS, data = lm_DF, Hess = TRUE)
+base_model = polr(SR ~ H + NP + AGR + TA + RS + DWH + DS, data = lm_DF, Hess = TRUE)
 summary(base_model)
 ctable <- coef(summary(base_model))
 p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
@@ -196,7 +197,7 @@ lm_DF$NP <- relevel(lm_DF$NP, ref = "1")
 lm_DF$DWH <- relevel(lm_DF$DWH, ref = "5")
 
 mod_fitcv <-
-  polr(SR ~ H + AGR + NP + DWH  + DS, data = lm_DF , Hess = TRUE)
+  polr(SR ~ H + NP + AGR + TA + RS + DWH + DS, data = lm_DF, Hess = TRUE)
 # mod_fitcv<-polr(SR ~ DS, data = lm_DF , Hess = TRUE)
 summary(mod_fitcv)
 
@@ -216,7 +217,7 @@ lm_DF$NP <- relevel(lm_DF$NP, ref = "3")
 lm_DF$DWH <- relevel(lm_DF$DWH, ref = "1")
 
 mod_fitcv <-
-  polr(SR ~ H + AGR + NP + DWH  + DS, data = lm_DF , Hess = TRUE)
+  polr(SR ~ H + NP + AGR + TA + RS + DWH + DS, data = lm_DF, Hess = TRUE)
 # mod_fitcv<-polr(SR ~ DS, data = lm_DF , Hess = TRUE)
 summary(mod_fitcv)
 
