@@ -52,8 +52,8 @@ max(StandardPart$google_scholar_h_index)
              width = 0.5,
              fill = "steelblue") +
     theme_bw() +
-    scale_y_continuous(breaks = seq(0, ylimit, by = 20),
-                       limits = c(0, ylimit)) +
+    scale_y_continuous(breaks = seq(0, 200, by = 50),
+                       limits = c(0, 200)) +
     labs(x = "", y = "Participant count", title = "Faculty Rank") +
     theme(
       panel.grid.major = element_blank(),
@@ -118,8 +118,8 @@ faculty_rank<-ggplot(temp, aes(x = "" , y = cou, fill = item)) +
              width = 0.5,
              fill = "steelblue") +
     theme_bw() +
-    scale_y_continuous(breaks = seq(0, ylimit, by = 20),
-                       limits = c(0, ylimit)) +
+    scale_y_continuous(breaks = seq(0, 300, by = 50),
+                       limits = c(0, 300)) +
     labs(x = "", y = "Participant count", title = "Gender") +
     theme(
       panel.grid.major = element_blank(),
@@ -189,8 +189,8 @@ Gender<-ggplot(temp, aes(x = "" , y = cou, fill = item)) +
              width = 0.5,
              fill = "steelblue") +
     theme_bw() +
-    scale_y_continuous(breaks = seq(0, ylimit, by = 20),
-                       limits = c(0, ylimit)) +
+    scale_y_continuous(breaks = seq(0, 150, by = 50),
+                       limits = c(0, 150)) +
     labs(x = "", y = "Participant count", title = "Department") +
     theme(
       panel.grid.major = element_blank(),

@@ -102,21 +102,21 @@ for (i in 1:nrow(Corelation_DF)) {
   if (Corelation_DF$WH[i] == "< 30") {
     Corelation_DF$WH[i] = 1
   } else if (Corelation_DF$WH[i] == "30-40") {
-    Corelation_DF$WH[i] = 2
+    Corelation_DF$WH[i] = 1
   } else if (Corelation_DF$WH[i] == "40-50") {
-    Corelation_DF$WH[i] = 3
+    Corelation_DF$WH[i] = 2
   } else {
-    Corelation_DF$WH[i] = 4
+    Corelation_DF$WH[i] = 3
   }
   
   if (Corelation_DF$BR[i] == "Every hour") {
     Corelation_DF$BR[i] = 1
   } else if (Corelation_DF$BR[i] == "Every 1-2 hours") {
-    Corelation_DF$BR[i] = 2
+    Corelation_DF$BR[i] = 1
   } else if (Corelation_DF$BR[i] == "Every 3-4 hours") {
-    Corelation_DF$BR[i] = 3
+    Corelation_DF$BR[i] = 2
   } else {
-    Corelation_DF$BR[i] = 4
+    Corelation_DF$BR[i] = 2
   }
   
   
@@ -135,21 +135,21 @@ for (i in 1:nrow(Corelation_DF)) {
   }
   
   if (Corelation_DF$SR[i] == "< 10%") {
-    Corelation_DF$SR[i] = 1
+    Corelation_DF$SR[i] = 0
   } else if (Corelation_DF$SR[i] == "10-20%") {
-    Corelation_DF$SR[i] = 2
+    Corelation_DF$SR[i] = 0
   } else if (Corelation_DF$SR[i] == "20-30%") {
-    Corelation_DF$SR[i] = 3
+    Corelation_DF$SR[i] = 0
   } else if (Corelation_DF$SR[i] == "30-50%") {
-    Corelation_DF$SR[i] = 4
+    Corelation_DF$SR[i] = 1
   } else if (Corelation_DF$SR[i] == "50-75%") {
-    Corelation_DF$SR[i] = 5
+    Corelation_DF$SR[i] = 1
   } else if (Corelation_DF$SR[i] == "75-90%") {
-    Corelation_DF$SR[i] = 6
+    Corelation_DF$SR[i] = 1
   } else if (Corelation_DF$SR[i] == "") {
     Corelation_DF$SR[i] = NA
   } else {
-    Corelation_DF$SR[i] = 7
+    Corelation_DF$SR[i] = 1
   }
   
   
@@ -177,13 +177,13 @@ for (i in 1:nrow(Corelation_DF)) {
   if (Corelation_DF$AP[i] == "1-2 weeks") {
     Corelation_DF$AP[i] = 1
   } else if (Corelation_DF$AP[i] == "2-4 weeks") {
-    Corelation_DF$AP[i] = 2
+    Corelation_DF$AP[i] = 1
   } else if (Corelation_DF$AP[i] == "1-2 months") {
-    Corelation_DF$AP[i] = 3
+    Corelation_DF$AP[i] = 2
   } else if (Corelation_DF$AP[i] == "") {
     Corelation_DF$AP[i] = NA
   } else {
-    Corelation_DF$AP[i] = 4
+    Corelation_DF$AP[i] = 3
   }
   
   if (Corelation_DF$AR[i] == "< 1 month") {
@@ -204,15 +204,15 @@ for (i in 1:nrow(Corelation_DF)) {
   if (Corelation_DF$DWH[i] == "Significantly less") {
     Corelation_DF$DWH[i] = 1
   } else if (Corelation_DF$DWH[i] == "Less") {
-    Corelation_DF$DWH[i] = 2
+    Corelation_DF$DWH[i] = 1
   } else if (Corelation_DF$DWH[i] == "About the same") {
-    Corelation_DF$DWH[i] = 3
+    Corelation_DF$DWH[i] = 1
   } else if (Corelation_DF$DWH[i] == "More") {
-    Corelation_DF$DWH[i] = 4
+    Corelation_DF$DWH[i] = 2
   } else if (Corelation_DF$DWH[i] == "") {
     Corelation_DF$DWH[i] = NA
   } else {
-    Corelation_DF$DWH[i] = 5
+    Corelation_DF$DWH[i] = 3
   }
   
   
@@ -331,14 +331,26 @@ ggsave(
 )
 ```
 
+```{r}
+Corelation_DF$H <- Corelation_DF$H + 0.001
+Corelation_DF$H <- log(Corelation_DF$H)
+```
 
 
 ```{r, echo=FALSE}
 library(corrplot)
+library(superml)
+
+# lbl <- LabelEncoder$new()
+# lbl$fit(Corelation_DF$Rank)
+# Corelation_DF$Rank <- lbl$fit_transform(Corelation_DF$Rank)
+
+rank_factor <- factor(Corelation_DF$Rank)
+Corelation_DF$Rank <- as.numeric(rank_factor)
 
 # Corelation_DF$BR<-factor(Corelation_DF$BR)
-M_proposal <- cor(Corelation_DF[, c(2:24)], use = "complete.obs")
-res1 <- cor.mtest(Corelation_DF[, c(2:24)], conf.level = .95)
+M_proposal <- cor(Corelation_DF[, c(1:24)], use = "complete.obs")
+res1 <- cor.mtest(Corelation_DF[, c(1:24)], conf.level = .95)
 
 # significance_plot<-
 corrplot(

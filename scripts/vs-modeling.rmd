@@ -1,5 +1,6 @@
 ---
-title: "Ordinal Logistic Regression or Proportional Odds Logistic Regression"
+# title: "Ordinal Logistic Regression or Proportional Odds Logistic Regression"
+title: "Random Forest for predicting the Success Rate Levels Successful-Unsuccessful"
 output:
   pdf_document: default
   html_document:
@@ -18,7 +19,13 @@ library(MASS)
 library(caret)
 library(mlbench)
 library(rms)
-# install.packages("rms")
+require(tidyr)
+library(superml)
+library(randomForest)
+library(aod)
+library(pROC)
+# require(dplyr)
+# install.packages("aod")
 # knitr::opts_chunk$set(echo = TRUE)
 
 #######----Source----------#######
@@ -39,7 +46,6 @@ library(rms)
 
 
 ```{r, echo=FALSE}
-
 root_dir <- getwd()
 project_directory <- dirname(root_dir)
 data_dir <- file.path(project_directory, 'raw-data')
@@ -52,180 +58,192 @@ data_file_name_std <- 'StandardPart.csv'
 Data <-
   read.csv(file.path(curated_data_dir, data_file_name),
            stringsAsFactors = FALSE)
-Data <- Data[complete.cases(Data), ]
+Data <- Data[complete.cases(Data),]
 ```
 
-```{r,echo=FALSE, warning=FALSE}
-success_rate <- ggplot(Data, aes(x = SR)) +
-  geom_histogram(binwidth = .5, stat = "count") + theme_minimal() +
-  ylim(0, 100) +
-  ylab("Count") + xlab("Success rate") + scale_x_discrete(
-    limits = c("1", "2", "3", "4", "5", "6", "7"),
-    labels = c("< 10%",
-               "10-20%",
-               "20-30%",
-               "30-50%",
-               "50-75%",
-               "75-90%",
-               "> 90%")
-  ) + ggtitle("Proposals success rate") + theme(plot.title = element_text(hjust = 0.5))
-print(success_rate)
+
+<!-- ```{r,echo=FALSE, warning=FALSE} -->
+<!-- success_rate <- ggplot(Data, aes(x = SR)) + -->
+<!--   geom_histogram(binwidth = .5, stat = "count") + theme_minimal() + -->
+<!--   ylim(0, 200) + -->
+<!--   ylab("Count") + xlab("Success rate") + scale_x_discrete( -->
+<!--     limits = c("1", "2", "3", "4", "5", "6", "7"), -->
+<!--     labels = c("< 10%", -->
+<!--                "10-20%", -->
+<!--                "20-30%", -->
+<!--                "30-50%", -->
+<!--                "50-75%", -->
+<!--                "75-90%", -->
+<!--                "> 90%") -->
+<!--   ) + ggtitle("Proposals success rate") + theme(plot.title = element_text(hjust = 0.5)) -->
+<!-- print(success_rate) -->
 
 
-# success_rate <- ggplot(Data, aes(x = SR)) +
-#   geom_histogram(binwidth = .5, stat = "count") + theme_minimal() +
-#   ylim(0, 180) +
-#   ylab("Count") + xlab("Success rate") + scale_x_discrete(
-#     limits = c("1", "2", "3"),
-#     labels = c("10-30%",
-#                "30-50%",
-#                "50-100%")
-#   ) + ggtitle("Proposals success rate") + theme(plot.title = element_text(hjust = 0.5))
-# print(success_rate)
-```
+<!-- # success_rate <- ggplot(Data, aes(x = SR)) + -->
+<!-- #   geom_histogram(binwidth = .5, stat = "count") + theme_minimal() + -->
+<!-- #   ylim(0, 180) + -->
+<!-- #   ylab("Count") + xlab("Success rate") + scale_x_discrete( -->
+<!-- #     limits = c("1", "2", "3"), -->
+<!-- #     labels = c("10-30%", -->
+<!-- #                "30-50%", -->
+<!-- #                "50-100%") -->
+<!-- #   ) + ggtitle("Proposals success rate") + theme(plot.title = element_text(hjust = 0.5)) -->
+<!-- # print(success_rate) -->
+<!-- ``` -->
 
 
 
 
 ```{r, echo=FALSE}
-Data$SR <- factor(Data$SR)
+Data$SR <- as.factor(Data$SR)
 hindex = Data$H
 
 lm_DF <- as.data.frame((Data[, 2:24]))
 
 
 lm_DF$Rank <- as.factor(Data$Rank)
-lm_DF$RS <- factor(lm_DF$RS)
-lm_DF$WH <- factor(lm_DF$WH)
-lm_DF$NP <- factor(lm_DF$NP)
+lm_DF$RS <- as.factor(lm_DF$RS)
+lm_DF$WH <- as.factor(lm_DF$WH)
+lm_DF$NP <- as.factor(lm_DF$NP)
 lm_DF$H <- lm_DF$H + 0.001
 lm_DF$H <- log(lm_DF$H)
 
-lm_DF$DWH <- factor(lm_DF$DWH)
-lm_DF$T <- factor(lm_DF$T)
-lm_DF$DS <- factor(lm_DF$DS)
+lm_DF$DWH <- as.factor(lm_DF$DWH)
+lm_DF$T <- as.factor(lm_DF$T)
+lm_DF$DS <- as.factor(lm_DF$DS)
+
+# lm_DF <- lm_DF %>% mutate(value = 1)  %>% spread(Rank, value,  fill = 0 )
+# lm_DF <- lm_DF %>% rename(Assistant_Professor = 'Assistant Professor', Associate_Professor = 'Associate Professor')
 
 
+lbl <- LabelEncoder$new()
+lbl$fit(lm_DF$Rank)
+lm_DF$Rank <- lbl$fit_transform(lm_DF$Rank)
+
+lm_DF$Rank <- as.factor(lm_DF$Rank)
 
 # ind<-sample(2,nrow(lm_DF), replace = TRUE, prob = c(0.8,0.2))
 # train_data<-lm_DF[ind==1,]
 # test_data<-lm_DF[ind==2,]
-```
-\newpage
-## Model with NP1 as reference
-```{r, echo=FALSE, warning=FALSE}
-# lm_DF$SR <- relevel(lm_DF$SR, ref = 7)
-base_model = polr(SR ~ H + NP + AGR + TA + RS + DWH + DS, data = lm_DF, Hess = TRUE)
-# base_model=lrm(SR ~ H + NP + AGR, data = lm_DF)
-summary(base_model)
 
-ctable <- coef(summary(base_model))
-p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
-ctable <- cbind(ctable, "p value" = round(p, 4))
-ctable
+# boxplot(lm_DF$H)
 ```
 
-```{r, echo=FALSE, warning=FALSE}
-# \newpage
-## Model with NP1 as reference and kfold cross validation
+<!-- \newpage -->
+<!-- ## Model with NP1 as reference -->
+<!-- ```{r, echo=FALSE, warning=FALSE} -->
+<!-- # lm_DF$SR <- relevel(lm_DF$SR, ref = 7) -->
+<!-- base_model = polr(SR ~ H + NP + AGR + TA + RS + DWH + DS, data = lm_DF, Hess = TRUE) -->
+<!-- # base_model=lrm(SR ~ H + NP + AGR, data = lm_DF) -->
+<!-- summary(base_model) -->
 
-# set.seed(123)
-# fitcontrol<- trainControl(method = "CV", number = 10)
-# 
-# # mod_fitcv<-train(SR ~ H + AGR + NP + DWH  + T + DS, data = lm_DF, na.action = na.omit , method="polr", trControl = fitcontrol)
-# mod_fitcv<-train(SR ~ H + AGR + NP, data = lm_DF, na.action = na.omit , method="polr", trControl = fitcontrol)
-# # print(mod_fitcv)
-# # mod_fitcv<-clm(SR ~ H + AGR + NP + DWH  + T + DS, data = lm_DF, Hess = TRUE)
-# summary(mod_fitcv)
-# 
-# ctable <- coef(summary(mod_fitcv))
-# p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
-# ctable <- cbind(ctable, "p value" = round(p,4))
-# ctable
+<!-- ctable <- coef(summary(base_model)) -->
+<!-- p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2 -->
+<!-- ctable <- cbind(ctable, "p value" = round(p, 4)) -->
+<!-- ctable -->
+<!-- ``` -->
 
-```
+<!-- ```{r, echo=FALSE, warning=FALSE} -->
+<!-- # \newpage -->
+<!-- ## Model with NP1 as reference and kfold cross validation -->
 
+<!-- # set.seed(123) -->
+<!-- # fitcontrol<- trainControl(method = "CV", number = 10) -->
+<!-- #  -->
+<!-- # # mod_fitcv<-train(SR ~ H + AGR + NP + DWH  + T + DS, data = lm_DF, na.action = na.omit , method="polr", trControl = fitcontrol) -->
+<!-- # mod_fitcv<-train(SR ~ H + AGR + NP, data = lm_DF, na.action = na.omit , method="polr", trControl = fitcontrol) -->
+<!-- # # print(mod_fitcv) -->
+<!-- # # mod_fitcv<-clm(SR ~ H + AGR + NP + DWH  + T + DS, data = lm_DF, Hess = TRUE) -->
+<!-- # summary(mod_fitcv) -->
+<!-- #  -->
+<!-- # ctable <- coef(summary(mod_fitcv)) -->
+<!-- # p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2 -->
+<!-- # ctable <- cbind(ctable, "p value" = round(p,4)) -->
+<!-- # ctable -->
 
-```{r, echo=FALSE}
-# pred <- predict(mod_fitcv, lm_DF)
-# # pred
-# tab<-table(pred, lm_DF$SR)
-# tab
-# result<- 1- sum(diag(tab))/sum(tab)
-# result
-```
-
-
-
-\newpage
-## Model with NP3 as reference 
-```{r, echo=FALSE, warning=FALSE}
-lm_DF$NP <- relevel(lm_DF$NP, ref = "3")
-base_model = polr(SR ~ H + NP + AGR + TA + RS + DWH + DS, data = lm_DF, Hess = TRUE)
-summary(base_model)
-ctable <- coef(summary(base_model))
-p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
-ctable <- cbind(ctable, "p value" = round(p, 4))
-ctable
-```
+<!-- ``` -->
 
 
-```{r, echo=FALSE, warning=FALSE}
-#\newpage
-## Model with NP4 as reference and kfold cross validation
-
-# set.seed(123)
-# fitcontrol<- trainControl(method = "CV", number = 10, savePredictions = T)
-# 
-# # mod_fitcv<-train(SR ~ H + AGR + NP, data = lm_DF , method="polr", trControl = fitcontrol)
-# mod_fitcv<-train(SR ~ H + AGR + NP, data = lm_DF , method="polr", trControl = fitcontrol)
-# summary(mod_fitcv)
-# 
-# ctable <- coef(summary(mod_fitcv))
-# p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
-# ctable <- cbind(ctable, "p value" = round(p,4))
-# ctable
-
-```
+<!-- ```{r, echo=FALSE} -->
+<!-- # pred <- predict(mod_fitcv, lm_DF) -->
+<!-- # # pred -->
+<!-- # tab<-table(pred, lm_DF$SR) -->
+<!-- # tab -->
+<!-- # result<- 1- sum(diag(tab))/sum(tab) -->
+<!-- # result -->
+<!-- ``` -->
 
 
-\newpage
-## Model with all variables NP1, DWH5 and DS1 as reference
-```{r, echo=FALSE, warning=FALSE}
 
-lm_DF$NP <- relevel(lm_DF$NP, ref = "1")
-lm_DF$DWH <- relevel(lm_DF$DWH, ref = "5")
-
-mod_fitcv <-
-  polr(SR ~ H + NP + AGR + TA + RS + DWH + DS, data = lm_DF, Hess = TRUE)
-# mod_fitcv<-polr(SR ~ DS, data = lm_DF , Hess = TRUE)
-summary(mod_fitcv)
-
-ctable <- coef(summary(mod_fitcv))
-p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
-ctable <- cbind(ctable, "p value" = round(p, 4))
-ctable
-```
+<!-- \newpage -->
+<!-- ## Model with NP3 as reference  -->
+<!-- ```{r, echo=FALSE, warning=FALSE} -->
+<!-- lm_DF$NP <- relevel(lm_DF$NP, ref = "3") -->
+<!-- base_model = polr(SR ~ H + NP + AGR + TA + RS + DWH + DS, data = lm_DF, Hess = TRUE) -->
+<!-- summary(base_model) -->
+<!-- ctable <- coef(summary(base_model)) -->
+<!-- p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2 -->
+<!-- ctable <- cbind(ctable, "p value" = round(p, 4)) -->
+<!-- ctable -->
+<!-- ``` -->
 
 
-\newpage
-## Model with all variables, NP3, DWH1 and DS1 as reference
-```{r, echo=FALSE, warning=FALSE}
+<!-- ```{r, echo=FALSE, warning=FALSE} -->
+<!-- #\newpage -->
+<!-- ## Model with NP4 as reference and kfold cross validation -->
 
-# lm_DF$DS<-relevel(lm_DF$DS, ref = "1")
-lm_DF$NP <- relevel(lm_DF$NP, ref = "3")
-lm_DF$DWH <- relevel(lm_DF$DWH, ref = "1")
+<!-- # set.seed(123) -->
+<!-- # fitcontrol<- trainControl(method = "CV", number = 10, savePredictions = T) -->
+<!-- #  -->
+<!-- # # mod_fitcv<-train(SR ~ H + AGR + NP, data = lm_DF , method="polr", trControl = fitcontrol) -->
+<!-- # mod_fitcv<-train(SR ~ H + AGR + NP, data = lm_DF , method="polr", trControl = fitcontrol) -->
+<!-- # summary(mod_fitcv) -->
+<!-- #  -->
+<!-- # ctable <- coef(summary(mod_fitcv)) -->
+<!-- # p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2 -->
+<!-- # ctable <- cbind(ctable, "p value" = round(p,4)) -->
+<!-- # ctable -->
 
-mod_fitcv <-
-  polr(SR ~ H + NP + AGR + TA + RS + DWH + DS, data = lm_DF, Hess = TRUE)
-# mod_fitcv<-polr(SR ~ DS, data = lm_DF , Hess = TRUE)
-summary(mod_fitcv)
+<!-- ``` -->
 
-ctable <- coef(summary(mod_fitcv))
-p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
-ctable <- cbind(ctable, "p value" = round(p, 4))
-ctable
-```
+
+<!-- \newpage -->
+<!-- ## Model with all variables NP1, DWH5 and DS1 as reference -->
+<!-- ```{r, echo=FALSE, warning=FALSE} -->
+
+<!-- lm_DF$NP <- relevel(lm_DF$NP, ref = "1") -->
+<!-- lm_DF$DWH <- relevel(lm_DF$DWH, ref = "5") -->
+
+<!-- mod_fitcv <- -->
+<!--   polr(SR ~ H + NP + AGR + TA + RS + DWH + DS, data = lm_DF, Hess = TRUE) -->
+<!-- # mod_fitcv<-polr(SR ~ DS, data = lm_DF , Hess = TRUE) -->
+<!-- summary(mod_fitcv) -->
+
+<!-- ctable <- coef(summary(mod_fitcv)) -->
+<!-- p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2 -->
+<!-- ctable <- cbind(ctable, "p value" = round(p, 4)) -->
+<!-- ctable -->
+<!-- ``` -->
+
+
+<!-- \newpage -->
+<!-- ## Model with all variables, NP3, DWH1 and DS1 as reference -->
+<!-- ```{r, echo=FALSE, warning=FALSE} -->
+
+<!-- # lm_DF$DS<-relevel(lm_DF$DS, ref = "1") -->
+<!-- lm_DF$NP <- relevel(lm_DF$NP, ref = "3") -->
+<!-- lm_DF$DWH <- relevel(lm_DF$DWH, ref = "1") -->
+
+<!-- mod_fitcv <- -->
+<!--   polr(SR ~ H + NP + AGR + TA + RS + DWH + DS, data = lm_DF, Hess = TRUE) -->
+<!-- # mod_fitcv<-polr(SR ~ DS, data = lm_DF , Hess = TRUE) -->
+<!-- summary(mod_fitcv) -->
+
+<!-- ctable <- coef(summary(mod_fitcv)) -->
+<!-- p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2 -->
+<!-- ctable <- cbind(ctable, "p value" = round(p, 4)) -->
+<!-- ctable -->
+<!-- ``` -->
 
 ```{r, echo=FALSE, warning=FALSE}
 # \newpage
@@ -308,4 +326,242 @@ ctable
 # 
 # summary(rand_model)
 ```
+
+```{r, echo=FALSE}
+
+# https://towardsdatascience.com/accuracy-precision-recall-or-f1-331fb37c5cb9
+# Precision talks about how precise/accurate your model is out of those predicted positive, how many of them are actual positive.
+# F1 Score might be a better measure to use if we need to seek a balance between Precision and Recall AND there is an uneven class distribution (large number of Actual Negatives).
+
+lm_DF$NASA <- as.numeric(lm_DF$NASA)
+lm_DF$TA <- as.numeric(lm_DF$TA)
+lm_DF$AGR <- as.numeric(lm_DF$AGR)
+
+```
+
+## All Data
+```{r, echo=FALSE}
+
+lm_DF$SR <- ifelse(test = lm_DF$SR == 0, yes = "Unsuccessful", no= "Successful")
+lm_DF$SR <- as.factor(lm_DF$SR)
+table(lm_DF$SR)
+
+file_name = 'ModelData.csv'
+write.csv(lm_DF,
+          file.path(curated_data_dir, file_name),
+          row.names = FALSE)
+
+set.seed(42)
+lm_DF$NP <- relevel(lm_DF$NP, ref = "3")
+lm_DF$DWH <- relevel(lm_DF$DWH, ref = "3")
+
+ind <- sample(2, nrow(lm_DF), replace = TRUE, prob = c(0.8, 0.2))
+train <- lm_DF[ind==1,]
+test <- lm_DF[ind==2,]
+
+```
+## Train Data
+```{r, echo=FALSE}
+table(train$SR)
+```
+## Test Data
+```{r, echo=FALSE}
+table(test$SR)
+```
+
+
+
+<!-- ```{r, echo=FALSE} -->
+<!-- mylogit <- glm(SR ~ NP + RS + DWH, data = train, family = "binomial") -->
+<!-- summary(mylogit) -->
+<!-- ``` -->
+
+```{r, echo=FALSE}
+# wald.test(b = coef(mylogit), Sigma = vcov(mylogit), Terms = 4:6)
+```
+
+
+\newpage
+## Randomforest base model
+```{r, echo=FALSE}
+set.seed(123)
+base_model <- randomForest(SR ~ ., data = train, proximity = TRUE, importance=TRUE)
+# model <- randomForest(SR ~ ., data = train, proximity = TRUE)
+base_model
+varImpPlot(base_model)
+```
+<!-- \newpage -->
+<!-- ## Importance of features -->
+<!-- ```{r, echo=FALSE} -->
+<!-- importance(base_model) -->
+<!-- ``` -->
+
+\newpage
+## Prediction on test data
+```{r, echo=FALSE}
+library(caret)
+set.seed(123)
+pred_test <- predict(base_model, test)
+result <- confusionMatrix(pred_test, test$SR)
+result
+```
+
+
+
+\newpage
+## Sensitivity-Specificity-Precision-Recall-F1
+```{r, echo=FALSE}
+result$byClass
+rf.roc<-multiclass.roc(train$SR,base_model$votes)
+# plot(rf.roc)
+# \newline
+auc(rf.roc)
+```
+
+
+<!-- \newpage -->
+<!-- ## Randomforest with impotant features -->
+<!-- ```{r, echo=FALSE} -->
+<!-- set.seed(123) -->
+<!-- model <- randomForest(SR ~ NASA + TA + AV + EM + Task + H + DWH + NP + DWR, data = train, proximity = TRUE) -->
+<!-- # model <- randomForest(SR ~ ., data = train, proximity = TRUE) -->
+<!-- model -->
+<!-- ``` -->
+
+
+\newpage
+## Randomforest extended model
+```{r, echo=FALSE}
+set.seed(123)
+model <- randomForest(SR ~ NASA + H + NP + NT + TA + EM + DWH + DS + Rank , data = train, proximity = TRUE, importance=TRUE)
+# model <- randomForest(SR ~ ., data = train, proximity = TRUE)
+model
+varImpPlot(model)
+```
+
+
+<!-- \newpage -->
+<!-- ## Importance of features -->
+<!-- ```{r, echo=FALSE} -->
+<!-- importance(model) -->
+<!-- ``` -->
+
+\newpage
+## Prediction on test data
+```{r, echo=FALSE}
+library(caret)
+set.seed(123)
+pred_test <- predict(model, test)
+result <- confusionMatrix(pred_test, test$SR)
+result
+```
+
+\newpage
+## Sensitivity-Specificity-Precision-Recall-F1
+```{r, echo=FALSE}
+result$byClass
+rf.roc<-multiclass.roc(train$SR,model$votes)
+auc(rf.roc)
+```
+
+
+
+
+
+<!-- ```{r} -->
+<!-- library(rpart) -->
+<!-- library(rpart.plot) -->
+
+<!-- fit <- rpart(SR ~ NP + H + AGR + TA + NASA + DWH + T +DS, data = train, method = 'class') -->
+<!-- rpart.plot(fit, extra = 106) -->
+<!-- ``` -->
+
+<!-- ```{r} -->
+<!-- predict_unseen <-predict(fit, test, type = 'class') -->
+<!-- predict_unseen -->
+<!-- ``` -->
+
+<!-- ```{r} -->
+<!-- table_mat <- table(test$SR, predict_unseen) -->
+<!-- table_mat -->
+<!-- ``` -->
+
+<!-- ```{r} -->
+<!-- accuracy_Test <- sum(diag(table_mat)) / sum(table_mat) -->
+<!-- accuracy_Test -->
+<!-- print(paste('Accuracy for test', accuracy_Test)) -->
+<!-- ``` -->
+
+<!-- ```{r} -->
+<!-- library(xgboost) -->
+<!-- data(iris) -->
+<!-- ``` -->
+<!-- ```{r} -->
+<!-- species = iris$Species -->
+<!-- label = as.integer(iris$Species)-1 -->
+<!-- iris$Species = NULL -->
+<!-- ``` -->
+
+<!-- ```{r} -->
+<!-- n = nrow(iris) -->
+<!-- train.index = sample(n,floor(0.75*n)) -->
+<!-- train.data = as.matrix(iris[train.index,]) -->
+<!-- train.label = label[train.index] -->
+<!-- test.data = as.matrix(iris[-train.index,]) -->
+<!-- test.label = label[-train.index] -->
+<!-- ``` -->
+
+<!-- ```{r} -->
+<!-- xgb.train = xgb.DMatrix(data=train.data,label=train.label) -->
+<!-- xgb.test = xgb.DMatrix(data=test.data,label=test.label) -->
+<!-- ``` -->
+
+<!-- ```{r} -->
+<!-- num_class = length(levels(species)) -->
+<!-- params = list( -->
+<!--   booster="gbtree", -->
+<!--   eta=0.001, -->
+<!--   max_depth=5, -->
+<!--   gamma=3, -->
+<!--   subsample=0.75, -->
+<!--   colsample_bytree=1, -->
+<!--   objective="multi:softprob", -->
+<!--   eval_metric="mlogloss", -->
+<!--   num_class=num_class -->
+<!-- ) -->
+<!-- ``` -->
+
+<!-- ```{r} -->
+<!-- # Train the XGBoost classifer -->
+<!-- xgb.fit=xgb.train( -->
+<!--   params=params, -->
+<!--   data=xgb.train, -->
+<!--   nrounds=10000, -->
+<!--   nthreads=1, -->
+<!--   early_stopping_rounds=10, -->
+<!--   watchlist=list(val1=xgb.train,val2=xgb.test), -->
+<!--   verbose=0 -->
+<!-- ) -->
+
+<!-- # Review the final model and results -->
+<!-- xgb.fit -->
+<!-- ``` -->
+<!-- ```{r} -->
+<!-- # Predict outcomes with the test data -->
+<!-- xgb.pred = predict(xgb.fit,test.data,reshape=T) -->
+<!-- xgb.pred = as.data.frame(xgb.pred) -->
+<!-- colnames(xgb.pred) = levels(species) -->
+<!-- ``` -->
+
+<!-- ```{r} -->
+<!-- # Use the predicted label with the highest probability -->
+<!-- xgb.pred$prediction = apply(xgb.pred,1,function(x) colnames(xgb.pred)[which.max(x)]) -->
+<!-- xgb.pred$label = levels(species)[test.label+1] -->
+<!-- ``` -->
+
+<!-- ```{r} -->
+<!-- # Calculate the final accuracy -->
+<!-- result = sum(xgb.pred$prediction==xgb.pred$label)/nrow(xgb.pred) -->
+<!-- print(paste("Final Accuracy =",sprintf("%1.2f%%", 100*result))) -->
+<!-- ``` -->
 

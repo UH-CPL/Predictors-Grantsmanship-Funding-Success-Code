@@ -115,7 +115,7 @@ Core_Questions<-Core_Questions  %>%  dplyr::rename(
 
 
 
-```{r}
+```{r, echo=FALSE}
 count(Core_Questions$Break)
 for(i in 1:nrow(Core_Questions)){
   
@@ -394,12 +394,17 @@ Ticks_list <-
 
 ```{r, echo=FALSE}
 
-ylimit= round_any(nrow(Core_Questions), 10,f = ceiling)
+# ylimit= round_any(nrow(Core_Questions), 10,f = ceiling)
+# ylimit= 200
 
 
 plot_list<-list()
 
 for (i in 2:length(Core_Questions)) {
+  ylimit= 250
+  if ((i == 3) | (i == 5) | (i == 8) | (i == 11) |(i == 12) |(i == 14)){
+    ylimit = 400
+  }
   temp <- count(Core_Questions[i])
   colnames(temp) <- c("item", "count")
   temp <- temp[!(temp$item == ""),]
@@ -410,7 +415,7 @@ for (i in 2:length(Core_Questions)) {
              width = 0.5,
              fill = "steelblue") +
     theme_bw() +
-    scale_y_continuous(breaks = seq(0, ylimit, by = 10),
+    scale_y_continuous(breaks = seq(0, ylimit, by = 50),
                        limits = c(0, ylimit)) +
     labs(x = "", y = "Count", title = title_list[i - 1]) +
     theme(
