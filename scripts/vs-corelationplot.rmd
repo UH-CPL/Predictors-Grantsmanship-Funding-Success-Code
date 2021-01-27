@@ -147,7 +147,7 @@ for (i in 1:nrow(Corelation_DF)) {
   } else if (Corelation_DF$SR[i] == "75-90%") {
     Corelation_DF$SR[i] = 1
   } else if (Corelation_DF$SR[i] == "") {
-    Corelation_DF$SR[i] = NA
+    Corelation_DF$SR[i] = 0
   } else {
     Corelation_DF$SR[i] = 1
   }
@@ -250,6 +250,9 @@ for (i in 1:nrow(Corelation_DF)) {
   }
 }
 
+
+table(Corelation_DF$SR)
+
 cols.num <-
   c("RS", "WH", "BR", "NP", "SR", "AP", "AR", "DWH", "T", "DS")
 Corelation_DF[cols.num] <-
@@ -265,6 +268,25 @@ write.csv(Corelation_DF,
           row.names = FALSE)
 ```
 
+```{r, echo=FALSE}
+
+supplement_nlp <- Corelation_DF
+supplement_nlp$SR <- ifelse(test = supplement_nlp$SR == 0, yes = "Unsuccessful", no= "Successful")
+supplement_nlp$SR <- as.factor(supplement_nlp$SR)
+
+supplement_nlp$Gender <- Raw_Data$gender
+supplement_nlp$Comments <- Raw_Data$please_write_about_any_oth
+
+supplement <- supplement_nlp %>% dplyr::select(Rank, Gender, SR, Comments)
+
+
+
+file_name = 'Supplement_nlp.csv'
+write.csv(supplement_nlp,
+          file.path(curated_data_dir, file_name),
+          row.names = FALSE)
+
+```
 
 
 ```{r, echo=FALSE}

@@ -32,21 +32,25 @@ Notstressful<-read.csv(file.path(curated_data_dir,data_file_name_std),stringsAsF
 
 ```
 
+## Notstressful
+```{r, echo=FALSE}
+Notstressful$item=tolower(Notstressful$item)
+set.seed(1234)
+wordcloud2(Notstressful,size=1 , shape = 'circle')
+```
 
 
+\newpage
 ## Stressful
 ```{r, echo=FALSE}
 Stressful$item=tolower(Stressful$item)
 set.seed(1234)
-wordcloud2(Stressful,size=.5 , shape = 'circle')
+wordcloud2(Stressful,size=1 , shape = 'circle')
+# wordcloud2(data = Stressful,size = .01)
+# letterCloud(Stressful, word = "R", size = 2)
 ```
 
 
-```{r, echo=FALSE}
-Notstressful$item=tolower(Notstressful$item)
-set.seed(1234)
-wordcloud2(Notstressful,size=.5 , shape = 'circle')
-```
 
 
 
