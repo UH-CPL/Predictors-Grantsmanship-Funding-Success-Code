@@ -1,9 +1,9 @@
 ---
 title: ''
 output:
+  pdf_document: default
   html_document:
     df_print: paged
-  pdf_document: default
   word_document: default
 ---
 
@@ -40,7 +40,7 @@ wordcloud2(Notstressful,size=1 , shape = 'circle')
 ```
 
 
-\newpage
+
 ## Stressful
 ```{r, echo=FALSE}
 Stressful$item=tolower(Stressful$item)

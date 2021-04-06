@@ -3,6 +3,7 @@ title: "DataPreprocessing"
 output:
   html_document:
     df_print: paged
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -29,13 +30,15 @@ Standard_data <- Standard_data[-c(1:80, 82:94), ]
 Standard_data$email[1]="ljohnsson12@gmail.com"
 Standard_data$confirm_email[1]="ljohnsson12@gmail.com"
 
-missing_email<-Standard_data[c('111','120','129', '148', '154', '161', '186', '194', '233', '246','347'),]
+missing_email<-Standard_data[c('111','120','129', '148', '154', '161', '186', '194', '233', '246','347', '413', '469', '510', '566', '578', '612', '618', '633' ),]
+
+
+# Standard_data <- Standard_data[Standard_data$phone_a_friend !="",]
 
 Standard_data<- subset(Standard_data, Standard_data$standard_part_complete==2)
-
 Standard_data<-rbind(Standard_data, missing_email)
 
-Standard_data <- Standard_data[-c(3, 5:9, 12), ]
+Standard_data <- Standard_data[-c(5:9, 12), ]
 Standard_data_index <- Standard_data[, -c(2:5)]
 old_name<-colnames(Standard_data_index)
 # Standard_data <- Standard_data[-c(82:95), ]
@@ -52,20 +55,17 @@ Standard_data <- Standard_data[-c(1:80, 82:94), ]
 Standard_data$Please.provide.your.email.address.The.system.will.use.this.email.address.to.send.you.an.acknowledgment..as.well.as.the.Amazon.gift.certificate..in.case.you.are.the.raffle.winner.[1]="ljohnsson12@gmail.com"
 Standard_data$Please.confirm.your.email.address[1]="ljohnsson12@gmail.com"
 
-missing_email<-Standard_data[c('111','120','129', '148', '154', '161', '186', '194', '233', '246','347'),]
-Standard_data<- subset(Standard_data, Standard_data$Complete.=="Complete")
+missing_email<-Standard_data[c('111','120','129', '148', '154', '161', '186', '194', '233', '246','347', '413', '469', '510', '566', '578', '612', '618', '633' ),]
 
+# Standard_data <- Standard_data[Standard_data$Phone.a.friend !="",]
+
+Standard_data<- subset(Standard_data, Standard_data$Complete.=="Complete")
 Standard_data<-rbind(Standard_data, missing_email)
 
-Standard_data <- Standard_data[-c(3, 5:9, 12), ]
+Standard_data <- Standard_data[-c(5:9, 12), ]
 Standard_data_label <- Standard_data[, -c(2:5)]
 colnames(Standard_data_label)<- old_name
 ```
-
-```{r}
-missing_email<-Standard_data[c('111','120','129', '148', '154', '161', '186', '194', '233', '246','347'),]
-```
-
 
 ```{r, echo=FALSE}
 # final_data<-Standard_data_label[, c(1:80)]
@@ -171,14 +171,215 @@ final_data<-final_data  %>%  dplyr::rename(record_id = "ï..record_id")
 final_data <- final_data[rownames(final_data) != "230",]
 final_data <- final_data[rownames(final_data) != "288",]
 final_data <- final_data[rownames(final_data) != "302",]
+final_data <- final_data[rownames(final_data) != "649",]
 final_data$google_scholar_h_index[97]=18
+
+
+# factor(final_data$what_is_the_average_number)
+
+final_data$email <- NULL
+final_data$confirm_email <- NULL
+final_data$standard_part_complete <- NULL
+# colnames(final_data)
+
+final_data$google_scholar_h_index[159] <- NA
+final_data$google_scholar_h_index[238] <- NA
+final_data$google_scholar_h_index[275] <- NA
+final_data$google_scholar_h_index[334] <- NA
+final_data$google_scholar_h_index[98] <- 20
+final_data$google_scholar_h_index[244] <- NA
+final_data$google_scholar_h_index[362] <- 63
+final_data$google_scholar_h_index[210] <- NA
+final_data$google_scholar_h_index[96] <- 198
+final_data$google_scholar_h_index[142] <- NA
+final_data$google_scholar_h_index[172] <- NA
+final_data$google_scholar_h_index[307] <- NA
+final_data$google_scholar_h_index[330] <- 119
+final_data$google_scholar_h_index[120] <- 120
+
+
+final_data$google_scholar_h_index[3] <- 15
+final_data$google_scholar_h_index[109] <- 49
+final_data$google_scholar_h_index[205] <- NA
+final_data$google_scholar_h_index[225] <- 10
+final_data$google_scholar_h_index[229] <- NA
+final_data$google_scholar_h_index[236] <- 32
+
+
+
+# record_id <- c(328, 441,96
+# 255
+# 392
+# 419
+# 426
+# 438
+#                497,
+#                584,
+#                240,
+#                448,
+#                620,
+#                401,
+#                238,
+#                305,
+#                343,
+#                545,
+#                580,
+#                270)
+# revised_index <- c(NA, NA, NA, NA, 20, NA, 63, NA, 198, NA, NA, NA, 119, 120)
 
 ```
 
-
-
-```{r}
+```{r, echo=FALSE}
+# View(final_data)
 file_name='StandardPart.csv'
+write.csv(final_data,file.path(curated_data_dir, file_name), row.names = FALSE)
+```
+
+
+```{r, echo=FALSE}
+final_data$record_id <- NULL
+for (i in 1:nrow(final_data)){
+   if (final_data$wha_average_number[i]=="1-2"){
+    final_data$wha_average_number[i]="1"
+   }
+  if (final_data$wha_average_number[i]=="3-4"){
+    final_data$wha_average_number[i]="2"
+   }
+  if (final_data$wha_average_number[i]=="5-6"){
+    final_data$wha_average_number[i]="3"
+   }
+  if (final_data$wha_average_number[i]=="7-9"){
+    final_data$wha_average_number[i]="4"
+  }
+  if (final_data$wha_average_number[i]==">=10"){
+    final_data$wha_average_number[i]="5"
+  }
+}
+
+for (i in 1:nrow(final_data)){
+   if (final_data$what_is_the_average_number[i]=="1-2"){
+    final_data$what_is_the_average_number[i]="1"
+   }
+  if (final_data$what_is_the_average_number[i]=="3-4"){
+    final_data$what_is_the_average_number[i]="2"
+   }
+  if (final_data$what_is_the_average_number[i]=="5-6"){
+    final_data$what_is_the_average_number[i]="3"
+   }
+  if (final_data$what_is_the_average_number[i]=="7-9"){
+    final_data$what_is_the_average_number[i]="4"
+  }
+  if (final_data$what_is_the_average_number[i]==">=10"){
+    final_data$what_is_the_average_number[i]="5"
+  }
+}
+
+
+final_data <- final_data  %>% dplyr::rename(
+  Rank = "faculty_rank",
+  Gender = "gender",
+  Department = "departmental_affiliation",
+  Department_Other = "please_write_down_the_depa",
+  H = "google_scholar_h_index",
+  State = "state_do_you_reside",
+  Salary_Dependency_In_Month = "how_many_months_of_your_sa",
+  Salary_Dependency_In_Month_Other = "please_specify_the_months",
+  Research_Funded_By_External_Grants = "what_is_your_current_level",
+  Deadline_Today = "do_you_have_a_deadline_tod",
+  Workload_Today = "please_indicate_your_workl",
+  Workplace = "where_you_typically_wor",
+  Workplace_Other = "please_specify_your_work_p",
+  RS = "test",  ## Research Style
+  WH = "in_a_typical_workday_how_m",  ## Typical week working hours
+  
+  TWR = "ti_research",  ## Typical week Research
+  TWT = "ti_teaching",  ## Typical week Research
+  TWA = "ti_administration",  ## Typical week Research
+  TWO = "ti_service_outreach",  ## Typical week Research
+  
+  TW_Sum = "sum_of_3",
+  BR = "in_a_typical_day_how_often",  ## Break Frequency
+  BR_Other = "please_specify_how_often_d",
+  Email = "how_do_you_usually_handle",
+  Proposal = "funding_proposal",
+  NP = "what_is_the_average_number",  ## Average Number of Proposal per year
+  Funding_Agency = "funding_agency",
+  Funding_Agency_Other = "specify_the_name",
+  P_SR = "hy",  ## Success Rate in the proposal
+  AP = "how_far_in_advance_do_you",  # Composing Proposal
+  P_AR = "what_is_the_length_of_supp",  ## Length of supporting research
+  P_DWH = "in_the_week_leading_to_a_p",  ## Work load a week before Proposal Deadline
+  
+  P_DWR = "week_research",  ## Research percentage a week before Proposal
+  P_DWT = "week_teaching",  ## Research percentage a week before Proposal
+  P_DWA = "week_administration",  ## Research percentage a week before Proposal
+  P_DWO = "week_service_outreach",  ## Research percentage a week before Proposal
+  
+  P_DW_SUm = "sum_of_4",
+  
+  PDR = "proposal_research",
+  PDT = "proposal_teaching",
+  PDA = "proposal_administration",
+  PDO = "proposal_service_outreach",
+  
+  PD_Sum = "sum_of_5",
+
+  
+  
+  
+  # Research_DD="proposal_research",        ## Research percentage in the Proposal deadlines day
+  P_T = "when_you_typically_subm",  ## Submit Proposal
+  P_DS = "stress_level_in_a_fundi",  ## Stress leven on Proposal Deadline
+  
+  
+  P_Disrupted_Research = "disrupted_part",
+  P_Disrupted_Sleep = "my_sleep",
+  P_Disrupted_Diet = "my_diet",
+  P_Disrupted_PA = "my_physical_activity",
+  P_Disrupted_IR = "my_interpersonal_relations",
+  
+  About_Proposal_Deadline = "please_write_about_any_oth",
+  
+  Conference = "refereed_conference",
+  NCP = "wha_average_number",
+  CR = "core_rank",
+  C_SR = "if_you_submit_manuscripts",  
+  ACP = "far_in_advance_do_you",  
+  AR = "length_of_supp",  
+  
+  C_DWH = "in_the_week_leading_to_a_c",  
+  
+  C_DWR = "research",
+  C_DWT = "teaching",
+  C_DWA = "administration",
+  C_DWO = "serviceoutreach",
+  
+  C_DW_Sum = "sum_of_6",
+  
+  CDR = "research1",
+  CDT = "teaching1",
+  CDA = "administration1",
+  CDS = "service_outreach1",
+  
+  CD_Sum = "sum_of_7",
+  
+  DDR = "research1",
+  C_T = "you_typically_subm",  ## Submit Proposal
+  C_DS = "ss_level_in_a_fundi",     ## Stress leven on Proposal Deadline
+  
+  C_Disrupted_Research = "disrupted_conf",
+  C_Disrupted_Sleep = "my_sleep2",
+  C_Disrupted_Diet = "diet2",
+  C_Disrupted_PA = "physical_activity2",
+  C_Disrupted_IR = "interpersonal_relations2",
+  
+  About_Conf_Deadline = "please_write_about_any",
+)
+```
+
+```{r, echo=FALSE}
+View(final_data)
+file_name='StandardPart_Updated.csv'
 write.csv(final_data,file.path(curated_data_dir, file_name), row.names = FALSE)
 ```
 

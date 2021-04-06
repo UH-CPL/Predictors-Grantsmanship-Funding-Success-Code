@@ -1,26 +1,9 @@
 ---
-title: "Core Questions"
-output:
-  html_document:
-    df_print: paged
-  pdf_document: default
+title: "Timeline"
+output: pdf_document
 ---
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(dplyr)
-library(plotrix)
-library(plotly)
-library(tools)
-library(plotrix)
-library(plotly)
-library(grid)
-library(gridExtra)
-library(ggpubr)
-library(cowplot)
-library(reshape2)
-library(plyr)
-library(ggplot2)
 library(dplyr)
 library(plotrix)
 library(plotly)
@@ -37,6 +20,7 @@ library(scales)
 library(stringr)
 ```
 
+
 ```{r, echo=FALSE}
 root_dir <- getwd()
 project_directory <- dirname(root_dir)
@@ -47,6 +31,13 @@ curated_data_dir <- file.path(project_directory, 'curated-data')
 StandardPart <-
   read.csv(file.path(data_dir, data_file_name), stringsAsFactors = FALSE)
 ```
+
+```{r, echo=FALSE}
+StandardPart <- StandardPart[StandardPart$funding_proposal=="Yes",]
+
+StandardPart <- StandardPart[StandardPart$refereed_conference=="Yes",]
+```
+
 
 
 ```{r, echo=FALSE}
@@ -416,110 +407,17 @@ Ticks_list <-
        list28)
 ```
 
-```{r}
-# ######Test a single core questions
-#   temp <- count(Core_Questions$Workload_today)
-#   colnames(temp) <- c("item", "count")
-#   temp <- temp[!(temp$item == ""),]
-# 
-#  bar_plot <- ggplot(data = temp, aes(x = item, y = count)) +
-#     geom_bar(stat = "identity",
-#              width = 0.5,
-#              fill = "steelblue") +
-#     theme_minimal() +
-#     scale_y_continuous(breaks = seq(0, ylimit, by = 5),
-#                        limits = c(0, ylimit)) +
-#     labs(x = "", y = "Participant count", title = title_list[i - 1]) +
-#     theme(
-#       panel.grid.major = element_blank(),
-#       panel.grid.minor = element_blank(),
-#       plot.title = element_text(hjust = 0.5),
-#       axis.text.x = element_text(
-#         face = "bold",
-#         size = 10 ,
-#         angle = 30,
-#         hjust = 1
-#       ),
-#       axis.text.y = element_text(face = "bold", size = 10)
-#     )+
-#    scale_x_discrete( limits=list[[1]])
-#  
-#  bar_plot
-```
-
-
-<!--```{r, echo=FALSE}
-
-# ylimit= round_any(nrow(Core_Questions), 10,f = ceiling)
-# ylimit= 200
-
-
-plot_list<-list()
-
-for (i in 2:length(Core_Questions)) {
-  ylimit= 250
-  if ((i == 3) | (i == 5) | (i == 8) | (i == 11) |(i == 12) |(i == 14)){
-    ylimit = 400
-  }
-  temp <- count(Core_Questions[i])
-  colnames(temp) <- c("item", "count")
-  temp <- temp[!(temp$item == ""),]
-  temp <- temp[order(temp$count), ]
-
-  bar_plot <- ggplot(data = temp, aes(x = item, y = count)) +
-    geom_bar(stat = "identity",
-             width = 0.5,
-             fill = "steelblue") +
-    theme_bw() +
-    scale_y_continuous(breaks = seq(0, ylimit, by = 50),
-                       limits = c(0, ylimit)) +
-    labs(x = "", y = "Count", title = title_list[i - 1]) +
-    theme(
-      panel.grid.major = element_blank(),
-      panel.grid.minor = element_blank(),
-      plot.title = element_text(hjust = 0.5),
-      axis.text.x = element_text(
-        face = "bold",
-        size = 10 ,
-        angle = 30,
-        hjust = 1
-      ),
-      axis.text.y = element_text(face = "bold", size = 10)
-    )+scale_x_discrete( limits=Ticks_list[[i-1]])
-
-  plot_list[[length(plot_list) + 1]] <- bar_plot
-
-}
-as.character("state_do_you_reside")
-
-plots_act=ggarrange(plotlist = plot_list, nrow = 2, ncol = 1)
-
-for (i in 1:length(plots_act)){
-      final_plot<-plot_grid(plots_act[[i]])
-      filename<-paste("plot",i,".pdf",sep="")
-      full_path<-file.path(plot_dir, filename)
-      ggsave(full_path, final_plot, width = 8.5, height = 11, units = "in")
-      print(final_plot)
-}
-
-```-->
-
 ```{r, echo=FALSE}
-
-# ylimit= round_any(nrow(Core_Questions), 10,f = ceiling)
-# ylimit= 200
 
 
 
 plot_list <- list()
 
-for (i in 2:length(Core_Questions)) {
+time_line_plots <- c(13, 16, 17, 22, 25, 26)
+for (i in time_line_plots) {
   # for (i in 18:19) {
-  ylimit = 250
-  if ((i == 3) |
-      (i == 5) | (i == 8) | (i == 11) | (i == 12) | (i == 14)) {
-    ylimit = 400
-  }
+  ylimit = 100
+  
   temp <- count(Core_Questions[i])
   colnames(temp) <- c("item", "count")
   temp <- temp[!(temp$item == ""), ]
@@ -535,156 +433,34 @@ for (i in 2:length(Core_Questions)) {
                        limits = c(0, ylimit)) +
     labs(x = "", y = "Count", title = title_list[i - 1]) +
     theme(
-      text = element_text(size = 14),
+      text = element_text(size = 8),
       panel.grid.major = element_blank(),
       panel.grid.minor = element_blank(),
       plot.title = element_text(hjust = 0.5),
       axis.text.x = element_text(
         face = "bold",
-        size = 14 ,
+        size = 8 ,
         angle = 30,
         hjust = 1
       ),
-      axis.text.y = element_text(face = "bold", size = 14)
+      axis.text.y = element_text(face = "bold", size = 8)
     ) + scale_x_discrete(limits = Ticks_list[[i - 1]])
-  
-  
+
+  print(bar_plot)
   
   plot_list[[length(plot_list) + 1]] <- bar_plot
-  
-  temp <- temp %>%
-    mutate(
-      cs = rev(cumsum(rev(count))),
-      prop = percent(count / sum(count)),
-      pos = count / 2 + lead(cs, 1),
-      pos = if_else(is.na(pos), count / 2, pos)
-    )
-  temp$pos[is.na(temp$pos)] <- 1
-  
-  
-  pichart <-
-    ggplot(temp, aes(
-      x = "" ,
-      y = count,
-      fill = fct_inorder(item)
-    )) +
-    geom_col(width = 1) +
-    coord_polar(theta = "y", start = 0) +
-    scale_fill_brewer(palette = "Set3", direction = -4) +
-    geom_label_repel(
-      aes(y = pos, label = paste0(item, " " , prop)),
-      data = temp,
-      size = 4,
-      show.legend = F,
-      nudge_x = 1
-    ) +
-    theme_void() +
-    theme(legend.position = "none", legend.title = element_blank())
-  
-  plot_list[[length(plot_list) + 1]] <- pichart
-  
 }
-as.character("state_do_you_reside")
 
-plots_act = ggarrange(plotlist = plot_list,
+
+final_plot <- ggarrange(plotlist = plot_list,
                       nrow = 2,
-                      ncol = 1)
-
-for (i in 1:length(plots_act)) {
-  final_plot <- plot_grid(plots_act[[i]])
-  filename <- paste("plot", i, ".pdf", sep = "")
-  full_path <- file.path(plot_dir, filename)
-  ggsave(
-    full_path,
-    final_plot,
-    width = 8.5,
-    height = 11,
-    units = "in"
-  )
-  print(final_plot)
-}
-
-
-
+                      ncol = 3)
 ```
-
 ```{r}
-Data_CQ <- Core_Questions[,c(13, 16, 9, 10, 18, 20)]
+library(superml)
+lbl = LabelEncoder$new()
 
-file_name='Selected_Core_Questions.csv'
-write.csv(Data_CQ,file.path(curated_data_dir, file_name), row.names = FALSE)
-```
-
-
-
-
-
-```{r}
-# ylimit= 150
-#   temp <- count(Core_Questions[14])
-#   colnames(temp) <- c("item", "count")
-#   temp <- temp[!(temp$item == ""),]
-#   temp <- temp[order(temp$count), ]
-#   temp <- temp[complete.cases(temp),]
-#   
-# 
-#   bar_plot <- ggplot(data = temp, aes(x = item, y = count)) +
-#     geom_bar(stat = "identity",
-#              width = 0.5,
-#              fill = "steelblue") +
-#     theme_bw() +
-#     scale_y_continuous(breaks = seq(0, ylimit, by = 50),
-#                        limits = c(0, ylimit)) +
-#     labs(x = "", y = "Count", title = "Funding Agencies") +
-#     theme(
-#       panel.grid.major = element_blank(),
-#       panel.grid.minor = element_blank(),
-#       plot.title = element_text(hjust = 0.5),
-#       axis.text.x = element_text(
-#         face = "bold",
-#         size = 10 ,
-#         angle = 30,
-#         hjust = 1
-#       ),
-#       axis.text.y = element_text(face = "bold", size = 10)
-#     )
-#   # +scale_x_discrete( limits=Ticks_list[[i-1]])
-#   
-#   bar_plot
-# 
-#   # plot_list[[length(plot_list) + 1]] <- bar_plot
-#   
-#   temp <- temp %>% 
-#   mutate(
-#     cs = rev(cumsum(rev(count))),
-#     prop = percent(count / sum(count)),
-#     pos = count/2 + lead(cs, 1),
-#     pos = if_else(is.na(pos), count/2, pos))
-# temp$pos[is.na(temp$pos)] <- 1
-# 
-# # temp<-temp[match(order_list[[1]], temp$item),]
-# 
-# pichart <-ggplot(temp, aes(x = "" , y = count, fill = item)) +
-#   geom_col(width = 1) +
-#   coord_polar(theta = "y", start = 0 ) +
-#   scale_fill_brewer(palette = "Set3", direction = -4) +
-#   geom_label_repel(aes(y = pos, label =paste0(item," " ,prop)), data = temp, size=4, show.legend = F, nudge_x = 1) +
-#   theme_void() +
-#   theme(legend.position =  "none", legend.title = element_blank())+
-#   labs(title = "")+
-#   theme(panel.grid.major = element_blank(),panel.grid.minor = element_blank(),plot.title = element_text(hjust = 0.5))
-# 
-# pichart
-# 
-# 
-# 
-# plots_act=ggarrange(bar_plot, pichart, nrow = 2, ncol = 1)
-# 
-#       # final_plot<-plot_grid(plots_act[[i]])
-#       filename<-"FA.pdf"
-#       full_path<-file.path(plot_dir, filename)
-#       ggsave(full_path, plots_act, width = 8.5, height = 11, units = "in")
-#       # print(final_plot)
+mean(lbl$fit_transform(Core_Questions$A_N_Pro))
 
 ```
 

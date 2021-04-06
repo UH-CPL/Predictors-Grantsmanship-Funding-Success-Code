@@ -33,7 +33,6 @@ data_file_name <- 'StandardPart.csv'
 curated_data_dir <- file.path(project_directory, 'curated-data')
 StandardPart <-
   read.csv(file.path(data_dir, data_file_name), stringsAsFactors = FALSE)
-max(StandardPart$google_scholar_h_index)
 ```
 
 
@@ -930,6 +929,113 @@ ggsave(
 ```
 
 
+
+
+
+```{r, echo=FALSE}
+
+data_file_name <- 'Selected_Core_Questions.csv'
+curated_data_dir <- file.path(project_directory, 'curated-data')
+Data_CQ <-
+  read.csv(file.path(data_dir, data_file_name), stringsAsFactors = FALSE)
+
+list1 = c("1-2", "3-4", "5-6", "7-9", ">=10")
+list2 = c("1-2 weeks", "2-4 weeks", "1-2 months", "> 2 months")
+list3 = c("< 30", "30-40", "40-50", "> 50")
+list4 = c("Every hour", "Every 1-2 hours", "Every 3-4 hours", "Other")
+list5 = c("Significantly less", "Less", "About the same", "More", "Significantly more")
+list6 = c("Significantly less", "Less", "About the same", "More", "Significantly more")
+
+Ticks_list <-
+  list(list1,
+       list2,
+       list3,
+       list4,
+       list5,
+       list6)
+
+title_list = c(
+  "Average number of proposals per year",
+  "Length of proposal composition period",
+  "Typical week workload [in hrs]",
+  "Walking breaks",
+  "Proposal vs typical week workload",
+  "Proposal deadline day vs regular working days workload"
+)
+
+
+plot_list_grid <- list()
+
+ylimit = 250
+for (i in 1:length(Data_CQ)) {
+  if ((i %% 2) ==0) {
+  temp <- count(Data_CQ[i])
+  colnames(temp) <- c("item", "count")
+  temp <- temp[!(temp$item == ""), ]
+  temp <- temp[order(temp$count),]
+  temp <- temp[complete.cases(temp), ]
+  
+  bar_plot <- ggplot(data = temp, aes(x = item, y = count)) +
+    geom_bar(stat = "identity",
+             width = 0.5,
+             fill = "steelblue") +
+    theme_bw() +
+    labs(x = "", y = "", title = title_list[i]) +
+    theme(
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      plot.title = element_text(hjust = 0.5, size = 7),
+      axis.text.x = element_text(face = "bold", size = 5),
+      axis.text.y = element_blank()
+    ) + scale_x_discrete(limits = Ticks_list[[i]])
+  
+  print(bar_plot)
+  
+  plot_list_grid[[length(plot_list_grid) + 1]] <- bar_plot
+  }
+  else{
+  temp <- count(Data_CQ[i])
+  colnames(temp) <- c("item", "count")
+  temp <- temp[!(temp$item == ""), ]
+  temp <- temp[order(temp$count),]
+  temp <- temp[complete.cases(temp), ]
+  
+  bar_plot <- ggplot(data = temp, aes(x = item, y = count)) +
+    geom_bar(stat = "identity",
+             width = 0.5,
+             fill = "steelblue") +
+    theme_bw() +
+    scale_y_continuous(breaks = seq(0, ylimit, by = 50),
+                       limits = c(0, ylimit)) +
+    labs(x = "", y = "Responses", title = title_list[i]) +
+    theme(
+      axis.title.y = element_text(size=7, face="bold"),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      plot.title = element_text(hjust = 0.5, size = 7),
+      axis.text.x = element_text(face = "bold", size = 5),
+      axis.text.y = element_text(face = "bold", size = 6)
+    ) + scale_x_discrete(limits = Ticks_list[[i]])
+  
+  print(bar_plot)
+  
+  plot_list_grid[[length(plot_list_grid) + 1]] <- bar_plot
+  }
+
+  
+}
+```
+
+
+
+```{r}
+give.n <- function(x) { 
+  # print(length(x))
+  # print(x)
+  return(c(y=-Inf, vjust = -1, label=length(x))) 
+}
+```
+
 ```{r, echo=FALSE}
 give.n <- function(x) {
   return(data.frame(y = 0.5,
@@ -947,9 +1053,9 @@ NASA <- StandardPart[, c(1, 76:81)]
 colnames(NASA) <-
   c(
     "record_id",
-    "Mental Demand",
-    "Physical Demand",
-    "Temporal Demand",
+    "Mental",
+    "Physical",
+    "Temporal",
     "Performance",
     "Effort",
     "Frustration"
@@ -972,11 +1078,6 @@ for (i in 1:6) {
 plot_nasa = ggarrange(plotlist = nasa_plot_list,
                       nrow = 3,
                       ncol = 2)
-#
-#       final_plot<-plot_grid(plot_nasa)
-#       filename<-paste("plot",i,".pdf",sep="")
-#       full_path<-file.path(plot_dir, filename)
-#       ggsave(full_path, final_plot, width = 8.5, height = 11, units = "in")
 
 title <- ggdraw() + draw_label("NASA TLX", fontface = 'bold')
 final_plot <-
@@ -1001,6 +1102,7 @@ Nasa_togetehr <- melt(NASA,id.vars =1)
 # library(ggplot2)
 
 
+
 nasa_boxplots <-
   ggplot(Nasa_togetehr, aes(
     x = factor(variable),
@@ -1010,27 +1112,31 @@ nasa_boxplots <-
   geom_boxplot() +
   theme_bw() +
   labs(x = "", y = "", title = "NASA TLX") +
-    theme(
+  theme(
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
-    plot.title = element_text(hjust = 0.5),
-    axis.text.x = element_blank(),
-    legend.position = "bottom",
+    plot.title = element_text(hjust = 0.5, size = 7),
+    axis.text.x = element_text(face = "bold", size = 5),
+    legend.position = "none",
+    legend.margin = margin(0, 0, 0, 0),
+    legend.box.margin = margin(-5, -5, -5, -5),
+    legend.spacing.x = unit(.25, 'cm'),
     legend.title = element_blank(),
-    legend.text = element_text(size = 10, face = "bold")
-  ) +
-  stat_summary(
-    fun.data = give.n,
-    geom = "text",
-    hjust = 0.5,
-    vjust = 0.9
-  ) +
-  guides(fill=guide_legend(nrow = 1,
-                 keywidth=0.4,
-                 keyheight=0.4,
-                 default.unit="inch")
-      )
-
+    legend.text = element_text(size = 5, face = "bold"),
+    axis.text.y=element_text(size=6, face = "bold")
+  ) + stat_summary(fun.data = give.n,
+                   geom = "text",
+                   size = 2) + 
+  
+    guides(
+    fill = guide_legend(
+      nrow = 1,
+      keywidth = 0.15,
+      keyheight = 0.15,
+      default.unit = "inch",
+      label.position = "bottom"
+    )
+  )
 nasa_boxplots
 
 
@@ -1043,7 +1149,9 @@ ggsave(
   height = 8.5,
   units = "in"
 )
-    
+   
+
+ 
 ```
 
 
@@ -1076,6 +1184,7 @@ Trait_Anxiety$X19 <- 5 - Trait_Anxiety$X19
 Trait_Anxiety <- Trait_Anxiety %>% mutate(Sum = rowSums(.[2:21]))
 
 
+
 Trait_Anxiety_plot <-
   ggplot(Trait_Anxiety, aes(x = factor(Record_ID), y = Sum)) +
   geom_bar(stat = "identity", fill = "steelblue") +
@@ -1092,35 +1201,42 @@ Trait_Anxiety_plot <-
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     axis.text.x = element_blank(),
-    text = element_text(size = 12, face = "bold")
+    text = element_text(size = 14, face = "bold")
   ) +
   scale_y_continuous(breaks = seq(0, 80, by = 20), limits = c(0, 80)) +
   coord_cartesian(ylim = c(20, 80))
 # print(Trait_Anxiety_plot)
 
       
-      
+    
+stat = Trait_Anxiety %>% summarise(mean= round(mean(Sum), 2), sd = round(sd(Sum)), median = median(Sum), max = max(Sum),min = min(Sum))
+
+
+x_lebel = paste0("\n\n\n", "Mean = ", stat$mean, ",     ", "SD = ", stat$sd, ",     ", "Median = ", stat$median, ",     ", "Min = ", stat$min, ",     ", "Max = ", stat$max)  
 
 trit_boxplot <- ggplot(Trait_Anxiety, aes(x = "", y = Sum)) +
   geom_boxplot(fill='#A4A4A4', color="black") +
   theme_bw() +
-  labs(x = "", y = "", title = "Trait Anxiety") +
+  labs(x = x_lebel, y = "", title = "Trait Anxiety") +
   theme(
+    axis.title.x = element_text(size=16),
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     plot.title = element_text(hjust = 0.5),
     axis.text.x = element_blank(),
     legend.position = "bottom",
     legend.title = element_blank(),
-    legend.text = element_text(size = 10)
+    axis.text.y = element_text(size=14),
+    text = element_text(size = 14)
   ) +
   stat_summary(
     fun.data = give.n,
     geom = "text",
     hjust = 0.5,
-    vjust = 0.9
+    vjust = 0.9,
+    size=6
   )
-
+trit_boxplot
 # Trait_Anxiety_plots <-
 #   ggarrange(Trait_Anxiety_plot,
 #             trit_boxplot,
@@ -1275,7 +1391,6 @@ draw_bfi_plot <- function() {
     
     hist_plot <- ggplot(data=temp_df, aes(x=Value)) + 
       geom_bar() +
-      # labs(title=title) +
       facet_grid(. ~ title) +
       coord_cartesian(xlim=get_x_limit(ques_sub_type), ylim=get_y_limit(title)) +
       xlab(x_lab) +
@@ -1283,7 +1398,7 @@ draw_bfi_plot <- function() {
       scale_x_continuous(breaks=seq(min(get_x_limit(ques_sub_type)), 
                                     max(get_x_limit(ques_sub_type)), 
                                     by=get_break_no(title))) +
-                                    # by=4)) +
+                            
       geom_vline(data=temp_df, 
                  mapping=aes(xintercept=mean(Value)),
                  color='red', 
@@ -1292,7 +1407,7 @@ draw_bfi_plot <- function() {
       theme_bw() +
       theme(legend.position = 'none',
             plot.title = element_text(hjust=0.5),
-            text = element_text(size=16),
+            text = element_text(size=18),
             strip.text.x = element_text(size=18),
             axis.text.x=element_text(size=16),
             axis.text.y=element_text(size=14),
@@ -1325,15 +1440,22 @@ extract_bfi_score()
 
 
 ```{r, echo=FALSE}
-
 bfi_plot_list <- list()
-bfi_list <-
-  c("Extraversion",
-    "Agreeableness",
-    "Conscientiousness",
-    "Neuroticism",
-    "Openness")
+# bfi_list <-
+#   c("Extraversion",
+#     "Agreeableness",
+#     "Conscientiousness",
+#     "Neuroticism",
+#     "Openness")
 
+
+
+bfi_list <-
+  c("Extrovert",
+    "Agreeable",
+    "Conscientious",
+    "Neurotic",
+    "Open")
 for (i in 1:5) {
   df <- subset(bfi_score_df, Title == bfi_list[i])
   
@@ -1369,44 +1491,67 @@ ggsave(
 )
 # print(final_plot)
 
- 
+
 give.n <- function(x) {
-  return( 
-    data.frame(
-       y = 1,
-      label = paste(format(length(x), big.mark = ",", decimal.mark = ".", scientific = FALSE))
-    )
-  )
-}     
-            
-BFI_boxplots<-ggplot(bfi_score_df, aes(x = factor(Title), y = Value, fill = Title)) +
+  return(data.frame(y = 1,
+                    label = paste(
+                      format(
+                        length(x),
+                        big.mark = ",",
+                        decimal.mark = ".",
+                        scientific = FALSE
+                      )
+                    )))
+}
+
+
+BFI_boxplots <-
+  ggplot(bfi_score_df, aes(x = factor(Title), y = Value, fill = Title)) +
   geom_boxplot() +
   theme_bw() +
   labs(x = "", y = "", title = "Big Five Inventory") +
   theme(
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
-    plot.title = element_text(hjust = 0.5),
-    axis.text.x = element_blank(),
-    legend.position = "bottom",
+    plot.title = element_text(hjust = 0.5, size = 7),
+    axis.text.x = element_text(face = "bold", size = 5),
+    legend.position = "none",
+    legend.margin = margin(0, 0, 0, 0),
+    legend.box.margin = margin(-5,-5,-5,-5),
+    legend.spacing.x = unit(.25, 'cm'),
     legend.title = element_blank(),
-    legend.text = element_text(size = 10, face = "bold")
-    # legend.key.size = unit(2, 'lines')
-  ) +
-  stat_summary(
-    fun.data = give.n,
-    geom = "text",
-    hjust = 0.5,
-    vjust = 0.9
-  ) +
-  scale_y_continuous(breaks = seq(1, 10, by = 1), limits = c(1, 10))+
-  guides(fill=guide_legend(nrow = 1,
-                 keywidth=0.4,
-                 keyheight=0.4,
-                 default.unit="inch")
-      )
-  
+    legend.text = element_text(size = 4, face = "bold"),
+    axis.text.y = element_text(size = 6, face = "bold")
+  ) + stat_summary(fun.data = give.n,
+                   geom = "text",
+                   size = 2) +
+  scale_y_continuous(breaks = seq(1, 10, by = 1), limits = c(0, 10)) +
+  guides(
+    fill = guide_legend(
+      nrow = 1,
+      keywidth = 0.15,
+      keyheight = 0.15,
+      default.unit = "inch",
+      label.position = "bottom"
+    )
+  ) + scale_x_discrete(breaks = c(
+      "Extraversion",
+      "Agreeableness",
+      "Conscientiousness",
+      "Neuroticism",
+      "Openness"
+    ),
+    labels = c("Extrovert",
+               "Agreeable",
+               "Conscientious",
+               "Neurotic",
+               "Open")
+  )
+
 BFI_boxplots
+
+# plot_list_grid[[length(plot_list_grid) + 1]] <- BFI_boxplots
+
 filename <- "BFI_boxplots.pdf"
 full_path <- file.path(plot_dir, filename)
 ggsave(
@@ -1420,6 +1565,7 @@ ggsave(
 
 
 ```{r, echo=FALSE}
+
 Ciss <- StandardPart[, c(1, 112:132)]
 column_name <- make.names(c("Record_ID", 1:21))
 colnames(Ciss) <- column_name
@@ -1458,9 +1604,9 @@ Ciss=ggarrange(Avoidance,Emotional,Task, nrow = 3, ncol = 1)
       
     
 CISS_Results <- data.frame(Avoidancecoping$Record_ID,Avoidancecoping$Sum, EmotionalCoping$Sum, TaskCoping$Sum)
-colnames(CISS_Results)<-c("Record_ID", "Avoidance Coping", "Emotion-oriented Coping", "Task-oriented Coping")
+colnames(CISS_Results)<-c("Record_ID", "Avoidance", "Emotion", "Task")
 
-CiSS_Melt<-melt(CISS_Results[,c('Record_ID','Avoidance Coping','Emotion-oriented Coping','Task-oriented Coping')],id.vars = 1)
+CiSS_Melt<-melt(CISS_Results[,c('Record_ID','Avoidance','Emotion','Task')],id.vars = 1)
 
 give.n <- function(x) {
   return( 
@@ -1470,43 +1616,157 @@ give.n <- function(x) {
     )
   )
 }     
-            
-CISS_boxplots<-ggplot(CiSS_Melt, aes(x = factor(variable), y = value, fill = variable)) +
+
+
+
+CISS_boxplots <-
+  ggplot(CiSS_Melt, aes(
+    x = factor(variable),
+    y = value,
+    fill = variable
+  )) +
   geom_boxplot() +
   theme_bw() +
   labs(x = "", y = "", title = "Coping Inventory for Stressful Situations") +
   theme(
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
-    plot.title = element_text(hjust = 0.5),
-    axis.text.x = element_blank(),
-    legend.position = "bottom",
+    plot.title = element_text(hjust = 0.5, size = 7),
+    axis.text.x = element_text(face = "bold", size = 5),
+    legend.position = "none",
+    legend.margin = margin(0, 0, 0, 0),
+    legend.box.margin = margin(-5,-5,-5,-5),
+    legend.spacing.x = unit(.5, 'cm'),
     legend.title = element_blank(),
-    legend.text = element_text(size = 10, face = "bold"),
-    legend.key.size = unit(2, 'lines')
-  ) +
-  stat_summary(
-    fun.data = give.n,
-    geom = "text",
-    hjust = 0.5,
-    vjust = 0.9
-  ) +
-  scale_y_continuous(breaks = seq(5, 35, by = 5), limits = c(5, 35))
-  # +
-  # guides(fill=guide_legend(nrow = 1,
-  #                keywidth=0.4,
-  #                keyheight=0.4,
-  #                default.unit="inch")
-  #     )
-  # 
+    legend.text = element_text(size = 5),
+    axis.text.y = element_text(size = 6, face = "bold")
+  ) + stat_summary(fun.data = give.n,
+                   geom = "text",
+                   size = 2) +
+  scale_y_continuous(breaks = seq(5, 35, by = 5), limits = c(5, 35))+
+  guides(fill=guide_legend(nrow = 1,
+                 keywidth=0.15,
+                 keyheight=0.15,
+                 default.unit="inch",
+                 label.position = "bottom"))
+
+
 CISS_boxplots
-      filename<-"Ciss_boxplots.pdf"
-      full_path<-file.path(plot_dir, filename)
-      ggsave(full_path, CISS_boxplots, width = 11, height = 8.5, units = "in")
 
-
+filename <- "Ciss_boxplots.pdf"
+full_path <- file.path(plot_dir, filename)
+ggsave(
+  full_path,
+  CISS_boxplots,
+  width = 11,
+  height = 8.5,
+  units = "in"
+)
 ``` 
 
+
+
+```{r, echo=FALSE}
+
+library(wordcloud)
+library(RColorBrewer)
+library(wordcloud2)
+library(tm)
+library(ggwordcloud)
+# data_file_name<-'world_cloud_stressful.csv'
+data_file_name_std<-'world_cloud.csv'
+
+
+# Stressful<-read.csv(file.path(curated_data_dir,data_file_name),stringsAsFactors = FALSE)
+Stressful<-read.csv(file.path(curated_data_dir,data_file_name_std),stringsAsFactors = FALSE)
+
+Stressful$item=tolower(Stressful$item)
+set.seed(1234)
+# wordcloud2(Stressful,size=1 , shape = 'circle')
+# 
+# data("love_words_small")
+
+set.seed(42)
+wc <- ggplot(Stressful, aes(label = item, size = count, color = factor(sample.int(10, nrow(Stressful), replace = TRUE)))) +
+  geom_text_wordcloud_area() +
+  scale_size_area(max_size = 24) +
+  theme_minimal()
+
+wc
+```
+
+```{r, echo=FALSE}
+# plot_list_grid[[length(plot_list_grid) + 1]] <- BFI_boxplots
+# plot_list_grid[[length(plot_list_grid) + 1]] <- CISS_boxplots
+# plot_list_grid[[length(plot_list_grid) + 1]] <- nasa_boxplots
+# plot_list_grid[[length(plot_list_grid) + 1]] <- wc
+
+barplots <- ggarrange(plotlist = plot_list_grid, nrow = 3, ncol = 2)
+box_plots <- ggarrange(BFI_boxplots, nasa_boxplots, CISS_boxplots, nrow = 3, ncol = 1)
+
+final_plot<-plot_grid(barplots, box_plots, ncol = 2,   rel_widths = c(2, 1))
+# 
+# final_plot <- ggarrange(plotlist = plot_list_grid, nrow = 3, ncol = 3)
+
+full_path<-file.path(plot_dir,"Grid_plot_final.pdf",sep="")
+  ggsave(full_path, final_plot, width = 8.5, height = 5.5, units = "in")
+```
+
+```{r}
+# 
+# plot_with_annotation <- function(plot_list, letter_list){
+#   plot_list_grid_annot <- list()
+#   
+#   for (item in 1:10){
+#     plot <- arrangeGrob(plot_list[item],
+#               top = textGrob(
+#                 toupper(paste0(letter_list[item])),
+#                 x = unit(0, "npc"),
+#                 y = unit(1, "npc"),
+#                 vjust = 2,
+#                 hjust = -1.5,
+#                 just = c("left", "top"),
+#                 gp = gpar(
+#                   col = "black",
+#                   fontsize = 22,
+#                   fontface = "bold"
+#                 )
+#               ))
+#     
+#     plot_grid(plot)
+#     
+#     plot_list_grid_annot[[length(plot_list_grid_annot) + 1]] <- plot_grid(plot)
+#     
+#   }
+#   
+#   return(plot_list_grid_annot)
+# }
+# 
+# letter_list <-c("A", "B", "C", "D", "E", "F", "G", "H", "I", "J")
+# 
+# final_list =  plot_with_annotation(plot_list_grid, letter_list)
+# 
+# finla_plot = ggarrange(plotlist = final_list, nrow = 5, ncol = 2)
+# 
+# 
+# 
+# plot <-
+#   arrangeGrob(wc,
+#               top = textGrob(
+#                 toupper(paste0("A")),
+#                 x = unit(0, "npc"),
+#                 y = unit(1, "npc"),
+#                 vjust = 2,
+#                 hjust = -1.5,
+#                 just = c("left", "top"),
+#                 gp = gpar(
+#                   col = "black",
+#                   fontsize = 22,
+#                   fontface = "bold"
+#                 )
+#               ))
+# plot_grid(plot)
+```
 
 
 
@@ -1529,9 +1789,9 @@ for (i in 1:5) {
   Psychometric[, paste0(bfi_list[i])]= df$Value
 }
 
-Psychometric$Avoidance_Coping<-CISS_Results$`Avoidance Coping`
-Psychometric$Emotional_oriented_Coping<-CISS_Results$`Emotion-oriented Coping`
-Psychometric$Task_oriented_Coping<-CISS_Results$`Task-oriented Coping`
+Psychometric$Avoidance_Coping<-CISS_Results$Avoidance
+Psychometric$Emotional_oriented_Coping<-CISS_Results$Emotion
+Psychometric$Task_oriented_Coping<-CISS_Results$Task
 # Psychometric$Faculty<-StandardPart$faculty_rank
 
 
@@ -1542,4 +1802,180 @@ colnames(Psychometric)<- c("Rank", "Mental", "Physical", "Temporal", "Performanc
 file_name='StandardPart_psychometric.csv'
 write.csv(Psychometric,file.path(curated_data_dir, file_name), row.names = FALSE)
 ```
+
+
+
+
+
+
+
+```{r, echo=FALSE}
+
+Psychometric$h_index <- StandardPart$google_scholar_h_index
+DF_Quant_Stat <- cbind(Psychometric, StandardPart[,c(17:20, 33:36, 38:41, 45:49, 58:61, 63:66, 70:74)])
+
+
+DF_Quant_Stat <- DF_Quant_Stat  %>% dplyr::rename(
+  
+  "Percentage of research in a typical week" = "ti_research",  ## Typical week Research
+  "Percentage of teaching in a typical week" = "ti_teaching",  ## Typical week Research
+  "Percentage of admin work in a typical week" = "ti_administration",  ## Typical week Research
+  "Percentage of service outreach in a typical week" = "ti_service_outreach",  ## Typical week Research
+  
+  "Percentage of research a week before proposal deadline" = "week_research",  ## Research percentage a week before Proposal
+  "Percentage of teaching a week before proposal deadline" = "week_teaching",  ## Research percentage a week before Proposal
+  "Percentage of admin work a week before proposal deadline" = "week_administration",  ## Research percentage a week before Proposal
+  "Percentage of service outreach a week before proposal deadline" = "week_service_outreach",  ## Research percentage a week before Proposal
+
+  "Percentage of research on proposal deadline day" = "proposal_research",
+  "Percentage of teaching on proposal deadline day" = "proposal_teaching",
+  "Percentage of admin work on proposal deadline day" = "proposal_administration",
+  "Percentage of service outreach on proposal deadline day" = "proposal_service_outreach",
+  
+  "Disruption of research on proposal deadline" = "disrupted_part",
+  "Disruption of sleep on proposal deadline" = "my_sleep",
+  "Disruption of diet on proposal deadline" = "my_diet",
+  "Disruption of physical activity on proposal deadline" = "my_physical_activity",
+  "Disruption of interpersonal relationship on proposal deadline" = "my_interpersonal_relations",
+  
+  "Percentage of research a week before conference deadline" = "research",
+  "Percentage of teaching a week before conference deadline" = "teaching",
+  "Percentage of admin work a week before conference deadline" = "administration",
+  "Percentage of service outreach a week before conference deadline" = "serviceoutreach",
+
+  "Percentage of research on conference deadline day" = "research1",
+  "Percentage of teaching on conference deadline day" = "teaching1",
+  "Percentage of admin work on conference deadline day" = "administration1",
+  "Percentage of service outreach on conference deadline day" = "service_outreach1",
+
+  "Disruption of research on conference deadline" = "disrupted_conf",
+  "Disruption of sleep on conference deadline" = "my_sleep2",
+  "Disruption of diet on conference deadline" = "diet2",
+  "Disruption of physical activity on conference deadline" = "physical_activity2",
+  "Disruption of interpersonal relationship on conference deadline" = "interpersonal_relations2")
+```
+
+
+
+
+```{r, echo=FALSE}
+
+give.n <- function(x) { 
+  # print(length(x))
+  # print(x)
+  return(c(y=-Inf, vjust = -1, label=length(x))) 
+} 
+stat_summary(fun.data = give.n, geom = "text", size = 6)
+
+
+# Psychometric[2]
+
+
+for (col_index in 2:ncol(DF_Quant_Stat)) {
+  col = as.numeric(unlist(DF_Quant_Stat[col_index]))
+  stat = DF_Quant_Stat %>% summarise(
+    mean = round(mean(col, na.rm=TRUE), 2),
+    sd = round(sd(col, na.rm=TRUE)),
+    median = median(col, na.rm=TRUE),
+    max = max(col, na.rm=TRUE),
+    min = min(col, na.rm=TRUE)
+  )
+  
+  x_lebel = 
+    paste0(
+    "\n\n\n",
+    "Mean = ",
+    stat$mean,
+    ",     ",
+    "SD = ",
+    stat$sd,
+    ",     ",
+    "Median = ",
+    stat$median,
+    ",     ",
+    "Min = ",
+    stat$min,
+    ",     ",
+    "Max = ",
+    stat$max
+  )
+  
+  boxplot_with_stat <-
+    ggplot(DF_Quant_Stat, aes(x = "", y = col)) +
+    geom_boxplot(fill = '#A4A4A4', color = "black") +
+    theme_bw() +
+    labs(x = x_lebel,
+         y = "",
+         title = colnames(DF_Quant_Stat[col_index])) +
+    theme(
+      axis.title.x = element_text(size = 18),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      plot.title = element_text(hjust = 0.5),
+      axis.text.x = element_blank(),
+      legend.position = "bottom",
+      legend.title = element_blank(),
+      axis.text.y = element_text(size = 18),
+      text = element_text(size = 16)
+    ) + stat_summary(fun.data = give.n, geom = "text", size = 6)
+  
+  filename <- paste("boxplot_with_stat", col_index, ".pdf", sep = "")
+  full_path <- file.path(plot_dir, filename)
+  ggsave(
+    full_path,
+    boxplot_with_stat,
+    width = 8.5,
+    height = 11,
+    units = "in"
+  )
+} 
+```
+
+
+
+<!--```{r}
+col_index =2
+
+col = as.numeric(unlist(Psychometric[col_index]))
+stat = Psychometric %>% summarise(mean= round(mean(col), 2), sd = round(sd(col)), median = median(col), max = max(col), min = min(col))
+
+  x_lebel = paste0(
+    
+    "Mean = ",
+    stat$mean,
+    ",     ",
+    "SD = ",
+    stat$sd,
+    ",     ",
+    "Median = ",
+    stat$median,
+    ",     ",
+    "Min = ",
+    stat$min,
+    ",     ",
+    "Max = ",
+    stat$max
+  )
+  
+  boxplot_with_stat <-
+    ggplot(Psychometric, aes(x = "", y = col)) +
+    geom_boxplot(fill = '#A4A4A4', color = "black") +
+    theme_bw() +
+    labs(x = x_lebel,
+         y = "",
+         title = colnames(Psychometric[col_index])) +
+    theme(
+      axis.title.x = element_text(size = 16),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      plot.title = element_text(hjust = 0.5),
+      axis.text.x = element_blank(),
+      axis.text.y = element_text(size = 14),
+      text = element_text(size = 14)
+    ) +
+stat_summary(fun.data = give.n, geom = "text", size = 6)
+
+boxplot_with_stat
+```-->
+
 

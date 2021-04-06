@@ -1,6 +1,8 @@
 ---
 title: "Corelation"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -54,7 +56,7 @@ colnames(Data) <-
 
 ```{r, echo=FALSE}
 Corelation_DF <-
-  data.frame(Data[, c(1, 8:17)], Raw_Data[, c(6, 15:17, 22, 26, 29:33, 43, 44)])
+  data.frame(Data[, c(1, 8:17)], Raw_Data[, c(6, 15:17, 22, 26:27, 29:33, 43, 44)])
 Corelation_DF <-
   Corelation_DF  %>%  dplyr::rename(
     H = "google_scholar_h_index",
@@ -63,6 +65,7 @@ Corelation_DF <-
     WH = "in_a_typical_workday_how_m",
     ## Typical week working hours
     TWR = "ti_research",
+    FA = "funding_agency",
     ## Typical week Research
     BR = "in_a_typical_day_how_often",
     ## Break Frequency
@@ -106,7 +109,7 @@ for (i in 1:nrow(Corelation_DF)) {
   } else if (Corelation_DF$WH[i] == "40-50") {
     Corelation_DF$WH[i] = 2
   } else {
-    Corelation_DF$WH[i] = 3
+    Corelation_DF$WH[i] = 2
   }
   
   if (Corelation_DF$BR[i] == "Every hour") {
@@ -157,19 +160,19 @@ for (i in 1:nrow(Corelation_DF)) {
   # if (Corelation_DF$SR[i] == "< 10%") {
   #   Corelation_DF$SR[i] = 1
   # } else if (Corelation_DF$SR[i] == "10-20%") {
-  #   Corelation_DF$SR[i] = 1
-  # } else if (Corelation_DF$SR[i] == "20-30%") {
-  #   Corelation_DF$SR[i] = 1
-  # } else if (Corelation_DF$SR[i] == "30-50%") {
   #   Corelation_DF$SR[i] = 2
+  # } else if (Corelation_DF$SR[i] == "20-30%") {
+  #   Corelation_DF$SR[i] = 3
+  # } else if (Corelation_DF$SR[i] == "30-50%") {
+  #   Corelation_DF$SR[i] = 4
   # } else if (Corelation_DF$SR[i] == "50-75%") {
-  #   Corelation_DF$SR[i] = 3
+  #   Corelation_DF$SR[i] = 5
   # } else if (Corelation_DF$SR[i] == "75-90%") {
-  #   Corelation_DF$SR[i] = 3
+  #   Corelation_DF$SR[i] = 6
   # } else if (Corelation_DF$SR[i] == "") {
   #   Corelation_DF$SR[i] = NA
   # } else {
-  #   Corelation_DF$SR[i] = 3
+  #   Corelation_DF$SR[i] = 7
   # }
   
   
@@ -183,7 +186,7 @@ for (i in 1:nrow(Corelation_DF)) {
   } else if (Corelation_DF$AP[i] == "") {
     Corelation_DF$AP[i] = NA
   } else {
-    Corelation_DF$AP[i] = 3
+    Corelation_DF$AP[i] = 2
   }
   
   if (Corelation_DF$AR[i] == "< 1 month") {
@@ -212,7 +215,7 @@ for (i in 1:nrow(Corelation_DF)) {
   } else if (Corelation_DF$DWH[i] == "") {
     Corelation_DF$DWH[i] = NA
   } else {
-    Corelation_DF$DWH[i] = 3
+    Corelation_DF$DWH[i] = 2
   }
   
   
@@ -221,13 +224,13 @@ for (i in 1:nrow(Corelation_DF)) {
   } else if (Corelation_DF$T[i] == "1-3 hours before deadline") {
     Corelation_DF$T[i] = 1
   } else if (Corelation_DF$T[i] == "3-6 hours before deadline") {
-    Corelation_DF$T[i] = 2
+    Corelation_DF$T[i] = 1
   } else if (Corelation_DF$T[i] == "1 day before deadline") {
-    Corelation_DF$T[i] = 3
+    Corelation_DF$T[i] = 2
   } else if (Corelation_DF$T[i] == "") {
     Corelation_DF$T[i] = NA
   } else {
-    Corelation_DF$T[i] = 3
+    Corelation_DF$T[i] = 2
   }
   
   
@@ -238,15 +241,31 @@ for (i in 1:nrow(Corelation_DF)) {
     Corelation_DF$DS[i] = 1
   } else if (Corelation_DF$DS[i] == "Same") {
     # Corelation_DF$DS[i]=3
-    Corelation_DF$DS[i] = 2
+    Corelation_DF$DS[i] = 1
   } else if (Corelation_DF$DS[i] == "Significantly  more") {
     # Corelation_DF$DS[i]=4
-    Corelation_DF$DS[i] = 3
+    Corelation_DF$DS[i] = 2
   } else if (Corelation_DF$DS[i] == "Extremely  more") {
     # Corelation_DF$DS[i]=5
-    Corelation_DF$DS[i] = 3
+    Corelation_DF$DS[i] = 2
   } else {
     Corelation_DF$DS[i] = NA
+  }
+  
+  if (Corelation_DF$FA[i]=="NSF"){
+    Corelation_DF$FA[i]=1
+  } else if (Corelation_DF$FA[i]=="NIH"){
+    Corelation_DF$FA[i]=2
+  } else if (Corelation_DF$FA[i]=="DOE"){
+    Corelation_DF$FA[i]=3
+  } else if (Corelation_DF$FA[i]=="DOD"){
+    Corelation_DF$FA[i]=4
+  } else if (Corelation_DF$FA[i]=="NASA"){
+    Corelation_DF$FA[i]=5
+  } else if (Corelation_DF$FA[i]==""){
+    Corelation_DF$FA[i]=NA
+  } else{
+    Corelation_DF$FA[i]=6
   }
 }
 
@@ -254,10 +273,10 @@ for (i in 1:nrow(Corelation_DF)) {
 table(Corelation_DF$SR)
 
 cols.num <-
-  c("RS", "WH", "BR", "NP", "SR", "AP", "AR", "DWH", "T", "DS")
+  c("RS", "WH", "BR", "NP", "SR", "AP", "AR", "DWH", "T", "DS", "FA")
 Corelation_DF[cols.num] <-
   sapply(Corelation_DF[cols.num], as.numeric)
-
+# Corelation_DF <- Corelation_DF[complete.cases(Corelation_DF),]
 ```
 
 
@@ -270,21 +289,21 @@ write.csv(Corelation_DF,
 
 ```{r, echo=FALSE}
 
-supplement_nlp <- Corelation_DF
-supplement_nlp$SR <- ifelse(test = supplement_nlp$SR == 0, yes = "Unsuccessful", no= "Successful")
-supplement_nlp$SR <- as.factor(supplement_nlp$SR)
-
-supplement_nlp$Gender <- Raw_Data$gender
-supplement_nlp$Comments <- Raw_Data$please_write_about_any_oth
-
-supplement <- supplement_nlp %>% dplyr::select(Rank, Gender, SR, Comments)
-
-
-
-file_name = 'Supplement_nlp.csv'
-write.csv(supplement_nlp,
-          file.path(curated_data_dir, file_name),
-          row.names = FALSE)
+# supplement_nlp <- Corelation_DF
+# supplement_nlp$SR <- ifelse(test = supplement_nlp$SR == 0, yes = "Unsuccessful", no= "Successful")
+# supplement_nlp$SR <- as.factor(supplement_nlp$SR)
+# 
+# # supplement_nlp$Gender <- Raw_Data$gender
+# # supplement_nlp$Comments <- Raw_Data$please_write_about_any_oth
+# 
+# supplement <- supplement_nlp %>% dplyr::select(Rank, Gender, SR, Comments)
+# 
+# 
+# 
+# file_name = 'Supplement_nlp.csv'
+# write.csv(supplement_nlp,
+#           file.path(curated_data_dir, file_name),
+#           row.names = FALSE)
 
 ```
 
@@ -354,8 +373,8 @@ ggsave(
 ```
 
 ```{r}
-Corelation_DF$H <- Corelation_DF$H + 0.001
-Corelation_DF$H <- log(Corelation_DF$H)
+# Corelation_DF$H <- Corelation_DF$H + 0.001
+# Corelation_DF$H <- log(Corelation_DF$H)
 ```
 
 
@@ -363,16 +382,13 @@ Corelation_DF$H <- log(Corelation_DF$H)
 library(corrplot)
 library(superml)
 
-# lbl <- LabelEncoder$new()
-# lbl$fit(Corelation_DF$Rank)
-# Corelation_DF$Rank <- lbl$fit_transform(Corelation_DF$Rank)
 
 rank_factor <- factor(Corelation_DF$Rank)
 Corelation_DF$Rank <- as.numeric(rank_factor)
 
 # Corelation_DF$BR<-factor(Corelation_DF$BR)
-M_proposal <- cor(Corelation_DF[, c(1:24)], use = "complete.obs")
-res1 <- cor.mtest(Corelation_DF[, c(1:24)], conf.level = .95)
+M_proposal <- cor(Corelation_DF[, c(1:25)], use = "complete.obs")
+res1 <- cor.mtest(Corelation_DF[, c(1:25)], conf.level = .95)
 
 # significance_plot<-
 corrplot(
@@ -395,6 +411,9 @@ corrplot(
 
 
 ```{r,echo=FALSE}
+
+# Raw_Data <-Raw_Data[,c(4,52:58, 63,68,69)]
+# Raw_Data <-Raw_Data[complete.cases(Raw_Data),]
 Corelation_DF_Conf<-data.frame(Corelation_DF[,c(1:16)], Raw_Data[,c(4,52:58, 63,68,69)])
 Corelation_DF_Conf<-Corelation_DF_Conf[complete.cases(Corelation_DF_Conf),]
 
@@ -423,9 +442,9 @@ for (i in 1:nrow(Corelation_DF_Conf)){
   } else if (Corelation_DF_Conf$NCP[i]=="5-6"){
     Corelation_DF_Conf$NCP[i]=3
   } else if (Corelation_DF_Conf$NCP[i]=="7-9"){
-    Corelation_DF_Conf$NCP[i]=4
+    Corelation_DF_Conf$NCP[i]=3
   } else {
-    Corelation_DF_Conf$NCP[i]=5
+    Corelation_DF_Conf$NCP[i]=3
   }
   
   
@@ -436,62 +455,64 @@ for (i in 1:nrow(Corelation_DF_Conf)){
   }  else if (Corelation_DF_Conf$CR[i]=="A"){
     Corelation_DF_Conf$CR[i]=3
   } else {
-    Corelation_DF_Conf$CR[i]=4
+    Corelation_DF_Conf$CR[i]=3
   }
   
-  if (Corelation_DF_Conf$SR[i]=="10-20%"){
-    Corelation_DF_Conf$SR[i]=1
+  if (Corelation_DF_Conf$SR[i]=="< 10%"){
+    Corelation_DF_Conf$SR[i]=0
+  } else if (Corelation_DF_Conf$SR[i]=="10-20%"){
+    Corelation_DF_Conf$SR[i]=0
   } else if (Corelation_DF_Conf$SR[i]=="20-30%"){
-    Corelation_DF_Conf$SR[i]=2
+    Corelation_DF_Conf$SR[i]=0
   } else if (Corelation_DF_Conf$SR[i]=="30-50%"){
-    Corelation_DF_Conf$SR[i]=3
+    Corelation_DF_Conf$SR[i]=0
   } else if (Corelation_DF_Conf$SR[i]=="50-75%"){
-    Corelation_DF_Conf$SR[i]=4
+    Corelation_DF_Conf$SR[i]=1
   } else if (Corelation_DF_Conf$SR[i]=="75-90%"){
-    Corelation_DF_Conf$SR[i]=5
+    Corelation_DF_Conf$SR[i]=1
   } else{
-    Corelation_DF_Conf$SR[i]=6
+    Corelation_DF_Conf$SR[i]=1
   }
   
   if (Corelation_DF_Conf$ACP[i]=="< 1 week"){
     Corelation_DF_Conf$ACP[i]=1
   } else if (Corelation_DF_Conf$ACP[i]=="1-2 weeks"){
-    Corelation_DF_Conf$ACP[i]=2
+    Corelation_DF_Conf$ACP[i]=1
   } else if (Corelation_DF_Conf$ACP[i]=="2-4 weeks"){
-    Corelation_DF_Conf$ACP[i]=3
+    Corelation_DF_Conf$ACP[i]=1
   } else if (Corelation_DF_Conf$ACP[i]=="1-2 months"){
-    Corelation_DF_Conf$ACP[i]=4
+    Corelation_DF_Conf$ACP[i]=2
   } else {
-    Corelation_DF_Conf$ACP[i]=5
+    Corelation_DF_Conf$ACP[i]=3
   }
   
   if (Corelation_DF_Conf$AR[i]=="< 1 month"){
     Corelation_DF_Conf$AR[i]=1
   } else if(Corelation_DF_Conf$AR[i]=="1-3 months"){
-    Corelation_DF_Conf$AR[i]=2
+    Corelation_DF_Conf$AR[i]=1
   } else if(Corelation_DF_Conf$AR[i]=="3-6 months"){
-    Corelation_DF_Conf$AR[i]=3
+    Corelation_DF_Conf$AR[i]=1
   } else if(Corelation_DF_Conf$AR[i]=="6-12 months"){
-    Corelation_DF_Conf$AR[i]=4
+    Corelation_DF_Conf$AR[i]=2
   } else if(Corelation_DF_Conf$AR[i]==""){
     Corelation_DF_Conf$AR[i]=NA
   } else {
-    Corelation_DF_Conf$AR[i]=5
+    Corelation_DF_Conf$AR[i]=3
   }
   
   
   if (Corelation_DF_Conf$DWH[i]=="Significantly less"){
     Corelation_DF_Conf$DWH[i]=1
   } else if (Corelation_DF_Conf$DWH[i]=="Less"){
-    Corelation_DF_Conf$DWH[i]=2
+    Corelation_DF_Conf$DWH[i]=1
   } else if (Corelation_DF_Conf$DWH[i]=="About the same"){
-    Corelation_DF_Conf$DWH[i]=3
+    Corelation_DF_Conf$DWH[i]=1
   } else if (Corelation_DF_Conf$DWH[i]=="More"){
-    Corelation_DF_Conf$DWH[i]=4
+    Corelation_DF_Conf$DWH[i]=2
   } else if (Corelation_DF_Conf$DWH[i]==""){
     Corelation_DF_Conf$DWH[i]=NA
   } else {
-    Corelation_DF_Conf$DWH[i]=5
+    Corelation_DF_Conf$DWH[i]=3
   }
   
   
@@ -513,13 +534,13 @@ for (i in 1:nrow(Corelation_DF_Conf)){
   if (Corelation_DF_Conf$DS[i]=="Extremely less"){
     Corelation_DF_Conf$DS[i]=1
   } else if (Corelation_DF_Conf$DS[i]=="Significantly less"){
-    Corelation_DF_Conf$DS[i]=2
+    Corelation_DF_Conf$DS[i]=1
   } else if (Corelation_DF_Conf$DS[i]=="Same"){
-    Corelation_DF_Conf$DS[i]=3
+    Corelation_DF_Conf$DS[i]=1
   } else if (Corelation_DF_Conf$DS[i]=="Significantly  more"){
-    Corelation_DF_Conf$DS[i]=4
+    Corelation_DF_Conf$DS[i]=2
   } else if (Corelation_DF_Conf$DS[i]=="Extremely  more"){
-    Corelation_DF_Conf$DS[i]=5
+    Corelation_DF_Conf$DS[i]=3
   } else {
     Corelation_DF_Conf$DS[i]=NA
   }
@@ -537,6 +558,14 @@ Conf_B_C<-Corelation_DF_Conf
 
 Corelation_DF_Conf$departmental_affiliation<-NULL
 ```
+
+```{r, echo=FALSE}
+file_name = 'CorrelationData_conf_SR2.csv'
+write.csv(Corelation_DF_Conf,
+          file.path(curated_data_dir, file_name),
+          row.names = FALSE)
+```
+
 
 ```{r,echo=FALSE}
 # 

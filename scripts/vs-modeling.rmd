@@ -1,6 +1,6 @@
 ---
-# title: "Ordinal Logistic Regression or Proportional Odds Logistic Regression"
-title: "Random Forest for predicting the Success Rate Levels Successful-Unsuccessful"
+title: "Ordinal Logistic Regression or Proportional Odds Logistic Regression"
+# title: "Random Forest for predicting the Success Rate Levels Successful-Unsuccessful"
 output:
   pdf_document: default
   html_document:
@@ -98,13 +98,14 @@ Data <- Data[complete.cases(Data),]
 Data$SR <- as.factor(Data$SR)
 hindex = Data$H
 
-lm_DF <- as.data.frame((Data[, 2:24]))
+lm_DF <- as.data.frame((Data[, 2:25]))
 
 
 lm_DF$Rank <- as.factor(Data$Rank)
 lm_DF$RS <- as.factor(lm_DF$RS)
 lm_DF$WH <- as.factor(lm_DF$WH)
 lm_DF$NP <- as.factor(lm_DF$NP)
+lm_DF$BR <- as.factor(lm_DF$BR)
 lm_DF$H <- lm_DF$H + 0.001
 lm_DF$H <- log(lm_DF$H)
 
@@ -112,8 +113,6 @@ lm_DF$DWH <- as.factor(lm_DF$DWH)
 lm_DF$T <- as.factor(lm_DF$T)
 lm_DF$DS <- as.factor(lm_DF$DS)
 
-# lm_DF <- lm_DF %>% mutate(value = 1)  %>% spread(Rank, value,  fill = 0 )
-# lm_DF <- lm_DF %>% rename(Assistant_Professor = 'Assistant Professor', Associate_Professor = 'Associate Professor')
 
 
 lbl <- LabelEncoder$new()
@@ -121,129 +120,141 @@ lbl$fit(lm_DF$Rank)
 lm_DF$Rank <- lbl$fit_transform(lm_DF$Rank)
 
 lm_DF$Rank <- as.factor(lm_DF$Rank)
-
-# ind<-sample(2,nrow(lm_DF), replace = TRUE, prob = c(0.8,0.2))
-# train_data<-lm_DF[ind==1,]
-# test_data<-lm_DF[ind==2,]
-
-# boxplot(lm_DF$H)
 ```
 
-<!-- \newpage -->
-<!-- ## Model with NP1 as reference -->
-<!-- ```{r, echo=FALSE, warning=FALSE} -->
-<!-- # lm_DF$SR <- relevel(lm_DF$SR, ref = 7) -->
-<!-- base_model = polr(SR ~ H + NP + AGR + TA + RS + DWH + DS, data = lm_DF, Hess = TRUE) -->
-<!-- # base_model=lrm(SR ~ H + NP + AGR, data = lm_DF) -->
-<!-- summary(base_model) -->
+\newpage
+## Model with NP1 as reference
+```{r, echo=FALSE, warning=FALSE}
+# lm_DF$SR <- relevel(lm_DF$SR, ref = 7)
+base_model = polr(SR ~ FA + H + NP + AGR + TA + RS + DWH + DS, data = lm_DF, Hess = TRUE)
+# base_model=lrm(SR ~ H + NP + AGR, data = lm_DF)
+summary(base_model)
 
-<!-- ctable <- coef(summary(base_model)) -->
-<!-- p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2 -->
-<!-- ctable <- cbind(ctable, "p value" = round(p, 4)) -->
-<!-- ctable -->
-<!-- ``` -->
+ctable <- coef(summary(base_model))
+p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
+ctable <- cbind(ctable, "p value" = round(p, 4))
+ctable
+```
 
-<!-- ```{r, echo=FALSE, warning=FALSE} -->
-<!-- # \newpage -->
-<!-- ## Model with NP1 as reference and kfold cross validation -->
+```{r, echo=FALSE, warning=FALSE}
+# \newpage
+## Model with NP1 as reference and kfold cross validation
 
-<!-- # set.seed(123) -->
-<!-- # fitcontrol<- trainControl(method = "CV", number = 10) -->
-<!-- #  -->
-<!-- # # mod_fitcv<-train(SR ~ H + AGR + NP + DWH  + T + DS, data = lm_DF, na.action = na.omit , method="polr", trControl = fitcontrol) -->
-<!-- # mod_fitcv<-train(SR ~ H + AGR + NP, data = lm_DF, na.action = na.omit , method="polr", trControl = fitcontrol) -->
-<!-- # # print(mod_fitcv) -->
-<!-- # # mod_fitcv<-clm(SR ~ H + AGR + NP + DWH  + T + DS, data = lm_DF, Hess = TRUE) -->
-<!-- # summary(mod_fitcv) -->
-<!-- #  -->
-<!-- # ctable <- coef(summary(mod_fitcv)) -->
-<!-- # p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2 -->
-<!-- # ctable <- cbind(ctable, "p value" = round(p,4)) -->
-<!-- # ctable -->
+# set.seed(123)
+# fitcontrol<- trainControl(method = "CV", number = 10)
+#
+# # mod_fitcv<-train(SR ~ H + AGR + NP + DWH  + T + DS, data = lm_DF, na.action = na.omit , method="polr", trControl = fitcontrol)
+# mod_fitcv<-train(SR ~ H + AGR + NP, data = lm_DF, na.action = na.omit , method="polr", trControl = fitcontrol)
+# # print(mod_fitcv)
+# # mod_fitcv<-clm(SR ~ H + AGR + NP + DWH  + T + DS, data = lm_DF, Hess = TRUE)
+# summary(mod_fitcv)
+#
+# ctable <- coef(summary(mod_fitcv))
+# p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
+# ctable <- cbind(ctable, "p value" = round(p,4))
+# ctable
 
-<!-- ``` -->
-
-
-<!-- ```{r, echo=FALSE} -->
-<!-- # pred <- predict(mod_fitcv, lm_DF) -->
-<!-- # # pred -->
-<!-- # tab<-table(pred, lm_DF$SR) -->
-<!-- # tab -->
-<!-- # result<- 1- sum(diag(tab))/sum(tab) -->
-<!-- # result -->
-<!-- ``` -->
+```
 
 
-
-<!-- \newpage -->
-<!-- ## Model with NP3 as reference  -->
-<!-- ```{r, echo=FALSE, warning=FALSE} -->
-<!-- lm_DF$NP <- relevel(lm_DF$NP, ref = "3") -->
-<!-- base_model = polr(SR ~ H + NP + AGR + TA + RS + DWH + DS, data = lm_DF, Hess = TRUE) -->
-<!-- summary(base_model) -->
-<!-- ctable <- coef(summary(base_model)) -->
-<!-- p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2 -->
-<!-- ctable <- cbind(ctable, "p value" = round(p, 4)) -->
-<!-- ctable -->
-<!-- ``` -->
+```{r, echo=FALSE}
+# pred <- predict(mod_fitcv, lm_DF)
+# # pred
+# tab<-table(pred, lm_DF$SR)
+# tab
+# result<- 1- sum(diag(tab))/sum(tab)
+# result
+```
 
 
-<!-- ```{r, echo=FALSE, warning=FALSE} -->
-<!-- #\newpage -->
-<!-- ## Model with NP4 as reference and kfold cross validation -->
 
-<!-- # set.seed(123) -->
-<!-- # fitcontrol<- trainControl(method = "CV", number = 10, savePredictions = T) -->
-<!-- #  -->
-<!-- # # mod_fitcv<-train(SR ~ H + AGR + NP, data = lm_DF , method="polr", trControl = fitcontrol) -->
-<!-- # mod_fitcv<-train(SR ~ H + AGR + NP, data = lm_DF , method="polr", trControl = fitcontrol) -->
-<!-- # summary(mod_fitcv) -->
-<!-- #  -->
-<!-- # ctable <- coef(summary(mod_fitcv)) -->
-<!-- # p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2 -->
-<!-- # ctable <- cbind(ctable, "p value" = round(p,4)) -->
-<!-- # ctable -->
-
-<!-- ``` -->
+\newpage
+## Model with NP3 as reference
+```{r, echo=FALSE, warning=FALSE}
+lm_DF$NP <- relevel(lm_DF$NP, ref = "3")
+base_model = polr(SR ~ FA + H + NP + AGR + TA + RS + DWH + DS, data = lm_DF, Hess = TRUE)
+summary(base_model)
+ctable <- coef(summary(base_model))
+p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
+ctable <- cbind(ctable, "p value" = round(p, 4))
+ctable
+```
 
 
-<!-- \newpage -->
-<!-- ## Model with all variables NP1, DWH5 and DS1 as reference -->
-<!-- ```{r, echo=FALSE, warning=FALSE} -->
+```{r, echo=FALSE, warning=FALSE}
+#\newpage
+## Model with NP4 as reference and kfold cross validation
 
-<!-- lm_DF$NP <- relevel(lm_DF$NP, ref = "1") -->
-<!-- lm_DF$DWH <- relevel(lm_DF$DWH, ref = "5") -->
+# set.seed(123)
+# fitcontrol<- trainControl(method = "CV", number = 10, savePredictions = T)
+#
+# # mod_fitcv<-train(SR ~ H + AGR + NP, data = lm_DF , method="polr", trControl = fitcontrol)
+# mod_fitcv<-train(SR ~ H + AGR + NP, data = lm_DF , method="polr", trControl = fitcontrol)
+# summary(mod_fitcv)
+#
+# ctable <- coef(summary(mod_fitcv))
+# p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
+# ctable <- cbind(ctable, "p value" = round(p,4))
+# ctable
 
-<!-- mod_fitcv <- -->
-<!--   polr(SR ~ H + NP + AGR + TA + RS + DWH + DS, data = lm_DF, Hess = TRUE) -->
-<!-- # mod_fitcv<-polr(SR ~ DS, data = lm_DF , Hess = TRUE) -->
-<!-- summary(mod_fitcv) -->
-
-<!-- ctable <- coef(summary(mod_fitcv)) -->
-<!-- p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2 -->
-<!-- ctable <- cbind(ctable, "p value" = round(p, 4)) -->
-<!-- ctable -->
-<!-- ``` -->
+```
 
 
-<!-- \newpage -->
-<!-- ## Model with all variables, NP3, DWH1 and DS1 as reference -->
-<!-- ```{r, echo=FALSE, warning=FALSE} -->
+\newpage
+## Model with all variables NP1, DWH2 and DS1 as reference
+```{r, echo=FALSE, warning=FALSE}
 
-<!-- # lm_DF$DS<-relevel(lm_DF$DS, ref = "1") -->
-<!-- lm_DF$NP <- relevel(lm_DF$NP, ref = "3") -->
-<!-- lm_DF$DWH <- relevel(lm_DF$DWH, ref = "1") -->
+lm_DF$NP <- relevel(lm_DF$NP, ref = "1")
+lm_DF$DWH <- relevel(lm_DF$DWH, ref = "2")
 
-<!-- mod_fitcv <- -->
-<!--   polr(SR ~ H + NP + AGR + TA + RS + DWH + DS, data = lm_DF, Hess = TRUE) -->
-<!-- # mod_fitcv<-polr(SR ~ DS, data = lm_DF , Hess = TRUE) -->
-<!-- summary(mod_fitcv) -->
+mod_fitcv <-
+  polr(SR ~ FA + H + NP + AGR + TA + RS + DWH + DS, data = lm_DF, Hess = TRUE)
+# mod_fitcv<-polr(SR ~ DS, data = lm_DF , Hess = TRUE)
+summary(mod_fitcv)
 
-<!-- ctable <- coef(summary(mod_fitcv)) -->
-<!-- p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2 -->
-<!-- ctable <- cbind(ctable, "p value" = round(p, 4)) -->
-<!-- ctable -->
-<!-- ``` -->
+ctable <- coef(summary(mod_fitcv))
+p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
+ctable <- cbind(ctable, "p value" = round(p, 4))
+ctable
+```
+
+
+\newpage
+## Model with all variables, NP3, DWH1 and DS1 as reference
+```{r, echo=FALSE, warning=FALSE}
+
+# lm_DF$DS<-relevel(lm_DF$DS, ref = "1")
+lm_DF$NP <- relevel(lm_DF$NP, ref = "3")
+lm_DF$DWH <- relevel(lm_DF$DWH, ref = "1")
+
+mod_fitcv <-
+  polr(SR ~ FA + H + NP + AGR + TA + RS + DWH + DS, data = lm_DF, Hess = TRUE)
+# mod_fitcv<-polr(SR ~ DS, data = lm_DF , Hess = TRUE)
+summary(mod_fitcv)
+
+ctable <- coef(summary(mod_fitcv))
+p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
+ctable <- cbind(ctable, "p value" = round(p, 4))
+ctable
+```
+
+\newpage
+## Model with all variables, NP3, DWH1 and DS1 as reference(New Model)
+```{r, echo=FALSE, warning=FALSE}
+
+lm_DF$NP <- relevel(lm_DF$NP, ref = "3")
+lm_DF$DWH <- relevel(lm_DF$DWH, ref = "1")
+
+mod_fitcv <-
+  polr(SR ~ Rank + NASA + TA + EM + H + NP + FA + DWH + DS + T , data = lm_DF, Hess = TRUE)
+# mod_fitcv<-polr(SR ~ DS, data = lm_DF , Hess = TRUE)
+summary(mod_fitcv)
+
+ctable <- coef(summary(mod_fitcv))
+p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
+ctable <- cbind(ctable, "p value" = round(p, 4))
+ctable
+```
 
 ```{r, echo=FALSE, warning=FALSE}
 # \newpage
@@ -333,136 +344,132 @@ lm_DF$Rank <- as.factor(lm_DF$Rank)
 # Precision talks about how precise/accurate your model is out of those predicted positive, how many of them are actual positive.
 # F1 Score might be a better measure to use if we need to seek a balance between Precision and Recall AND there is an uneven class distribution (large number of Actual Negatives).
 
-lm_DF$NASA <- as.numeric(lm_DF$NASA)
-lm_DF$TA <- as.numeric(lm_DF$TA)
-lm_DF$AGR <- as.numeric(lm_DF$AGR)
+# lm_DF$NASA <- as.numeric(lm_DF$NASA)
+# lm_DF$TA <- as.numeric(lm_DF$TA)
+# lm_DF$AGR <- as.numeric(lm_DF$AGR)
 
 ```
 
-## All Data
+
 ```{r, echo=FALSE}
-
-lm_DF$SR <- ifelse(test = lm_DF$SR == 0, yes = "Unsuccessful", no= "Successful")
-lm_DF$SR <- as.factor(lm_DF$SR)
-table(lm_DF$SR)
-
-file_name = 'ModelData.csv'
+file_name = 'ModelData_new.csv'
 write.csv(lm_DF,
           file.path(curated_data_dir, file_name),
           row.names = FALSE)
 
-set.seed(42)
-lm_DF$NP <- relevel(lm_DF$NP, ref = "3")
-lm_DF$DWH <- relevel(lm_DF$DWH, ref = "3")
+```
 
+<!--```{r}
+set.seed(42)
 ind <- sample(2, nrow(lm_DF), replace = TRUE, prob = c(0.8, 0.2))
 train <- lm_DF[ind==1,]
 test <- lm_DF[ind==2,]
-
-```
-## Train Data
-```{r, echo=FALSE}
-table(train$SR)
-```
-## Test Data
-```{r, echo=FALSE}
-table(test$SR)
-```
+```-->
 
 
-
+<!-- ## Train Data -->
 <!-- ```{r, echo=FALSE} -->
-<!-- mylogit <- glm(SR ~ NP + RS + DWH, data = train, family = "binomial") -->
-<!-- summary(mylogit) -->
+<!-- table(train$SR) -->
+<!-- ``` -->
+<!-- ## Test Data -->
+<!-- ```{r, echo=FALSE} -->
+<!-- table(test$SR) -->
 <!-- ``` -->
 
-```{r, echo=FALSE}
-# wald.test(b = coef(mylogit), Sigma = vcov(mylogit), Terms = 4:6)
-```
 
 
-\newpage
-## Randomforest base model
-```{r, echo=FALSE}
-set.seed(123)
-base_model <- randomForest(SR ~ ., data = train, proximity = TRUE, importance=TRUE)
-# model <- randomForest(SR ~ ., data = train, proximity = TRUE)
-base_model
-varImpPlot(base_model)
-```
-<!-- \newpage -->
-<!-- ## Importance of features -->
+<!-- <!-- ```{r, echo=FALSE} --> -->
+<!-- <!-- mylogit <- glm(SR ~ NP + RS + DWH, data = train, family = "binomial") --> -->
+<!-- <!-- summary(mylogit) --> -->
+<!-- <!-- ``` --> -->
+
 <!-- ```{r, echo=FALSE} -->
-<!-- importance(base_model) -->
+<!-- # wald.test(b = coef(mylogit), Sigma = vcov(mylogit), Terms = 4:6) -->
 <!-- ``` -->
-
-\newpage
-## Prediction on test data
-```{r, echo=FALSE}
-library(caret)
-set.seed(123)
-pred_test <- predict(base_model, test)
-result <- confusionMatrix(pred_test, test$SR)
-result
-```
-
-
-
-\newpage
-## Sensitivity-Specificity-Precision-Recall-F1
-```{r, echo=FALSE}
-result$byClass
-rf.roc<-multiclass.roc(train$SR,base_model$votes)
-# plot(rf.roc)
-# \newline
-auc(rf.roc)
-```
 
 
 <!-- \newpage -->
-<!-- ## Randomforest with impotant features -->
+<!-- ## Randomforest base model -->
 <!-- ```{r, echo=FALSE} -->
 <!-- set.seed(123) -->
-<!-- model <- randomForest(SR ~ NASA + TA + AV + EM + Task + H + DWH + NP + DWR, data = train, proximity = TRUE) -->
+<!-- base_model <- randomForest(SR ~ ., data = train, proximity = TRUE, importance=TRUE) -->
 <!-- # model <- randomForest(SR ~ ., data = train, proximity = TRUE) -->
-<!-- model -->
+<!-- base_model -->
+<!-- varImpPlot(base_model) -->
+<!-- ``` -->
+<!-- <!-- \newpage --> -->
+<!-- <!-- ## Importance of features --> -->
+<!-- <!-- ```{r, echo=FALSE} --> -->
+<!-- <!-- importance(base_model) --> -->
+<!-- <!-- ``` --> -->
+
+<!-- \newpage -->
+<!-- ## Prediction on test data -->
+<!-- ```{r, echo=FALSE} -->
+<!-- library(caret) -->
+<!-- set.seed(123) -->
+<!-- pred_test <- predict(base_model, test) -->
+<!-- result <- confusionMatrix(pred_test, test$SR) -->
+<!-- result -->
 <!-- ``` -->
 
-
-\newpage
-## Randomforest extended model
-```{r, echo=FALSE}
-set.seed(123)
-model <- randomForest(SR ~ NASA + H + NP + NT + TA + EM + DWH + DS + Rank , data = train, proximity = TRUE, importance=TRUE)
-# model <- randomForest(SR ~ ., data = train, proximity = TRUE)
-model
-varImpPlot(model)
-```
 
 
 <!-- \newpage -->
-<!-- ## Importance of features -->
+<!-- ## Sensitivity-Specificity-Precision-Recall-F1 -->
 <!-- ```{r, echo=FALSE} -->
-<!-- importance(model) -->
+<!-- result$byClass -->
+<!-- rf.roc<-multiclass.roc(train$SR,base_model$votes) -->
+<!-- # plot(rf.roc) -->
+<!-- # \newline -->
+<!-- auc(rf.roc) -->
 <!-- ``` -->
 
-\newpage
-## Prediction on test data
-```{r, echo=FALSE}
-library(caret)
-set.seed(123)
-pred_test <- predict(model, test)
-result <- confusionMatrix(pred_test, test$SR)
-result
-```
 
-\newpage
-## Sensitivity-Specificity-Precision-Recall-F1
-```{r, echo=FALSE}
-result$byClass
-rf.roc<-multiclass.roc(train$SR,model$votes)
-auc(rf.roc)
-```
+<!-- <!-- \newpage --> -->
+<!-- <!-- ## Randomforest with impotant features --> -->
+<!-- <!-- ```{r, echo=FALSE} --> -->
+<!-- <!-- set.seed(123) --> -->
+<!-- <!-- model <- randomForest(SR ~ NASA + TA + AV + EM + Task + H + DWH + NP + DWR, data = train, proximity = TRUE) --> -->
+<!-- <!-- # model <- randomForest(SR ~ ., data = train, proximity = TRUE) --> -->
+<!-- <!-- model --> -->
+<!-- <!-- ``` --> -->
+
+
+<!-- \newpage -->
+<!-- ## Randomforest extended model -->
+<!-- ```{r, echo=FALSE} -->
+<!-- set.seed(123) -->
+<!-- model <- randomForest(SR ~ NASA + H + NP + NT + TA + EM + DWH + DS + Rank , data = train, proximity = TRUE, importance=TRUE) -->
+<!-- # model <- randomForest(SR ~ ., data = train, proximity = TRUE) -->
+<!-- model -->
+<!-- varImpPlot(model) -->
+<!-- ``` -->
+
+
+<!-- <!-- \newpage --> -->
+<!-- <!-- ## Importance of features --> -->
+<!-- <!-- ```{r, echo=FALSE} --> -->
+<!-- <!-- importance(model) --> -->
+<!-- <!-- ``` --> -->
+
+<!-- \newpage -->
+<!-- ## Prediction on test data -->
+<!-- ```{r, echo=FALSE} -->
+<!-- library(caret) -->
+<!-- set.seed(123) -->
+<!-- pred_test <- predict(model, test) -->
+<!-- result <- confusionMatrix(pred_test, test$SR) -->
+<!-- result -->
+<!-- ``` -->
+
+<!-- \newpage -->
+<!-- ## Sensitivity-Specificity-Precision-Recall-F1 -->
+<!-- ```{r, echo=FALSE} -->
+<!-- result$byClass -->
+<!-- rf.roc<-multiclass.roc(train$SR,model$votes) -->
+<!-- auc(rf.roc) -->
+<!-- ``` -->
 
 
 
