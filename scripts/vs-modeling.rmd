@@ -256,6 +256,18 @@ ctable <- cbind(ctable, "p value" = round(p, 4))
 ctable
 ```
 
+
+
+```{r, echo=FALSE}
+file_name = 'ModelData_new.csv'
+write.csv(lm_DF,
+          file.path(curated_data_dir, file_name),
+          row.names = FALSE)
+
+```
+
+
+
 ```{r, echo=FALSE, warning=FALSE}
 # \newpage
 # ## Model with all variables and Kfold cross validation
@@ -351,13 +363,6 @@ ctable
 ```
 
 
-```{r, echo=FALSE}
-file_name = 'ModelData_new.csv'
-write.csv(lm_DF,
-          file.path(curated_data_dir, file_name),
-          row.names = FALSE)
-
-```
 
 <!--```{r}
 set.seed(42)
