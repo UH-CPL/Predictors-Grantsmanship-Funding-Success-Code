@@ -123,6 +123,28 @@ lm_DF$Rank <- lbl$fit_transform(lm_DF$Rank)
 lm_DF$Rank <- as.factor(lm_DF$Rank)
 ```
 
+
+
+\newpage
+## Logistic Regression
+```{r, echo=False}
+# mylogit <- glm(SR ~ TA + H + RS + NP + FA + T, data = lm_DF, family = "binomial")
+mylogit <- glm(SR ~ NP + FA + Rank + T + TA + RS + H, data = lm_DF, family = "binomial")
+
+summary(mylogit)
+```
+
+
+\newpage
+## Logistic Regression
+```{r, echo=False}
+mylogit <- glm(SR ~ NP + FA + T + TA + RS + H, data = lm_DF, family = "binomial")
+
+summary(mylogit)
+```
+
+
+
 \newpage
 ## Model with NP1 as reference
 ```{r, echo=FALSE, warning=FALSE}
