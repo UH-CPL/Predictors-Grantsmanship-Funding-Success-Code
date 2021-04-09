@@ -508,77 +508,67 @@ levels(factor(Timeline$NP))
 
 
 Timeline <- Timeline %>%
-  mutate(NP = recode(NP, "1-2" = 2, "3-4" = 4,"5-6" = 6, "7-9" = 7, ">=10" = 10)) %>% 
-  mutate(NC = recode(NC, "1-2" = 1, "3-4" = 3,"5-6" = 5, "7-9" = 7, ">= 10" = 10)) %>% 
-  mutate(PCP_weeks = recode(PCP_weeks, "< 1 week" = 1, "1-2 weeks" = 2,"2-4 weeks" = 4, "1-2 months" = 8, "> 2 months" = 12)) %>% 
-  mutate(CCP_weeks = recode(CCP_weeks, "< 1 week" = 1, "1-2 weeks" = 2,"2-4 weeks" = 3, "1-2 months" = 6, "> 2 months" = 8))
+  mutate(NP_min = recode(NP, "1-2" = 1, "3-4" = 3,"5-6" = 5, "7-9" = 7, ">=10" = 10)) %>% 
+  mutate(NP_mean = recode(NP, "1-2" = 1.5, "3-4" = 3.5,"5-6" = 5.5, "7-9" = 8, ">=10" = 10)) %>% 
+  mutate(NP_max = recode(NP, "1-2" = 2, "3-4" = 4,"5-6" = 6, "7-9" = 9, ">=10" = 10)) %>% 
+  
+  mutate(NC_min = recode(NC, "1-2" = 1, "3-4" = 3,"5-6" = 5, "7-9" = 7, ">= 10" = 10)) %>% 
+  mutate(NC_mean = recode(NC, "1-2" = 1.5, "3-4" = 3.5,"5-6" = 5.5, "7-9" = 8, ">= 10" = 10)) %>% 
+  mutate(NC_max = recode(NC, "1-2" = 2, "3-4" = 4,"5-6" = 6, "7-9" = 9, ">= 10" = 10)) %>% 
+  
+  
+  mutate(PCP_weeks_min = recode(PCP_weeks, "< 1 week" = 1, "1-2 weeks" = 1,"2-4 weeks" = 2, "1-2 months" = 4, "> 2 months" = 8)) %>% 
+  mutate(PCP_weeks_mean = recode(PCP_weeks, "< 1 week" = 1, "1-2 weeks" = 1.5,"2-4 weeks" = 3, "1-2 months" = 6, "> 2 months" = 9)) %>% 
+  mutate(PCP_weeks_max = recode(PCP_weeks, "< 1 week" = 1, "1-2 weeks" = 2,"2-4 weeks" = 4, "1-2 months" = 8, "> 2 months" = 10)) %>% 
+  
+  
+  mutate(CCP_weeks_min = recode(CCP_weeks, "< 1 week" = 1, "1-2 weeks" = 1,"2-4 weeks" = 2, "1-2 months" = 4, "> 2 months" = 8)) %>% 
+  mutate(CCP_weeks_mean = recode(CCP_weeks, "< 1 week" = 1, "1-2 weeks" = 1.5,"2-4 weeks" = 3, "1-2 months" = 6, "> 2 months" = 9)) %>% 
+  mutate(CCP_weeks_max = recode(CCP_weeks, "< 1 week" = 1, "1-2 weeks" = 2,"2-4 weeks" = 4, "1-2 months" = 8, "> 2 months" = 10))
   
 
-Timeline_mean <- Timeline %>% summarise_all(mean)
-Timeline_mean <- floor(Timeline_mean)
-
-Timeline_melt <- melt(Timeline_mean)
-
-
-
-  bar_plot <- ggplot(data = Timeline_melt, aes(x = variable, y = value)) +
-    geom_bar(stat = "identity",
-             width = 0.5,
-             fill = "steelblue") +
-    theme_bw() +
-    theme(
-      panel.grid.major = element_blank(),
-      panel.grid.minor = element_blank(),
-      plot.title = element_text(hjust = 0.5, size = 12),
-      axis.text.x = element_text(face = "bold", size = 10)
-    ) + xlab("") + ylab("") + ggtitle("Average number of proposals, papers, and composition period [ in week ]")
-    
-  
-  print(bar_plot) 
-# Timeline_mean$Proposal_Weeks <- Timeline_mean$NP * Timeline_mean$PCP
-# Timeline_mean$Conf_Weeks <- Timeline_mean$NC * Timeline_mean$CCP
-
-
-```
-
-
-```{r, echo=FALSE}
-library(ggplot2)
-
-df <- data.frame(y = seq(1, 53, by = 1), x = 1)
-
-df.labs <-
-  data.frame(y = Timeline_melt$value,
-             lab = Timeline_melt$variable)
-
-Timeline_plot <- ggplot(df, aes(x = x, y = y, fill = y)) +
-  geom_tile() +
-  geom_text(data = df.labs, aes(x = 1, y = 18, label = "Working period on Proposal"), size=4) +
-  geom_text(data = df.labs, aes(x = 1, y = 42, label = "Working period on Conf. Paper"), size=4) +
-  geom_hline(yintercept=c(32), size=1, linetype="dashed") +
-  scale_fill_gradient(low = "green", high = "red", guide = FALSE) +
-  coord_flip() +
-  ggtitle("Timeline of an year") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(face = "bold", size = 10),
-        axis.title.x = element_text(face = "bold"))+
-  scale_y_continuous(limits = c(1, 53), breaks = seq(2, 52, by = 10))+
-  scale_x_continuous(breaks = pretty(df$y)) +
-  xlab("") + 
-  ylab("Weeks in a year") +  
-  theme(aspect.ratio = 0.09, plot.title = element_text(hjust = 0.5))
-Timeline_plot
 
 
 
 
-final_plot <- ggarrange(bar_plot,Timeline_plot,
-                      nrow = 2,
+Timeline$Time_Min <- (Timeline$NP_min * Timeline$PCP_weeks_min) + (Timeline$NC_min * Timeline$CCP_weeks_min)
+Timeline$Time_Mean <- (Timeline$NP_mean * Timeline$PCP_weeks_mean) + (Timeline$NC_mean * Timeline$CCP_weeks_mean)
+Timeline$Time_Max <- (Timeline$NP_max * Timeline$PCP_weeks_max) + (Timeline$NC_max * Timeline$CCP_weeks_max)
+
+
+
+
+
+
+# Timeline_mean <- Timeline %>% summarise_all(mean)
+# Timeline_mean <- floor(Timeline_mean)
+
+# Timeline_melt <- melt(Timeline_mean)
+
+
+
+Hist_min <- ggplot(Timeline, aes(x=Time_Min))+
+  geom_histogram(color="darkblue", fill="lightblue")+
+  geom_vline(aes(xintercept=mean(Time_Min)),
+            color="blue", linetype="dashed", size=1)
+
+Hist_mean <- ggplot(Timeline, aes(x=Time_Mean))+
+  geom_histogram(color="darkblue", fill="lightblue")+
+    geom_vline(aes(xintercept=mean(Time_Mean)),
+            color="blue", linetype="dashed", size=1)
+
+Hist_max <- ggplot(Timeline, aes(x=Time_Max))+
+  geom_histogram(color="darkblue", fill="lightblue")+
+      geom_vline(aes(xintercept=mean(Time_Max)),
+            color="blue", linetype="dashed", size=1)
+
+
+final_plot <- ggarrange(Hist_min,Hist_mean, Hist_max,
+                      nrow = 3,
                       ncol = 1)
 
 
-
-  filename <- "Timeline.pdf"
+  filename <- "Timeline_histogram.pdf"
   full_path <- file.path(plot_dir, filename)
   ggsave(
     full_path,
@@ -587,5 +577,72 @@ final_plot <- ggarrange(bar_plot,Timeline_plot,
     height = 5.5,
     units = "in"
   )
+
+  # bar_plot <- ggplot(data = Timeline_melt, aes(x = variable, y = value)) +
+  #   geom_bar(stat = "identity",
+  #            width = 0.5,
+  #            fill = "steelblue") +
+  #   theme_bw() +
+  #   theme(
+  #     panel.grid.major = element_blank(),
+  #     panel.grid.minor = element_blank(),
+  #     plot.title = element_text(hjust = 0.5, size = 12),
+  #     axis.text.x = element_text(face = "bold", size = 10)
+  #   ) + xlab("") + ylab("") + ggtitle("Average number of proposals, papers, and composition period [ in week ]")
+  #   
+  # 
+  # print(bar_plot) 
+# Timeline_mean$Proposal_Weeks <- Timeline_mean$NP * Timeline_mean$PCP
+# Timeline_mean$Conf_Weeks <- Timeline_mean$NC * Timeline_mean$CCP
+
+
+```
+
+
+```{r, echo=FALSE}
+# library(ggplot2)
+# 
+# df <- data.frame(y = seq(1, 53, by = 1), x = 1)
+# 
+# df.labs <-
+#   data.frame(y = Timeline_melt$value,
+#              lab = Timeline_melt$variable)
+# 
+# Timeline_plot <- ggplot(df, aes(x = x, y = y, fill = y)) +
+#   geom_tile() +
+#   geom_text(data = df.labs, aes(x = 1, y = 18, label = "Working period on Proposal"), size=4) +
+#   geom_text(data = df.labs, aes(x = 1, y = 42, label = "Working period on Conf. Paper"), size=4) +
+#   geom_hline(yintercept=c(32), size=1, linetype="dashed") +
+#   scale_fill_gradient(low = "green", high = "red", guide = FALSE) +
+#   coord_flip() +
+#   ggtitle("Timeline of an year") +
+#   theme_minimal() +
+#   theme(axis.text.x = element_text(face = "bold", size = 10),
+#         axis.title.x = element_text(face = "bold"))+
+#   scale_y_continuous(limits = c(1, 53), breaks = seq(2, 52, by = 10))+
+#   scale_x_continuous(breaks = pretty(df$y)) +
+#   xlab("") + 
+#   ylab("Weeks in a year") +  
+#   theme(aspect.ratio = 0.09, plot.title = element_text(hjust = 0.5))
+# Timeline_plot
+# 
+# 
+# 
+# 
+# final_plot <- ggarrange(bar_plot,Timeline_plot,
+#                       nrow = 2,
+#                       ncol = 1)
+# 
+# 
+# 
+#   filename <- "Timeline.pdf"
+#   full_path <- file.path(plot_dir, filename)
+#   ggsave(
+#     full_path,
+#     final_plot,
+#     width = 8.5,
+#     height = 5.5,
+#     units = "in"
+#   )
 ```
 

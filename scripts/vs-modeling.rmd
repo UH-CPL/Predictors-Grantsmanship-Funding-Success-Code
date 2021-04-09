@@ -110,6 +110,7 @@ lm_DF$H <- lm_DF$H + 0.001
 lm_DF$H <- log(lm_DF$H)
 
 lm_DF$DWH <- as.factor(lm_DF$DWH)
+lm_DF$FA <- as.factor(lm_DF$FA)
 lm_DF$T <- as.factor(lm_DF$T)
 lm_DF$DS <- as.factor(lm_DF$DS)
 
@@ -125,7 +126,7 @@ lm_DF$Rank <- as.factor(lm_DF$Rank)
 \newpage
 ## Model with NP1 as reference
 ```{r, echo=FALSE, warning=FALSE}
-# lm_DF$SR <- relevel(lm_DF$SR, ref = 7)
+lm_DF$FA <- relevel(lm_DF$FA, ref = 6)
 base_model = polr(SR ~ FA + H + NP + AGR + TA + RS + DWH + DS, data = lm_DF, Hess = TRUE)
 # base_model=lrm(SR ~ H + NP + AGR, data = lm_DF)
 summary(base_model)
