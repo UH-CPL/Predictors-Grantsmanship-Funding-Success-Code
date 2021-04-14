@@ -1,5 +1,6 @@
 ---
-title: "Ordinal Logistic Regression or Proportional Odds Logistic Regression"
+title: "Logistic Regression"
+# title: "Ordinal Logistic Regression or Proportional Odds Logistic Regression"
 # title: "Random Forest for predicting the Success Rate Levels Successful-Unsuccessful"
 output:
   pdf_document: default
@@ -41,6 +42,12 @@ library(pROC)
 # Akaike information criterion (AIC) (Akaike, 1974) is a fined technique based on in-sample fit to estimate the likelihood of a model to predict/estimate the future values. A good model is the one that has minimum AIC among all the other models. ... A lower AIC or BIC value indicates a better fit.
 
 
+
+# Forward selection, which starts with no predictors in the model, iteratively adds the most contributive predictors, and stops when the improvement is no longer statistically significant.
+# 
+# Backward selection (or backward elimination), which starts with all predictors in the model (full model), iteratively removes the least contributive predictors, and stops when you have a model where all predictors are statistically significant.
+# 
+# Stepwise selection (or sequential replacement), which is a combination of forward and backward selections. You start with no predictors, then sequentially add the most contributive predictors (like forward selection). After adding each new variable, remove any variables that no longer provide an improvement in the model fit (like backward selection).
 ```
 
 
@@ -121,42 +128,89 @@ lbl$fit(lm_DF$Rank)
 lm_DF$Rank <- lbl$fit_transform(lm_DF$Rank)
 
 lm_DF$Rank <- as.factor(lm_DF$Rank)
+# lm_DF$FA <- relevel(lm_DF$FA, ref = "2")
+```
+
+\newpage
+## Null Model
+```{r, echo=FALSE}
+NullModel<-glm(SR~1,data = lm_DF,family="binomial")
+summary(NullModel)
+
+```
+
+
+\newpage
+## Logistic Regression: Full MOdel
+```{r, echo=FALSE}
+FullModel <- glm(SR ~ Rank+NASA+TA+EXT+AGR+CS+NT+OP+AV+EM+Task+H+RS+WH+TWR+BR+NP+FA+AP+AR+DWH+DWR+T+DS, data = lm_DF, family = "binomial")
+
+summary(FullModel)
+```
+\newpage
+## Backward Elimination
+```{r, echo=FALSE}
+BEmodel<-stepAIC(FullModel, direction="backward",trace=FALSE)
+summary(BEmodel)
+```
+\newpage
+## Comparing Models
+```{r, echo=FALSE}
+anova(NullModel,BEmodel,FullModel,test="LRT")
+```
+
+
+\newpage
+## Forward Selection
+```{r, echo=FALSE}
+FSmodel<-stepAIC(NullModel,scope=list(lower=formula(NullModel),upper=formula(FullModel)),direction="forward",trace = FALSE)
+FSmodel$anova
+```
+
+\newpage
+## Forward Selection
+```{r, echo=FALSE}
+FSmodel <- glm(SR ~ NP + DS + H + RS + FA + TA + Rank, data = lm_DF, family = "binomial")
+
+summary(FSmodel)
+```
+\newpage
+## Comparing Models
+```{r, echo=FALSE}
+anova(NullModel,BEmodel,FSmodel,FullModel,test="LRT")
+```
+
+
+\newpage
+## Step_wise method
+```{r, echo=FALSE}
+SWmodel<-stepAIC(NullModel,scope=list(lower=formula(NullModel),upper=formula(FullModel)),direction="both",trace = FALSE)
+SWmodel$anova
+summary(SWmodel)
 ```
 
 
 
 \newpage
-## Logistic Regression
-```{r, echo=False}
-# mylogit <- glm(SR ~ TA + H + RS + NP + FA + T, data = lm_DF, family = "binomial")
-mylogit <- glm(SR ~ NP + FA + Rank + T + TA + RS + H, data = lm_DF, family = "binomial")
-
-summary(mylogit)
-```
-
-
-\newpage
-## Logistic Regression
-```{r, echo=False}
-mylogit <- glm(SR ~ NP + FA + T + TA + RS + H, data = lm_DF, family = "binomial")
-
-summary(mylogit)
+## Comparing models
+```{r, echo=FALSE}
+anova(NullModel,BEmodel,FSmodel,SWmodel,FullModel,test="LRT")
 ```
 
 
 
-\newpage
-## Model with NP1 as reference
+<!-- \newpage -->
+<!-- ## Model with NP1 as reference -->
 ```{r, echo=FALSE, warning=FALSE}
-lm_DF$FA <- relevel(lm_DF$FA, ref = 6)
-base_model = polr(SR ~ FA + H + NP + AGR + TA + RS + DWH + DS, data = lm_DF, Hess = TRUE)
-# base_model=lrm(SR ~ H + NP + AGR, data = lm_DF)
-summary(base_model)
-
-ctable <- coef(summary(base_model))
-p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
-ctable <- cbind(ctable, "p value" = round(p, 4))
-ctable
+# # lm_DF$FA <- relevel(lm_DF$FA, ref = 6)
+# base_model = polr(SR ~ FA + H + NP + AGR + TA + RS + DWH + DS, data = lm_DF, Hess = TRUE)
+# # base_model=lrm(SR ~ H + NP + AGR, data = lm_DF)
+# summary(base_model)
+# 
+# ctable <- coef(summary(base_model))
+# p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
+# ctable <- cbind(ctable, "p value" = round(p, 4))
+# ctable
 ```
 
 ```{r, echo=FALSE, warning=FALSE}
@@ -191,16 +245,16 @@ ctable
 
 
 
-\newpage
-## Model with NP3 as reference
+<!-- \newpage -->
+<!-- ## Model with NP3 as reference -->
 ```{r, echo=FALSE, warning=FALSE}
-lm_DF$NP <- relevel(lm_DF$NP, ref = "3")
-base_model = polr(SR ~ FA + H + NP + AGR + TA + RS + DWH + DS, data = lm_DF, Hess = TRUE)
-summary(base_model)
-ctable <- coef(summary(base_model))
-p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
-ctable <- cbind(ctable, "p value" = round(p, 4))
-ctable
+# lm_DF$NP <- relevel(lm_DF$NP, ref = "3")
+# base_model = polr(SR ~ FA + H + NP + AGR + TA + RS + DWH + DS, data = lm_DF, Hess = TRUE)
+# summary(base_model)
+# ctable <- coef(summary(base_model))
+# p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
+# ctable <- cbind(ctable, "p value" = round(p, 4))
+# ctable
 ```
 
 
@@ -223,60 +277,60 @@ ctable
 ```
 
 
-\newpage
-## Model with all variables NP1, DWH2 and DS1 as reference
+<!-- \newpage -->
+<!-- ## Model with all variables NP1, DWH2 and DS1 as reference -->
 ```{r, echo=FALSE, warning=FALSE}
 
-lm_DF$NP <- relevel(lm_DF$NP, ref = "1")
-lm_DF$DWH <- relevel(lm_DF$DWH, ref = "2")
-
-mod_fitcv <-
-  polr(SR ~ FA + H + NP + AGR + TA + RS + DWH + DS, data = lm_DF, Hess = TRUE)
-# mod_fitcv<-polr(SR ~ DS, data = lm_DF , Hess = TRUE)
-summary(mod_fitcv)
-
-ctable <- coef(summary(mod_fitcv))
-p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
-ctable <- cbind(ctable, "p value" = round(p, 4))
-ctable
+# lm_DF$NP <- relevel(lm_DF$NP, ref = "1")
+# lm_DF$DWH <- relevel(lm_DF$DWH, ref = "2")
+# 
+# mod_fitcv <-
+#   polr(SR ~ FA + H + NP + AGR + TA + RS + DWH + DS, data = lm_DF, Hess = TRUE)
+# # mod_fitcv<-polr(SR ~ DS, data = lm_DF , Hess = TRUE)
+# summary(mod_fitcv)
+# 
+# ctable <- coef(summary(mod_fitcv))
+# p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
+# ctable <- cbind(ctable, "p value" = round(p, 4))
+# ctable
 ```
 
 
-\newpage
-## Model with all variables, NP3, DWH1 and DS1 as reference
+<!-- \newpage -->
+<!-- ## Model with all variables, NP3, DWH1 and DS1 as reference -->
 ```{r, echo=FALSE, warning=FALSE}
 
 # lm_DF$DS<-relevel(lm_DF$DS, ref = "1")
-lm_DF$NP <- relevel(lm_DF$NP, ref = "3")
-lm_DF$DWH <- relevel(lm_DF$DWH, ref = "1")
-
-mod_fitcv <-
-  polr(SR ~ FA + H + NP + AGR + TA + RS + DWH + DS, data = lm_DF, Hess = TRUE)
-# mod_fitcv<-polr(SR ~ DS, data = lm_DF , Hess = TRUE)
-summary(mod_fitcv)
-
-ctable <- coef(summary(mod_fitcv))
-p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
-ctable <- cbind(ctable, "p value" = round(p, 4))
-ctable
+# lm_DF$NP <- relevel(lm_DF$NP, ref = "3")
+# lm_DF$DWH <- relevel(lm_DF$DWH, ref = "1")
+# 
+# mod_fitcv <-
+#   polr(SR ~ FA + H + NP + AGR + TA + RS + DWH + DS, data = lm_DF, Hess = TRUE)
+# # mod_fitcv<-polr(SR ~ DS, data = lm_DF , Hess = TRUE)
+# summary(mod_fitcv)
+# 
+# ctable <- coef(summary(mod_fitcv))
+# p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
+# ctable <- cbind(ctable, "p value" = round(p, 4))
+# ctable
 ```
 
-\newpage
-## Model with all variables, NP3, DWH1 and DS1 as reference(New Model)
+<!-- \newpage -->
+<!-- ## Model with all variables, NP3, DWH1 and DS1 as reference(New Model) -->
 ```{r, echo=FALSE, warning=FALSE}
 
-lm_DF$NP <- relevel(lm_DF$NP, ref = "3")
-lm_DF$DWH <- relevel(lm_DF$DWH, ref = "1")
-
-mod_fitcv <-
-  polr(SR ~ Rank + NASA + TA + EM + H + NP + FA + DWH + DS + T , data = lm_DF, Hess = TRUE)
-# mod_fitcv<-polr(SR ~ DS, data = lm_DF , Hess = TRUE)
-summary(mod_fitcv)
-
-ctable <- coef(summary(mod_fitcv))
-p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
-ctable <- cbind(ctable, "p value" = round(p, 4))
-ctable
+# lm_DF$NP <- relevel(lm_DF$NP, ref = "3")
+# lm_DF$DWH <- relevel(lm_DF$DWH, ref = "1")
+# 
+# mod_fitcv <-
+#   polr(SR ~ Rank + NASA + TA + EM + H + NP + FA + DWH + DS + T , data = lm_DF, Hess = TRUE)
+# # mod_fitcv<-polr(SR ~ DS, data = lm_DF , Hess = TRUE)
+# summary(mod_fitcv)
+# 
+# ctable <- coef(summary(mod_fitcv))
+# p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
+# ctable <- cbind(ctable, "p value" = round(p, 4))
+# ctable
 ```
 
 
