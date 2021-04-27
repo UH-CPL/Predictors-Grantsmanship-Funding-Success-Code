@@ -172,12 +172,15 @@ final_data <- final_data[rownames(final_data) != "230",]
 final_data <- final_data[rownames(final_data) != "288",]
 final_data <- final_data[rownames(final_data) != "302",]
 final_data <- final_data[rownames(final_data) != "649",]
+final_data <- final_data[rownames(final_data) != "662",]
+
+
 final_data$google_scholar_h_index[97]=18
 
 
 # factor(final_data$what_is_the_average_number)
 
-final_data$email <- NULL
+# final_data$email <- NULL
 final_data$confirm_email <- NULL
 final_data$standard_part_complete <- NULL
 # colnames(final_data)

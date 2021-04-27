@@ -550,17 +550,17 @@ Timeline$Time_Max <- (Timeline$NP_max * Timeline$PCP_weeks_max) + (Timeline$NC_m
 Hist_min <- ggplot(Timeline, aes(x=Time_Min))+
   geom_histogram(color="darkblue", fill="lightblue")+
   geom_vline(aes(xintercept=mean(Time_Min)),
-            color="blue", linetype="dashed", size=1)
+            color="blue", linetype="dashed", size=1)+ labs(x="", title = "Considering minimum time") + theme(plot.title = element_text(hjust = 0.5))
 
 Hist_mean <- ggplot(Timeline, aes(x=Time_Mean))+
   geom_histogram(color="darkblue", fill="lightblue")+
     geom_vline(aes(xintercept=mean(Time_Mean)),
-            color="blue", linetype="dashed", size=1)
+            color="blue", linetype="dashed", size=1) + labs(x="", title = "Considering mean time") + theme(plot.title = element_text(hjust = 0.5))
 
 Hist_max <- ggplot(Timeline, aes(x=Time_Max))+
   geom_histogram(color="darkblue", fill="lightblue")+
       geom_vline(aes(xintercept=mean(Time_Max)),
-            color="blue", linetype="dashed", size=1)
+            color="blue", linetype="dashed", size=1) + labs(x="[In Weeks]",title = "Considering maximum time") + theme(plot.title = element_text(hjust = 0.5))
 
 
 final_plot <- ggarrange(Hist_min,Hist_mean, Hist_max,

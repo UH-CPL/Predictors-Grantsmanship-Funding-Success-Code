@@ -143,16 +143,29 @@ summary(NullModel)
 \newpage
 ## Logistic Regression: Full MOdel
 ```{r, echo=FALSE}
-FullModel <- glm(SR ~ Rank+NASA+TA+EXT+AGR+CS+NT+OP+AV+EM+Task+H+RS+WH+TWR+BR+NP+FA+AP+AR+DWH+DWR+T+DS, data = lm_DF, family = "binomial")
+# FullModel <- glm(SR ~ Rank+NASA+TA+EXT+AGR+CS+NT+OP+AV+EM+Task+H+RS+WH+TWR+BR+NP+FA+AP+AR+DWH+DWR+T+DS, data = lm_DF, family = "binomial")
+FullModel <- glm(SR ~ ., data = lm_DF, family = "binomial")
 
 summary(FullModel)
 ```
 \newpage
-## Backward Elimination
+## Backward Elimination Model selection
 ```{r, echo=FALSE}
 BEmodel<-stepAIC(FullModel, direction="backward",trace=FALSE)
+BEmodel$anova
+# summary(BEmodel)
+```
+
+
+\newpage
+## Backward Elimination Model
+```{r, echo=FALSE}
+# BEmodel<-stepAIC(FullModel, direction="backward",trace=FALSE)
+# BEmodel$anova
 summary(BEmodel)
 ```
+
+
 \newpage
 ## Comparing Models
 ```{r, echo=FALSE}
@@ -161,14 +174,14 @@ anova(NullModel,BEmodel,FullModel,test="LRT")
 
 
 \newpage
-## Forward Selection
+## Forward Selection  
 ```{r, echo=FALSE}
 FSmodel<-stepAIC(NullModel,scope=list(lower=formula(NullModel),upper=formula(FullModel)),direction="forward",trace = FALSE)
 FSmodel$anova
 ```
 
 \newpage
-## Forward Selection
+## Forward Selection model
 ```{r, echo=FALSE}
 FSmodel <- glm(SR ~ NP + DS + H + RS + FA + TA + Rank, data = lm_DF, family = "binomial")
 

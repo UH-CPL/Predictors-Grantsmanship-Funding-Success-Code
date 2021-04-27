@@ -1,14 +1,15 @@
 ---
 title: "Core Questions"
 output:
+  pdf_document: default
   html_document:
     df_print: paged
-  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
+library(freqtables)
 library(plotrix)
 library(plotly)
 library(tools)
@@ -35,6 +36,8 @@ library(ggrepel)
 library(forcats)
 library(scales)
 library(stringr)
+# https://cran.r-project.org/web/packages/freqtables/vignettes/descriptive_analysis.html
+# Core_Questions %>% freq_table(R_Style)
 ```
 
 ```{r, echo=FALSE}
@@ -103,6 +106,7 @@ Core_Questions<- StandardPart %>% select(record_id, state_do_you_reside, how_man
 
 Core_Questions<-Core_Questions  %>%  dplyr::rename(
                                           # h_index="google_scholar_h_index",
+                                          FA = "funding_agency",
                                            Record_id="record_id",
                                            State="state_do_you_reside",
                                            S_D_E="how_many_months_of_your_sa",     ## salary depends on external grants
@@ -110,28 +114,28 @@ Core_Questions<-Core_Questions  %>%  dplyr::rename(
                                            Deadline_today="do_you_have_a_deadline_tod",
                                            Workload_today="please_indicate_your_workl",
                                            Workplace="where_you_typically_wor",
-                                           R_Style="test",                         ## Research Style
+                                           RS="test",                         ## Research Style
                                            TW_W_H="in_a_typical_workday_how_m",    ## Typical week working hours
                                            # TW_Research="ti_research",              ## Typical week Research
                                            Break="in_a_typical_day_how_often",     ## Break Frequency
                                            Email="how_do_you_usually_handle",      ## Email respnse style
-                                           A_N_Pro="what_is_the_average_number",   ## Average Number of Proposal per year
+                                           NP="what_is_the_average_number",   ## Average Number of Proposal per year
                                            Success="hy",                           ## Success Rate in the proposal
                                            Com_Proposal="how_far_in_advance_do_you",# Composing Proposal
                                            L_Of_SR="what_is_the_length_of_supp",   ## Length of supporting research
                                            W_WB_PD="in_the_week_leading_to_a_p",   ## Work load a week before Proposal Deadline
                                            # Research_WB="week_research",            ## Research percentage a week before Proposal
                                            # Research_DD="proposal_research",        ## Research percentage in the Proposal deadlines day
-                                           Submit_P="when_you_typically_subm",     ## Submit Proposal
-                                           Stress_PD="stress_level_in_a_fundi",    ## Stress leven on Proposal Deadline
+                                           T="when_you_typically_subm",     ## Submit Proposal
+                                           DS="stress_level_in_a_fundi",    ## Stress leven on Proposal Deadline
                                            A_N_Conf_Pap="wha_average_number"
                                            )
 
 
 East = 'Connecticut|Maryland|Massachusetts|^New Jersey$|^New York$|Pennsylvania'
-West = 'Arizona|California|Colorado|Nevada|^New Mexico$|Oregon'
+West = 'Arizona|California|Colorado|Nevada|^New Mexico$|Oregon|^Utah$'
 Midwest = 'Illinois|Michigan|Minnesota|Ohio|Wisconsin'
-South = 'Florida|Georgia|Tennessee|Texas|Virginia|Alabama'
+South = 'Florida|Georgia|Tennessee|Texas|Virginia|Alabama|^North Carolina$|^oklahoma$'
 
 
   Core_Questions <- Core_Questions %>%
@@ -160,6 +164,30 @@ for(i in 1:nrow(Core_Questions)){
   }
 
 
+  if (Core_Questions$RS[i] == "Hands-off") {
+    Core_Questions$RS[i] = "RS1"
+  } else if (Core_Questions$RS[i] == "") {
+    Core_Questions$RS[i] = NA
+  } else{
+    Core_Questions$RS[i] = "RS2"
+  }
+  
+  
+  if (Core_Questions$NP[i] == "1-2") {
+    Core_Questions$NP[i] = "NP1"
+  } else if (Core_Questions$NP[i] == "3-4") {
+    Core_Questions$NP[i] = "NP2"
+  } else if (Core_Questions$NP[i] == "5-6") {
+    Core_Questions$NP[i] = "NP3"
+  } else if (Core_Questions$NP[i] == "7-9") {
+    Core_Questions$NP[i] = "NP3"
+  } else if (Core_Questions$NP[i] == "") {
+    Core_Questions$NP[i] = NA
+  } else {
+    Core_Questions$NP[i] = "NP3"
+  }
+  
+  
   if (Core_Questions$RO_F_EG[i]=="Not funded"){
     Core_Questions$RO_F_EG[i]="Not funded"
   } else if (Core_Questions$RO_F_EG[i]=="25-1%"){
@@ -204,33 +232,48 @@ for(i in 1:nrow(Core_Questions)){
   
   
   
-  if (Core_Questions$funding_agency[i]=="NSF"){
-    Core_Questions$funding_agency[i]="NSF"
-  } else if (Core_Questions$funding_agency[i]=="NIH"){
-    Core_Questions$funding_agency[i]="NIH"
-  } else if (Core_Questions$funding_agency[i]=="DOE"){
-    Core_Questions$funding_agency[i]="DOE"
-  } else if (Core_Questions$funding_agency[i]=="DOD"){
-    Core_Questions$funding_agency[i]="DOD"
-  } else if (Core_Questions$funding_agency[i]=="NASA"){
-    Core_Questions$funding_agency[i]="NASA"
+  if (Core_Questions$FA[i]=="NSF"){
+    Core_Questions$FA[i]="NSF"
+  } else if (Core_Questions$FA[i]=="NIH"){
+    Core_Questions$FA[i]="NIH"
+  } else if (Core_Questions$FA[i]=="DOE"){
+    Core_Questions$FA[i]="DOE"
+  } else if (Core_Questions$FA[i]=="DOD"){
+    Core_Questions$FA[i]="DOD"
+  } else if (Core_Questions$FA[i]=="NASA"){
+    Core_Questions$FA[i]="NASA"
   }  else{
-    Core_Questions$funding_agency[i]="Other"
+    Core_Questions$FA[i]="Other"
   }
   
   
-  if (Core_Questions$Submit_P[i]=="Minutes before deadline"){
-    Core_Questions$Submit_P[i]="Minutes before"
-  } else if (Core_Questions$Submit_P[i]=="1-3 hours before deadline"){
-    Core_Questions$Submit_P[i]="1-3 hours before"
-  } else if (Core_Questions$Submit_P[i]=="3-6 hours before deadline"){
-    Core_Questions$Submit_P[i]="3-6 hours before"
-  }  else if (Core_Questions$Submit_P[i]=="1 day before deadline"){
-    Core_Questions$Submit_P[i]="1 day before"
-  } else if (Core_Questions$Submit_P[i]==""){
-    Core_Questions$Submit_P[i]=NA
+  # if (Core_Questions$T[i]=="Minutes before deadline"){
+  #   Core_Questions$T[i]="Minutes before"
+  # } else if (Core_Questions$T[i]=="1-3 hours before deadline"){
+  #   Core_Questions$T[i]="1-3 hours before"
+  # } else if (Core_Questions$T[i]=="3-6 hours before deadline"){
+  #   Core_Questions$T[i]="3-6 hours before"
+  # }  else if (Core_Questions$T[i]=="1 day before deadline"){
+  #   Core_Questions$T[i]="1 day before"
+  # } else if (Core_Questions$T[i]==""){
+  #   Core_Questions$T[i]=NA
+  # } else {
+  #   Core_Questions$T[i]="2 or more days before"
+  # }
+  
+  
+  if (Core_Questions$T[i] == "Minutes before deadline") {
+    Core_Questions$T[i] = "T1"
+  } else if (Core_Questions$T[i] == "1-3 hours before deadline") {
+    Core_Questions$T[i] = "T1"
+  } else if (Core_Questions$T[i] == "3-6 hours before deadline") {
+    Core_Questions$T[i] = "T1"
+  } else if (Core_Questions$T[i] == "1 day before deadline") {
+    Core_Questions$T[i] = "T2"
+  } else if (Core_Questions$T[i] == "") {
+    Core_Questions$T[i] = NA
   } else {
-    Core_Questions$Submit_P[i]="2 or more days before"
+    Core_Questions$T[i] = "T2"
   }
   
     if (Core_Questions$you_typically_subm[i]=="Minutes before deadline"){
@@ -248,18 +291,36 @@ for(i in 1:nrow(Core_Questions)){
   }
   
   
-  if (Core_Questions$Stress_PD[i] == "Extremely less"){
-    Core_Questions$Stress_PD[i] = "Significantly less"
-  } else if (Core_Questions$Stress_PD[i] == "Significantly less"){
-    Core_Questions$Stress_PD[i] = "Less"
-  } else if (Core_Questions$Stress_PD[i] == "Same"){
-    Core_Questions$Stress_PD[i] = "About the same"
-  } else if (Core_Questions$Stress_PD[i] == "Significantly  more"){
-    Core_Questions$Stress_PD[i] = "More"
-  } else if (Core_Questions$Stress_PD[i] == "Extremely  more"){
-    Core_Questions$Stress_PD[i] = "Significantly more"
+  # if (Core_Questions$DS[i] == "Extremely less"){
+  #   Core_Questions$DS[i] = "Significantly less"
+  # } else if (Core_Questions$DS[i] == "Significantly less"){
+  #   Core_Questions$DS[i] = "Less"
+  # } else if (Core_Questions$DS[i] == "Same"){
+  #   Core_Questions$DS[i] = "About the same"
+  # } else if (Core_Questions$DS[i] == "Significantly  more"){
+  #   Core_Questions$DS[i] = "More"
+  # } else if (Core_Questions$DS[i] == "Extremely  more"){
+  #   Core_Questions$DS[i] = "Significantly more"
+  # } else {
+  #   Core_Questions$DS[i] = NA
+  # }
+  
+  if (Core_Questions$DS[i] == "Extremely less") {
+    Core_Questions$DS[i] = "DS1"
+  } else if (Core_Questions$DS[i] == "Significantly less") {
+    # Core_Questions$DS[i]=2
+    Core_Questions$DS[i] = "DS1"
+  } else if (Core_Questions$DS[i] == "Same") {
+    # Core_Questions$DS[i]=3
+    Core_Questions$DS[i] = "DS1"
+  } else if (Core_Questions$DS[i] == "Significantly  more") {
+    # Core_Questions$DS[i]=4
+    Core_Questions$DS[i] = "DS2"
+  } else if (Core_Questions$DS[i] == "Extremely  more") {
+    # Core_Questions$DS[i]=5
+    Core_Questions$DS[i] = "DS2"
   } else {
-    Core_Questions$Stress_PD[i] = NA
+    Core_Questions$DS[i] = NA
   }
   
   
@@ -279,8 +340,89 @@ for(i in 1:nrow(Core_Questions)){
   
   
 }
-  levels(factor(Core_Questions$Stress_PD))
-  count(Core_Questions$State)
+```
+
+
+```{r}
+# for (i in 1:nrow(Core_Questions)) {
+#   #####-------Research Style-------------####################
+#   if (Core_Questions$R_Style[i] == "Hands-off") {
+#     Core_Questions$R_Style[i] = "Hands-off"
+#   } else if (Core_Questions$R_Style[i] == "") {
+#     Core_Questions$R_Style[i] = NA
+#   } else{
+#     Core_Questions$R_Style[i] = "Hands-on"
+#   }
+#   
+#   ##########-----Typical Week working Hours-------------#############
+# 
+#   
+#   if (Core_Questions$NP[i] == "1-2") {
+#     Core_Questions$NP[i] = "NP1"
+#   } else if (Core_Questions$NP[i] == "3-4") {
+#     Core_Questions$NP[i] = "NP2"
+#   } else if (Core_Questions$NP[i] == "5-6") {
+#     Core_Questions$NP[i] = "NP3"
+#   } else if (Core_Questions$NP[i] == "7-9") {
+#     Core_Questions$NP[i] = "NP3"
+#   } else if (Core_Questions$NP[i] == "") {
+#     Core_Questions$NP[i] = NA
+#   } else {
+#     Core_Questions$NP[i] = "NP3"
+#   }
+# 
+#   
+#   
+#   
+#   if (Core_Questions$T[i] == "Minutes before deadline") {
+#     Core_Questions$T[i] = "T1"
+#   } else if (Core_Questions$T[i] == "1-3 hours before deadline") {
+#     Core_Questions$T[i] = "T1"
+#   } else if (Core_Questions$T[i] == "3-6 hours before deadline") {
+#     Core_Questions$T[i] = "T1"
+#   } else if (Core_Questions$T[i] == "1 day before deadline") {
+#     Core_Questions$T[i] = "T2"
+#   } else if (Core_Questions$T[i] == "") {
+#     Core_Questions$T[i] = NA
+#   } else {
+#     Core_Questions$T[i] = "T2"
+#   }
+#   
+#   
+#   if (Core_Questions$DS[i] == "Extremely less") {
+#     Core_Questions$DS[i] = "DS1"
+#   } else if (Core_Questions$DS[i] == "Significantly less") {
+#     # Core_Questions$DS[i]=2
+#     Core_Questions$DS[i] = "DS1"
+#   } else if (Core_Questions$DS[i] == "Same") {
+#     # Core_Questions$DS[i]=3
+#     Core_Questions$DS[i] = "DS1"
+#   } else if (Core_Questions$DS[i] == "Significantly  more") {
+#     # Core_Questions$DS[i]=4
+#     Core_Questions$DS[i] = "DS2"
+#   } else if (Core_Questions$DS[i] == "Extremely  more") {
+#     # Core_Questions$DS[i]=5
+#     Core_Questions$DS[i] = "DS2"
+#   } else {
+#     Core_Questions$DS[i] = NA
+#   }
+#   
+#   if (Core_Questions$FA[i]=="NSF"){
+#     Core_Questions$FA[i]="NSF"
+#   } else if (Core_Questions$FA[i]=="NIH"){
+#     Core_Questions$FA[i]="NIH"
+#   } else if (Core_Questions$FA[i]=="DOE"){
+#     Core_Questions$FA[i]="DOE"
+#   } else if (Core_Questions$FA[i]=="DOD"){
+#     Core_Questions$FA[i]="DOD"
+#   } else if (Core_Questions$FA[i]=="NASA"){
+#     Core_Questions$FA[i]="NASA"
+#   } else if (Core_Questions$FA[i]==""){
+#     Core_Questions$FA[i]=NA
+#   } else{
+#     Core_Questions$FA[i]="Other"
+#   }
+# }
 ```
 
 ```{r}
@@ -290,19 +432,19 @@ for(i in 1:nrow(Core_Questions)){
   levels(factor(Core_Questions$Deadline_today))
   levels(factor(Core_Questions$Workload_today))
   levels(factor(Core_Questions$Workplace))
-  levels(factor(Core_Questions$R_Style))
+  levels(factor(Core_Questions$RS))
   levels(factor(Core_Questions$TW_W_H))
   levels(factor(Core_Questions$Break))
   levels(factor(Core_Questions$Email))
   levels(factor(Core_Questions$funding_proposal))
-  levels(factor(Core_Questions$A_N_Pro))
-  levels(factor(Core_Questions$funding_agency))
+  levels(factor(Core_Questions$NP))
+  levels(factor(Core_Questions$FA))
   levels(factor(Core_Questions$Success))
   levels(factor(Core_Questions$Com_Proposal))
   levels(factor(Core_Questions$L_Of_SR))
   levels(factor(Core_Questions$W_WB_PD))
-  levels(factor(Core_Questions$Submit_P))
-  levels(factor(Core_Questions$Stress_PD))
+  levels(factor(Core_Questions$T))
+  levels(factor(Core_Questions$DS))
   levels(factor(Core_Questions$refereed_conference))
   levels(factor(Core_Questions$A_N_Conf_Pap))
   levels(factor(Core_Questions$core_rank))
@@ -314,13 +456,11 @@ for(i in 1:nrow(Core_Questions)){
   levels(factor(Core_Questions$ss_level_in_a_fundi))
   
   
-  count(Core_Questions$funding_agency)
+  # count(Core_Questions$FA)
 ```
 
 
 ```{r, echo=FALSE}
-
-
 list1 = c("East", "West", "Midwest", "South")
 list2 = c("Two months", "Three months", "Other")
 
@@ -335,14 +475,16 @@ list4 = c("No", "Yes")
 list5 = c("Light", "Standard", "Heavy")
 list6 = c("Home", "Office", "Other")
 
-list7 = c("Hands-off", "Hands-on")
+# list7 = c("Hands-off", "Hands-on")
+list7 = c("RS1", "RS2")
 list8 = c("< 30", "30-40", "40-50", "> 50")
 
 list9 = c("Every hour", "Every 1-2 hours", "Every 3-4 hours", "Other")
 list10 = c("Reply instantly", "Reply Once/Twice")
 
 list11 = c("No", "Yes")
-list12 = c("1-2", "3-4", "5-6", "7-9", ">=10")
+# list12 = c("1-2", "3-4", "5-6", "7-9", ">=10")
+list12 = c("NP1", "NP2", "NP3")
 
 list13 = c("NSF", "NIH", "DOE","DOD", "NASA",  "Other")
 list14 = c("< 10%", "10-20%", "20-30%", "30-50%", "50-75%", "75-90%", "> 90%")
@@ -351,15 +493,11 @@ list15 = c("1-2 weeks", "2-4 weeks", "1-2 months", "> 2 months")
 list16 = c("< 1 month", "1-3 months", "3-6 months", "6-12 months", "> 12 months")
 
 list17 = c("Significantly less", "Less", "About the same", "More", "Significantly more")
-list18 = c(
-  "Minutes before",
-  "1-3 hours before",
-  "3-6 hours before",
-  "1 day before",
-  "2 or more days before"
-)
+# list18 = c("Minutes before",  "1-3 hours before",  "3-6 hours before",  "1 day before",  "2 or more days before")
+list18 = c("T1", "T2")
 
-list19 = c("Significantly less", "Less", "About the same", "More", "Significantly more")
+# list19 = c("Significantly less", "Less", "About the same", "More", "Significantly more")
+list19 = c("DS1", "DS2")
 
 list20 = c("No", "Yes")
 
@@ -504,16 +642,12 @@ for (i in 1:length(plots_act)){
 
 ```-->
 
+## Raw version
 ```{r, echo=FALSE}
-
-# ylimit= round_any(nrow(Core_Questions), 10,f = ceiling)
-# ylimit= 200
-
-
-
 plot_list <- list()
 
 for (i in 2:length(Core_Questions)) {
+# for (i in 2:3) {
   # for (i in 18:19) {
   ylimit = 250
   if ((i == 3) |
@@ -525,15 +659,48 @@ for (i in 2:length(Core_Questions)) {
   temp <- temp[!(temp$item == ""), ]
   temp <- temp[order(temp$count),]
   temp <- temp[complete.cases(temp), ]
+ 
+  
+  temp2 = Core_Questions %>% freq_table(Core_Questions[i])
+  temp2 = temp2[, c(2, 8, 9)]
+  temp2 <- temp2[!(temp2$cat == ""), ]
+  temp2 <- temp2[complete.cases(temp2), ]
+  temp2<-temp2  %>%  dplyr::rename( Item="cat", LCI="lcl", UCI="ucl") 
+  temp2$LCI <- format(round(temp2$LCI, 2), nsmall = 2)
+  temp2$UCI <- format(round(temp2$UCI, 2), nsmall = 2)
+  
+  # x_lebel = paste("\n", "Item", "\t\t\t\t\t\t", "LCI", "\t\t\t\t\t\t", "UCI", "\n")
+  x_lebel = paste("\n\n")
+  
+  for (row_num in 1:nrow(temp2)){
+    print("Hello")
+    x_lebel = paste(x_lebel, temp2$Item[row_num], "\t\t\t\t\t\tLCI =", temp2$LCI[row_num], "\t\t\t\t\t\tUCI =", temp2$UCI[row_num], "\n")
+  }
+  
+    # x_lebel = head(temp2, length(temp2))
+    # paste0(
+    # "\n\n\n",
+    
+    # print(temp2, quote = TRUE, row.names = FALSE)
+    # "Item = ",
+    # temp2$Item,
+    # ",     ",
+    # "LCI = ",
+    # temp2$LCI,
+    # ",     ",
+    # "UCI = ",
+    # temp2$UCI
+  # )
   
   bar_plot <- ggplot(data = temp, aes(x = item, y = count)) +
     geom_bar(stat = "identity",
              width = 0.5,
              fill = "steelblue") +
+    geom_text(aes(label=count), vjust=1.6, color="white", size=3.5) +
     theme_bw() +
     scale_y_continuous(breaks = seq(0, ylimit, by = 50),
                        limits = c(0, ylimit)) +
-    labs(x = "", y = "Count", title = title_list[i - 1]) +
+    labs(x = x_lebel, y = "Count", title = title_list[i - 1]) +
     theme(
       text = element_text(size = 14),
       panel.grid.major = element_blank(),
@@ -606,7 +773,13 @@ for (i in 1:length(plots_act)) {
 
 
 
+  # temp2 = Core_Questions %>% freq_table(Core_Questions$R_Style)
+  # temp2 = temp2[, c(2, 8, 9)]
+  # temp2<-temp2  %>%  dplyr::rename( Item="cat", LCI="lcl", UCI="ucl")
 ```
+
+
+
 
 ```{r}
 Data_CQ <- Core_Questions[,c(13, 16, 9, 10, 18, 20)]
