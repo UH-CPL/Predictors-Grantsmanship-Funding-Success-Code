@@ -284,7 +284,7 @@ Corelation_DF[cols.num] <-
 
 
 ```{r, echo=FALSE}
-file_name = 'CorrelationData.csv'
+file_name = 'KeyData.csv'
 write.csv(Corelation_DF,
           file.path(curated_data_dir, file_name),
           row.names = FALSE)

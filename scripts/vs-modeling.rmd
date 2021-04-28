@@ -58,7 +58,7 @@ project_directory <- dirname(root_dir)
 data_dir <- file.path(project_directory, 'raw-data')
 curated_data_dir <- file.path(project_directory, 'curated-data')
 plot_dir <- file.path(project_directory, 'Plots')
-data_file_name <- 'CorrelationData.csv'
+data_file_name <- 'KeyData.csv'
 data_file_name_std <- 'StandardPart.csv'
 
 

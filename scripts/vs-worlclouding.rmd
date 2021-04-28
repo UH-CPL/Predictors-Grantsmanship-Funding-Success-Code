@@ -13,6 +13,7 @@ library(wordcloud)
 library(RColorBrewer)
 library(wordcloud2)
 library(tm)
+library(ggwordcloud)
 # install.packages("wordcloud2")
 ```
 
@@ -23,8 +24,8 @@ project_directory<-dirname(root_dir)
 data_dir <- file.path(project_directory, 'raw-data')
 curated_data_dir <- file.path(project_directory, 'curated-data')
 plot_dir <- file.path(project_directory, 'Plots')
-data_file_name<-'world_cloud_stressful.csv'
-data_file_name_std<-'world_cloud.csv'
+data_file_name<-'world_cloud_stressful_new.csv'
+data_file_name_std<-'world_cloud_helpful.csv'
 
 
 Stressful<-read.csv(file.path(curated_data_dir,data_file_name),stringsAsFactors = FALSE)
@@ -32,22 +33,49 @@ Notstressful<-read.csv(file.path(curated_data_dir,data_file_name_std),stringsAsF
 
 ```
 
-## Notstressful
+
 ```{r, echo=FALSE}
-Notstressful$item=tolower(Notstressful$item)
+word_cloud <- function(Data, Title) {
+  wc <-
+    ggplot(Data, aes(
+      label = item,
+      size = count,
+      color = factor(sample.int(10, nrow(Data), replace = TRUE))
+    )) +
+    geom_text_wordcloud_area() +
+    scale_size_area(max_size = 24) +
+    theme_minimal() +
+    ggtitle("Deadlines are stressful") +
+    theme(plot.title = element_text(hjust = 0.5))
+  
+  return(wc)
+}
+
+```
+
+## Stressful
+```{r, echo=FALSE, warning=FALSE}
+# Notstressful$item=tolower(Notstressful$item)
+# set.seed(1234)
+# wordcloud2(Notstressful,size=1 , shape = 'circle')
+
+
+Stressful$item=tolower(Stressful$item)
 set.seed(1234)
-wordcloud2(Notstressful,size=1 , shape = 'circle')
+wc_stressful <- word_cloud(Stressful, "Deadlines are stressful")
+wc_stressful
 ```
 
 
 
-## Stressful
-```{r, echo=FALSE}
-Stressful$item=tolower(Stressful$item)
+## NotStressful
+```{r, echo=FALSE, warning=FALSE}
+Notstressful$item=tolower(Notstressful$item)
 set.seed(1234)
-wordcloud2(Stressful,size=1 , shape = 'circle')
-# wordcloud2(data = Stressful,size = .01)
-# letterCloud(Stressful, word = "R", size = 2)
+
+
+wc_helpfulful <- word_cloud(Notstressful, "Deadlines are helpfulful")
+wc_helpfulful
 ```
 
 

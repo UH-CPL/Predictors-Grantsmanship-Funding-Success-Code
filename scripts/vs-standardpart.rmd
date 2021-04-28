@@ -1683,9 +1683,7 @@ Stressful<-read.csv(file.path(curated_data_dir,data_file_name_std),stringsAsFact
 
 Stressful$item=tolower(Stressful$item)
 set.seed(1234)
-# wordcloud2(Stressful,size=1 , shape = 'circle')
-# 
-# data("love_words_small")
+
 
 set.seed(42)
 wc <- ggplot(Stressful, aes(label = item, size = count, color = factor(sample.int(10, nrow(Stressful), replace = TRUE)))) +
