@@ -1668,30 +1668,29 @@ ggsave(
 
 
 ```{r, echo=FALSE}
-
-library(wordcloud)
-library(RColorBrewer)
-library(wordcloud2)
-library(tm)
-library(ggwordcloud)
-# data_file_name<-'world_cloud_stressful.csv'
-data_file_name_std<-'world_cloud.csv'
-
-
-# Stressful<-read.csv(file.path(curated_data_dir,data_file_name),stringsAsFactors = FALSE)
-Stressful<-read.csv(file.path(curated_data_dir,data_file_name_std),stringsAsFactors = FALSE)
-
-Stressful$item=tolower(Stressful$item)
-set.seed(1234)
-
-
-set.seed(42)
-wc <- ggplot(Stressful, aes(label = item, size = count, color = factor(sample.int(10, nrow(Stressful), replace = TRUE)))) +
-  geom_text_wordcloud_area() +
-  scale_size_area(max_size = 24) +
-  theme_minimal()
-
-wc
+# library(wordcloud)
+# library(RColorBrewer)
+# library(wordcloud2)
+# library(tm)
+# library(ggwordcloud)
+# # data_file_name<-'world_cloud_stressful.csv'
+# data_file_name_std<-'world_cloud.csv'
+# 
+# 
+# # Stressful<-read.csv(file.path(curated_data_dir,data_file_name),stringsAsFactors = FALSE)
+# Stressful<-read.csv(file.path(curated_data_dir,data_file_name_std),stringsAsFactors = FALSE)
+# 
+# Stressful$item=tolower(Stressful$item)
+# set.seed(1234)
+# 
+# 
+# set.seed(42)
+# wc <- ggplot(Stressful, aes(label = item, size = count, color = factor(sample.int(10, nrow(Stressful), replace = TRUE)))) +
+#   geom_text_wordcloud_area() +
+#   scale_size_area(max_size = 24) +
+#   theme_minimal()
+# 
+# wc
 ```
 
 ```{r, echo=FALSE}

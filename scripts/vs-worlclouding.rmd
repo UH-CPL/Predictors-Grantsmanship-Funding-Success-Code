@@ -14,6 +14,7 @@ library(RColorBrewer)
 library(wordcloud2)
 library(tm)
 library(ggwordcloud)
+library(dplyr)
 # install.packages("wordcloud2")
 ```
 
@@ -26,10 +27,12 @@ curated_data_dir <- file.path(project_directory, 'curated-data')
 plot_dir <- file.path(project_directory, 'Plots')
 data_file_name<-'world_cloud_stressful_new.csv'
 data_file_name_std<-'world_cloud_helpful.csv'
+data_file_name_suggestion<-'word_cloud_suggestions.csv'
 
 
 Stressful<-read.csv(file.path(curated_data_dir,data_file_name),stringsAsFactors = FALSE)
 Notstressful<-read.csv(file.path(curated_data_dir,data_file_name_std),stringsAsFactors = FALSE)
+Suggestion<-read.csv(file.path(curated_data_dir,data_file_name_suggestion),stringsAsFactors = FALSE)
 
 ```
 
@@ -75,6 +78,17 @@ set.seed(1234)
 
 
 wc_helpfulful <- word_cloud(Notstressful, "Deadlines are helpfulful")
+wc_helpfulful
+```
+
+##  Improvment suggestions
+```{r, echo=FALSE, warning=FALSE}
+Suggestion <- Suggestion %>% rename(item = "ï..item")
+Suggestion$item=tolower(Suggestion$item)
+set.seed(1234)
+
+
+wc_helpfulful <- word_cloud(Suggestion, "Improvment suggestions")
 wc_helpfulful
 ```
 

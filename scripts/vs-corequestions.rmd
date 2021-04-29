@@ -482,7 +482,7 @@ list8 = c("< 30", "30-40", "40-50", "> 50")
 list9 = c("Every hour", "Every 1-2 hours", "Every 3-4 hours", "Other")
 list10 = c("Reply instantly", "Reply Once/Twice")
 
-list11 = c("No", "Yes")
+list11 = c("Yes")
 # list12 = c("1-2", "3-4", "5-6", "7-9", ">=10")
 list12 = c("NP1", "NP2", "NP3")
 
@@ -651,7 +651,7 @@ for (i in 2:length(Core_Questions)) {
   # for (i in 18:19) {
   ylimit = 250
   if ((i == 3) |
-      (i == 5) | (i == 8) | (i == 11) | (i == 12) | (i == 14)) {
+      (i == 5) | (i == 8) | (i == 11) | (i == 12) | (i == 14) | (i == 20)) {
     ylimit = 400
   }
   temp <- count(Core_Questions[i])
@@ -660,7 +660,7 @@ for (i in 2:length(Core_Questions)) {
   temp <- temp[order(temp$count),]
   temp <- temp[complete.cases(temp), ]
  
-  
+    
   temp2 = Core_Questions %>% freq_table(Core_Questions[i])
   temp2 = temp2[, c(2, 8, 9)]
   temp2 <- temp2[!(temp2$cat == ""), ]
@@ -669,34 +669,23 @@ for (i in 2:length(Core_Questions)) {
   temp2$LCI <- format(round(temp2$LCI, 2), nsmall = 2)
   temp2$UCI <- format(round(temp2$UCI, 2), nsmall = 2)
   
-  # x_lebel = paste("\n", "Item", "\t\t\t\t\t\t", "LCI", "\t\t\t\t\t\t", "UCI", "\n")
-  x_lebel = paste("\n\n")
+  x_lebel = paste("\n\n 95% CI ")
   
   for (row_num in 1:nrow(temp2)){
-    print("Hello")
-    x_lebel = paste(x_lebel, temp2$Item[row_num], "\t\t\t\t\t\tLCI =", temp2$LCI[row_num], "\t\t\t\t\t\tUCI =", temp2$UCI[row_num], "\n")
+    if (row_num == 3){
+      space = "\n"
+    } else {
+      space = "      "
+    }
+    x_lebel = paste0(x_lebel, temp2$Item[row_num], "(",temp2$LCI[row_num], ", " ,temp2$UCI[row_num], ")", space)
   }
   
-    # x_lebel = head(temp2, length(temp2))
-    # paste0(
-    # "\n\n\n",
-    
-    # print(temp2, quote = TRUE, row.names = FALSE)
-    # "Item = ",
-    # temp2$Item,
-    # ",     ",
-    # "LCI = ",
-    # temp2$LCI,
-    # ",     ",
-    # "UCI = ",
-    # temp2$UCI
-  # )
   
   bar_plot <- ggplot(data = temp, aes(x = item, y = count)) +
     geom_bar(stat = "identity",
              width = 0.5,
              fill = "steelblue") +
-    geom_text(aes(label=count), vjust=1.6, color="white", size=3.5) +
+    geom_text(aes(label=count), vjust=1, color="white", size=3.5) +
     theme_bw() +
     scale_y_continuous(breaks = seq(0, ylimit, by = 50),
                        limits = c(0, ylimit)) +
@@ -718,6 +707,8 @@ for (i in 2:length(Core_Questions)) {
   
   
   plot_list[[length(plot_list) + 1]] <- bar_plot
+  
+
   
   temp <- temp %>%
     mutate(

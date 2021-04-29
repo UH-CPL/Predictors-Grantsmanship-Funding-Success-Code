@@ -210,26 +210,13 @@ final_data$google_scholar_h_index[236] <- 32
 
 
 
-# record_id <- c(328, 441,96
-# 255
-# 392
-# 419
-# 426
-# 438
-#                497,
-#                584,
-#                240,
-#                448,
-#                620,
-#                401,
-#                238,
-#                305,
-#                343,
-#                545,
-#                580,
-#                270)
-# revised_index <- c(NA, NA, NA, NA, 20, NA, 63, NA, 198, NA, NA, NA, 119, 120)
+```
 
+```{r, echo=FALSE}
+
+final_data<- final_data[!is.na(final_data$google_scholar_h_index),]
+final_data<- final_data[final_data$funding_proposal !="No",]
+# final_data<- subset(final_data, final_data$!= "NA")
 ```
 
 ```{r, echo=FALSE}
@@ -382,7 +369,7 @@ final_data <- final_data  %>% dplyr::rename(
 
 ```{r, echo=FALSE}
 View(final_data)
-file_name='StandardPart_Updated.csv'
+file_name='AllData.csv'
 write.csv(final_data,file.path(curated_data_dir, file_name), row.names = FALSE)
 ```
 
