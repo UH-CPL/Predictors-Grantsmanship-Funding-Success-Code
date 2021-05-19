@@ -173,19 +173,19 @@ for(i in 1:nrow(Core_Questions)){
   }
   
   
-  if (Core_Questions$NP[i] == "1-2") {
-    Core_Questions$NP[i] = "NP1"
-  } else if (Core_Questions$NP[i] == "3-4") {
-    Core_Questions$NP[i] = "NP2"
-  } else if (Core_Questions$NP[i] == "5-6") {
-    Core_Questions$NP[i] = "NP3"
-  } else if (Core_Questions$NP[i] == "7-9") {
-    Core_Questions$NP[i] = "NP3"
-  } else if (Core_Questions$NP[i] == "") {
-    Core_Questions$NP[i] = NA
-  } else {
-    Core_Questions$NP[i] = "NP3"
-  }
+  # if (Core_Questions$NP[i] == "1-2") {
+  #   Core_Questions$NP[i] = "NP1"
+  # } else if (Core_Questions$NP[i] == "3-4") {
+  #   Core_Questions$NP[i] = "NP2"
+  # } else if (Core_Questions$NP[i] == "5-6") {
+  #   Core_Questions$NP[i] = "NP3"
+  # } else if (Core_Questions$NP[i] == "7-9") {
+  #   Core_Questions$NP[i] = "NP3"
+  # } else if (Core_Questions$NP[i] == "") {
+  #   Core_Questions$NP[i] = NA
+  # } else {
+  #   Core_Questions$NP[i] = "NP3"
+  # }
   
   
   if (Core_Questions$RO_F_EG[i]=="Not funded"){
@@ -291,37 +291,37 @@ for(i in 1:nrow(Core_Questions)){
   }
   
   
-  # if (Core_Questions$DS[i] == "Extremely less"){
-  #   Core_Questions$DS[i] = "Significantly less"
-  # } else if (Core_Questions$DS[i] == "Significantly less"){
-  #   Core_Questions$DS[i] = "Less"
-  # } else if (Core_Questions$DS[i] == "Same"){
-  #   Core_Questions$DS[i] = "About the same"
-  # } else if (Core_Questions$DS[i] == "Significantly  more"){
-  #   Core_Questions$DS[i] = "More"
-  # } else if (Core_Questions$DS[i] == "Extremely  more"){
-  #   Core_Questions$DS[i] = "Significantly more"
-  # } else {
-  #   Core_Questions$DS[i] = NA
-  # }
-  
-  if (Core_Questions$DS[i] == "Extremely less") {
-    Core_Questions$DS[i] = "DS1"
-  } else if (Core_Questions$DS[i] == "Significantly less") {
-    # Core_Questions$DS[i]=2
-    Core_Questions$DS[i] = "DS1"
-  } else if (Core_Questions$DS[i] == "Same") {
-    # Core_Questions$DS[i]=3
-    Core_Questions$DS[i] = "DS1"
-  } else if (Core_Questions$DS[i] == "Significantly  more") {
-    # Core_Questions$DS[i]=4
-    Core_Questions$DS[i] = "DS2"
-  } else if (Core_Questions$DS[i] == "Extremely  more") {
-    # Core_Questions$DS[i]=5
-    Core_Questions$DS[i] = "DS2"
+  if (Core_Questions$DS[i] == "Extremely less"){
+    Core_Questions$DS[i] = "Significantly less"
+  } else if (Core_Questions$DS[i] == "Significantly less"){
+    Core_Questions$DS[i] = "Less"
+  } else if (Core_Questions$DS[i] == "Same"){
+    Core_Questions$DS[i] = "About the same"
+  } else if (Core_Questions$DS[i] == "Significantly  more"){
+    Core_Questions$DS[i] = "More"
+  } else if (Core_Questions$DS[i] == "Extremely  more"){
+    Core_Questions$DS[i] = "Significantly more"
   } else {
     Core_Questions$DS[i] = NA
   }
+  
+  # if (Core_Questions$DS[i] == "Extremely less") {
+  #   Core_Questions$DS[i] = "DS1"
+  # } else if (Core_Questions$DS[i] == "Significantly less") {
+  #   # Core_Questions$DS[i]=2
+  #   Core_Questions$DS[i] = "DS1"
+  # } else if (Core_Questions$DS[i] == "Same") {
+  #   # Core_Questions$DS[i]=3
+  #   Core_Questions$DS[i] = "DS1"
+  # } else if (Core_Questions$DS[i] == "Significantly  more") {
+  #   # Core_Questions$DS[i]=4
+  #   Core_Questions$DS[i] = "DS2"
+  # } else if (Core_Questions$DS[i] == "Extremely  more") {
+  #   # Core_Questions$DS[i]=5
+  #   Core_Questions$DS[i] = "DS2"
+  # } else {
+  #   Core_Questions$DS[i] = NA
+  # }
   
   
     if (Core_Questions$ss_level_in_a_fundi[i] == "Extremely less"){
@@ -426,34 +426,34 @@ for(i in 1:nrow(Core_Questions)){
 ```
 
 ```{r}
-  levels(factor(Core_Questions$State))
-  levels(factor(Core_Questions$S_D_E))
-  levels(factor(Core_Questions$RO_F_EG))
-  levels(factor(Core_Questions$Deadline_today))
-  levels(factor(Core_Questions$Workload_today))
-  levels(factor(Core_Questions$Workplace))
-  levels(factor(Core_Questions$RS))
-  levels(factor(Core_Questions$TW_W_H))
-  levels(factor(Core_Questions$Break))
-  levels(factor(Core_Questions$Email))
-  levels(factor(Core_Questions$funding_proposal))
-  levels(factor(Core_Questions$NP))
-  levels(factor(Core_Questions$FA))
-  levels(factor(Core_Questions$Success))
-  levels(factor(Core_Questions$Com_Proposal))
-  levels(factor(Core_Questions$L_Of_SR))
-  levels(factor(Core_Questions$W_WB_PD))
-  levels(factor(Core_Questions$T))
-  levels(factor(Core_Questions$DS))
-  levels(factor(Core_Questions$refereed_conference))
-  levels(factor(Core_Questions$A_N_Conf_Pap))
-  levels(factor(Core_Questions$core_rank))
-  levels(factor(Core_Questions$if_you_submit_manuscripts))
-  levels(factor(Core_Questions$far_in_advance_do_you))
-  levels(factor(Core_Questions$length_of_supp))
-  levels(factor(Core_Questions$in_the_week_leading_to_a_c))
-  levels(factor(Core_Questions$you_typically_subm))
-  levels(factor(Core_Questions$ss_level_in_a_fundi))
+  # levels(factor(Core_Questions$State))
+  # levels(factor(Core_Questions$S_D_E))
+  # levels(factor(Core_Questions$RO_F_EG))
+  # levels(factor(Core_Questions$Deadline_today))
+  # levels(factor(Core_Questions$Workload_today))
+  # levels(factor(Core_Questions$Workplace))
+  # levels(factor(Core_Questions$RS))
+  # levels(factor(Core_Questions$TW_W_H))
+  # levels(factor(Core_Questions$Break))
+  # levels(factor(Core_Questions$Email))
+  # levels(factor(Core_Questions$funding_proposal))
+  # levels(factor(Core_Questions$NP))
+  # levels(factor(Core_Questions$FA))
+  # levels(factor(Core_Questions$Success))
+  # levels(factor(Core_Questions$Com_Proposal))
+  # levels(factor(Core_Questions$L_Of_SR))
+  # levels(factor(Core_Questions$W_WB_PD))
+  # levels(factor(Core_Questions$T))
+  # levels(factor(Core_Questions$DS))
+  # levels(factor(Core_Questions$refereed_conference))
+  # levels(factor(Core_Questions$A_N_Conf_Pap))
+  # levels(factor(Core_Questions$core_rank))
+  # levels(factor(Core_Questions$if_you_submit_manuscripts))
+  # levels(factor(Core_Questions$far_in_advance_do_you))
+  # levels(factor(Core_Questions$length_of_supp))
+  # levels(factor(Core_Questions$in_the_week_leading_to_a_c))
+  # levels(factor(Core_Questions$you_typically_subm))
+  # levels(factor(Core_Questions$ss_level_in_a_fundi))
   
   
   # count(Core_Questions$FA)
@@ -483,8 +483,8 @@ list9 = c("Every hour", "Every 1-2 hours", "Every 3-4 hours", "Other")
 list10 = c("Reply instantly", "Reply Once/Twice")
 
 list11 = c("Yes")
-# list12 = c("1-2", "3-4", "5-6", "7-9", ">=10")
-list12 = c("NP1", "NP2", "NP3")
+list12 = c("1-2", "3-4", "5-6", "7-9", ">=10")
+# list12 = c("NP1", "NP2", "NP3")
 
 list13 = c("NSF", "NIH", "DOE","DOD", "NASA",  "Other")
 list14 = c("< 10%", "10-20%", "20-30%", "30-50%", "50-75%", "75-90%", "> 90%")
@@ -496,8 +496,8 @@ list17 = c("Significantly less", "Less", "About the same", "More", "Significantl
 # list18 = c("Minutes before",  "1-3 hours before",  "3-6 hours before",  "1 day before",  "2 or more days before")
 list18 = c("T1", "T2")
 
-# list19 = c("Significantly less", "Less", "About the same", "More", "Significantly more")
-list19 = c("DS1", "DS2")
+list19 = c("Significantly less", "Less", "About the same", "More", "Significantly more")
+# list19 = c("DS1", "DS2")
 
 list20 = c("No", "Yes")
 

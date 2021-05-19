@@ -934,7 +934,7 @@ ggsave(
 
 
 ```{r, echo=FALSE}
-
+library(freqtables)
 data_file_name <- 'Selected_Core_Questions.csv'
 curated_data_dir <- file.path(project_directory, 'curated-data')
 Data_CQ <-
@@ -976,6 +976,15 @@ for (i in 1:length(Data_CQ)) {
   temp <- temp[order(temp$count),]
   temp <- temp[complete.cases(temp), ]
   
+  # temp2 = Data_CQ %>% freq_table(Data_CQ[3])
+  # temp2 = temp2[, c(2, 8, 9)]
+  # temp2 <- temp2[!(temp2$cat == ""), ]
+  # temp2 <- temp2[complete.cases(temp2), ]
+  # temp2<-temp2  %>%  dplyr::rename( item="cat", LCI="lcl", UCI="ucl") 
+  # temp2$LCI <- format(round(temp2$LCI, 2), nsmall = 2)
+  # temp2$UCI <- format(round(temp2$UCI, 2), nsmall = 2)
+  # temp_final <- merge(temp, temp2, by="item")
+  
   bar_plot <- ggplot(data = temp, aes(x = item, y = count)) +
     geom_bar(stat = "identity",
              width = 0.5,
@@ -1000,6 +1009,15 @@ for (i in 1:length(Data_CQ)) {
   temp <- temp[!(temp$item == ""), ]
   temp <- temp[order(temp$count),]
   temp <- temp[complete.cases(temp), ]
+  
+  # temp2 = Data_CQ %>% freq_table(Data_CQ[i])
+  # temp2 = temp2[, c(2, 8, 9)]
+  # temp2 <- temp2[!(temp2$cat == ""), ]
+  # temp2 <- temp2[complete.cases(temp2), ]
+  # temp2<-temp2  %>%  dplyr::rename( item="cat", LCI="lcl", UCI="ucl") 
+  # temp2$LCI <- format(round(temp2$LCI, 2), nsmall = 2)
+  # temp2$UCI <- format(round(temp2$UCI, 2), nsmall = 2)
+  # temp_final <- merge(temp, temp2, by="item")
   
   bar_plot <- ggplot(data = temp, aes(x = item, y = count)) +
     geom_bar(stat = "identity",

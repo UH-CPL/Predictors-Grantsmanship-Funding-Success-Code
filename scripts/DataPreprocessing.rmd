@@ -216,7 +216,6 @@ final_data$google_scholar_h_index[236] <- 32
 
 final_data<- final_data[!is.na(final_data$google_scholar_h_index),]
 final_data<- final_data[final_data$funding_proposal !="No",]
-# final_data<- subset(final_data, final_data$!= "NA")
 ```
 
 ```{r, echo=FALSE}
@@ -368,8 +367,10 @@ final_data <- final_data  %>% dplyr::rename(
 ```
 
 ```{r, echo=FALSE}
-View(final_data)
+# View(final_data)
 file_name='AllData.csv'
 write.csv(final_data,file.path(curated_data_dir, file_name), row.names = FALSE)
+
+print(paste("The number of rows", nrow(final_data)))
 ```
 
