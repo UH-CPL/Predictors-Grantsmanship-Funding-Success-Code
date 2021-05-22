@@ -173,19 +173,19 @@ for(i in 1:nrow(Core_Questions)){
   }
   
   
-  # if (Core_Questions$NP[i] == "1-2") {
-  #   Core_Questions$NP[i] = "NP1"
-  # } else if (Core_Questions$NP[i] == "3-4") {
-  #   Core_Questions$NP[i] = "NP2"
-  # } else if (Core_Questions$NP[i] == "5-6") {
-  #   Core_Questions$NP[i] = "NP3"
-  # } else if (Core_Questions$NP[i] == "7-9") {
-  #   Core_Questions$NP[i] = "NP3"
-  # } else if (Core_Questions$NP[i] == "") {
-  #   Core_Questions$NP[i] = NA
-  # } else {
-  #   Core_Questions$NP[i] = "NP3"
-  # }
+  if (Core_Questions$NP[i] == "1-2") {
+    Core_Questions$NP[i] = "NP1"
+  } else if (Core_Questions$NP[i] == "3-4") {
+    Core_Questions$NP[i] = "NP2"
+  } else if (Core_Questions$NP[i] == "5-6") {
+    Core_Questions$NP[i] = "NP3"
+  } else if (Core_Questions$NP[i] == "7-9") {
+    Core_Questions$NP[i] = "NP3"
+  } else if (Core_Questions$NP[i] == "") {
+    Core_Questions$NP[i] = NA
+  } else {
+    Core_Questions$NP[i] = "NP3"
+  }
   
   
   if (Core_Questions$RO_F_EG[i]=="Not funded"){
@@ -850,5 +850,47 @@ write.csv(Data_CQ,file.path(curated_data_dir, file_name), row.names = FALSE)
 #       ggsave(full_path, plots_act, width = 8.5, height = 11, units = "in")
 #       # print(final_plot)
 
+```
+
+
+
+
+## Funding_WRT_NP
+```{r, echo=FALSE}
+library(ggplot2)
+
+
+
+
+Funding_WRT_NP <- ggplot(Core_Questions, aes(x = RO_F_EG)) + geom_histogram(stat = "count") +
+  facet_grid( ~ NP) +
+  theme(
+    axis.title.y = element_text(size=12, face="bold", colour = "black"),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(hjust = 0.5),
+    axis.text.x = element_text(
+      face = "bold",
+      size = 10 ,
+      angle = 30,
+      hjust = 1
+    ),
+    axis.text.y = element_text(
+      face = "bold",
+      size = 10), 
+    strip.text = element_text(size = 12, face = "bold")
+  ) +
+  labs(x = "", y = "Count")
+
+
+filename <- "Funding_WRT_NP.pdf"
+full_path <- file.path(plot_dir, filename)
+ggsave(
+  full_path,
+  Funding_WRT_NP,
+  width = 8.5,
+  height = 5.5,
+  units = "in"
+)
 ```
 
