@@ -1,0 +1,638 @@
+---
+title: "Model Plots"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(sjPlot)
+library(grid)
+library(gridExtra)
+library(ggpubr)
+```
+
+
+```{r, echo=FALSE}
+  root_dir <- getwd()
+  project_directory <- dirname(root_dir)
+  data_dir <- file.path(project_directory, 'raw-data')
+  curated_data_dir <- file.path(project_directory, 'curated-data')
+  plot_dir <- file.path(project_directory, 'Plots')
+```
+
+
+```{r, echo=FALSE}
+
+data_processing_model <- function(data_file_name) {
+  root_dir <- getwd()
+  project_directory <- dirname(root_dir)
+  data_dir <- file.path(project_directory, 'raw-data')
+  curated_data_dir <- file.path(project_directory, 'curated-data')
+  plot_dir <- file.path(project_directory, 'Plots')
+  
+  print(data_file_name)
+  lm_DF <-
+    read.csv(file.path(curated_data_dir, data_file_name),
+             stringsAsFactors = FALSE)
+  count(lm_DF$SR)
+  
+  lm_DF$RS <- as.factor(lm_DF$RS)
+  lm_DF$WH <- as.factor(lm_DF$WH)
+  lm_DF$NP <- as.factor(lm_DF$NP)
+  lm_DF$BF <- as.factor(lm_DF$BF)
+  lm_DF$DWH <- as.factor(lm_DF$DWH)
+  lm_DF$FA <- as.factor(lm_DF$FA)
+  lm_DF$TS <- as.factor(lm_DF$TS)
+  lm_DF$DS <- as.factor(lm_DF$DS)
+  lm_DF$PR <- as.factor(lm_DF$PR)
+  lm_DF$FR <- as.factor(lm_DF$FR)
+  
+  
+  NullModel <- glm(SR ~ 1, data = lm_DF, family = "binomial")
+  FullModel <- glm(SR ~ ., data = lm_DF, family = "binomial")
+  BEmodel <-
+    stepAIC(FullModel, direction = "backward", trace = FALSE)
+  summary(BEmodel)
+  
+  return(BEmodel)
+}
+
+```
+
+## Configuration 20
+```{r, echo=FALSE}
+model_20 <- data_processing_model("model_data_conf20.csv")
+summary(model_20)
+```
+
+
+
+## Configuration 30
+```{r, echo=FALSE}
+model_30 <- data_processing_model("model_data_conf30.csv")
+summary(model_30)
+```
+
+
+
+## Configuration 50
+```{r, echo=FALSE}
+model_50 <- data_processing_model("model_data_conf50.csv")
+summary(model_50)
+```
+
+
+```{r}
+ggplot(dummy_df, aes(x=x, y=y, group=group)) + 
+    geom_line(scale = 0.9) +
+    # theme_minimal() +
+    theme(
+      plot.title = element_text(hjust = 0.5, size = 8, face = "bold"),
+      axis.title.x=element_text(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank()) + labs(title ="", x ="")
+```
+
+
+## Dummy plot
+
+```{r, echo=FALSE}
+dummy_df <- data.frame(x = c(0, 100, 0, 100), 
+                       y = c(100, 0, 0, 100), 
+                       group=c('a', 'a', 'b', 'b'))
+
+draw_dummy_plot <- function(plot_title) {
+  dummy_plot <- ggplot(dummy_df, aes(x=x, y=y, group=group)) + 
+    geom_line(scale = 0.9) +
+    # theme_minimal() +
+    theme(
+      plot.title = element_text(hjust = 0.5, size = 8, face = "bold"),
+      axis.title.x=element_text(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank()) + labs(title =  plot_title, x= "")
+    
+  return(dummy_plot)
+  dummy_plot
+}
+
+
+draw_dummy_plot_blank_title <- function(plot_title) {
+  dummy_plot <- ggplot(dummy_df, aes(x=x, y=y, group=group)) + 
+    geom_line(scale = 0.9) +
+    # theme_minimal() +
+    theme(
+      plot.title = element_blank(),
+      axis.title.x=element_text(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank()) + labs(title =  plot_title, x= "")
+    
+  return(dummy_plot)
+  dummy_plot
+}
+
+```
+
+## plot in new orientation
+```{r, echo=FALSE}
+model_plot_20 <- function(model_name, item, modified, Plot_title) {
+  print(model_name)
+  if (item == "NP" | item == "H" | item == "FR") {
+    y_title = expression(paste(italic("P")))
+    y_text = element_text(face = "bold")
+  } else{
+    y_title = ""
+    y_text = element_blank()
+  }
+  
+  if (item == "NP" |
+      item == "FA" |
+      item == "TS" |
+      item == "FR" |
+      item == "RS" | item == "DS" | item == "BF" | item == "PR") {
+    
+    
+    plt = plot_model(model_name, type = "pred", terms = item) +
+      theme(
+        plot.title = element_text(hjust = 0.5, face = "bold", size = 8),
+        panel.grid = element_blank(),
+        axis.title = element_text(face = "bold"),
+        axis.text.x = element_text(
+          face = "bold",
+          size = 7,
+          angle = 30,
+          hjust = 1
+        ),
+        axis.text.y = element_text(face = "bold", size = 7)
+      ) +
+      labs(y = y_title, x = "", title = Plot_title) + scale_y_continuous(
+        limits = c(0.0, 1),
+        breaks = c(0.0, 0.25, 0.50, 0.75, 1),
+        labels = c(
+          "0.00" = "0%",
+          "0.25" = "25%",
+          "0.50" = "50%",
+          "0.75" = "75%",
+          "1" = "100%"
+        )
+      ) + theme(axis.text.y = y_text, axis.ticks.y = element_blank()) + scale_x_discrete(limits = modified)
+    return(plt)
+  } else {
+    plt = plot_model(model_name, type = "pred", terms = item) +
+      theme(
+        plot.title = element_text(hjust = 0.5, face = "bold", size = 8),
+        panel.grid = element_blank(),
+        axis.title = element_text(face = "bold"),
+        axis.text.x = element_text(
+          face = "bold",
+          size = 7,
+          angle = 30,
+          hjust = 1
+        ),
+        axis.text.y = element_text(face = "bold", size = 7)
+      ) +
+      labs(y = y_title, x = "", title = Plot_title) + scale_y_continuous(
+        limits = c(0.0, 1),
+        breaks = c(0.0, 0.25, 0.50, 0.75, 1),
+        labels = c(
+          "0.00" = "0%",
+          "0.25" = "25%",
+          "0.50" = "50%",
+          "0.75" = "75%",
+          "1" = "100%"
+        )
+      ) + theme(axis.text.y = y_text, axis.ticks.y = element_blank())
+    return(plt)
+  }
+  
+}
+```
+
+
+
+```{r, echo=FALSE}
+model_plot <- function(model_name, item, modified, Plot_title) {
+  print(model_name)
+  if (item == "NP" | item == "H" | item == "FR") {
+    y_title = expression(paste(italic("P")))
+    y_text = element_text(face = "bold")
+  } else{
+    # y_title = ""
+    y_title = expression(paste(italic("P")))
+    # y_text = element_blank()
+    y_text = element_text(face = "bold")
+  }
+  
+  if (item == "NP" |
+      item == "FA" |
+      item == "TS" |
+      item == "FR" |
+      item == "RS" | item == "DS" | item == "BF" | item == "PR") {
+    plt = plot_model(model_name, type = "pred", terms = item) +
+      theme(
+        plot.title = element_blank(),
+        panel.grid = element_blank(),
+        axis.title = element_text(face = "bold"),
+        axis.text.x = element_text(
+          face = "bold",
+          size = 7,
+          angle = 30,
+          hjust = 1
+        ),
+        axis.text.y = element_text(face = "bold", size = 7)
+      ) +
+      # labs(y = y_title, x = "", title = Plot_title) + scale_y_continuous(
+      labs(y = "", x = "", title = Plot_title) + scale_y_continuous(
+        limits = c(0.0, 1),
+        breaks = c(0.0, 0.25, 0.50, 0.75, 1),
+        labels = c(
+          "0.00" = "0%",
+          "0.25" = "25%",
+          "0.50" = "50%",
+          "0.75" = "75%",
+          "1" = "100%"
+        )
+      # ) + theme(axis.text.y = y_text, axis.ticks.y = element_blank()) + scale_x_discrete(limits = modified)
+      ) + theme(axis.text.y = element_blank(), axis.ticks.y = element_blank()) + scale_x_discrete(limits = modified)
+    
+    return(plt)
+  } else {
+    plt = plot_model(model_name, type = "pred", terms = item) +
+      theme(
+        plot.title = element_blank(),
+        panel.grid = element_blank(),
+        axis.title = element_text(face = "bold"),
+        axis.text.x = element_text(
+          face = "bold",
+          size = 7,
+          angle = 30,
+          hjust = 1
+        ),
+        axis.text.y = element_text(face = "bold", size = 7)
+      ) +
+      labs(y = y_title, x = "", title = Plot_title) + scale_y_continuous(
+        limits = c(0.0, 1),
+        breaks = c(0.0, 0.25, 0.50, 0.75, 1),
+        labels = c(
+          "0.00" = "0%",
+          "0.25" = "25%",
+          "0.50" = "50%",
+          "0.75" = "75%",
+          "1" = "100%"
+        )
+      # ) + theme(axis.text.y = y_text, axis.ticks.y = element_blank())
+      ) + theme(axis.text.y = y_text)
+    return(plt)
+  }
+  
+}
+```
+
+
+```{r, echo=FALSE}
+np_actual = c("1" = "NP1", "2" = "NP2", "3"="NP3")
+fa_actual = c("1" = "NSF", "2" = "NIH", "3" = "DOE", "4" = "DOD", "5" = "NASA", "6" = "OTHER")
+TS_actual = c("1" = "TS1", "2" = "TS2")
+DS_actual = c("1" = "DS1", "2" = "DS2")
+BF_actual = c("1" = "BF1", "2" = "BF2")
+PR_actual = c("1" = "PR1", "2" = "PR2", "3" = "PR3", "4" = "PR4", "5" = "PR5")
+RS_actual = c("1" = "RS1", "2" = "RS2")
+FR_actual = c("1" = "FR1", "2" = "FR2", "3" = "FR3")
+H_actual = c("0" = "0", "50" = "50", "100" = "100", "150" ="150", "200" = "200")
+```
+
+
+```{r, echo=FALSE}
+plot_list <- list()
+plot_item <- c("NP", "FA", "TS")
+title <- c("Number of Proposals", "Funding Agency", "Time of Submission")
+
+modified_ticx = list(np_actual, fa_actual, TS_actual, H_actual)
+
+for (item in 1:length(plot_item)){
+  plot = model_plot_20(model_20, plot_item[item], modified_ticx[[item]], title[item])
+  plot_list[[length(plot_list) + 1]] <- plot
+}
+
+
+dummy_BF <- draw_dummy_plot("Break Frequency")
+dummy_PR <- draw_dummy_plot("Pilot Research")
+
+
+plot_A_20 <- ggarrange(
+  plot_list[[1]],
+  plot_list[[2]],
+  plot_list[[3]],
+  dummy_BF,
+  dummy_PR,
+  nrow = 1,
+  ncol = 5
+)
+plot_A_20
+
+```
+
+
+
+## A panel plots
+```{r, echo=FALSE}
+plot_list <- list()
+plot_item <- c("NP", "FA")
+title <- c("", "")
+
+modified_ticx = list(np_actual, fa_actual, FR_actual, RS_actual, H_actual , DS_actual)
+
+for (item in 1:length(plot_item)){
+  plot = model_plot(model_30, plot_item[item], modified_ticx[[item]], title[item])
+  plot_list[[length(plot_list) + 1]] <- plot
+}
+
+
+dummy_BF <- draw_dummy_plot_blank_title("")
+dummy_PR <- draw_dummy_plot_blank_title("")
+dummy_TS <- draw_dummy_plot_blank_title("")
+
+
+plot_A_30 <- ggarrange(
+  plot_list[[1]],
+  plot_list[[2]],
+  dummy_TS,
+  dummy_BF,
+  dummy_PR,
+  nrow = 1,
+  ncol = 5
+)
+plot_A_30
+```
+
+```{r, echo=FALSE}
+plot_list <- list()
+plot_item <- c("NP", "FA", "BF", "PR")
+title <- c("", "", "", "")
+
+modified_ticx = list(np_actual, fa_actual, BF_actual, PR_actual, H_actual, H_actual)
+
+for (item in 1:length(plot_item)){
+  plot = model_plot(model_50, plot_item[item], modified_ticx[[item]], title[item])
+  plot_list[[length(plot_list) + 1]] <- plot
+}
+
+
+dummy_TS <- draw_dummy_plot_blank_title("")
+
+
+plot_A_50 <- ggarrange(
+  plot_list[[1]],
+  plot_list[[2]],
+  dummy_TS,
+  plot_list[[3]],
+  plot_list[[4]],
+  nrow = 1,
+  ncol = 5
+)
+plot_A_50
+```
+
+```{r, echo=FALSE}
+Research_tactics<- plot_grid(plot_A_20, plot_A_30, plot_A_50, nrow = 3)
+filename <- "SR_prediction_A.pdf"
+full_path <- file.path(plot_dir, filename)
+ggsave(
+  full_path,
+  Research_tactics,
+  width = 8.5,
+  height = 5.5,
+  units = "in"
+)
+```
+
+
+
+```{r}
+
+plot_list <- list()
+plot_item <- c("H")
+title <- c("h-index")
+
+modified_ticx = list(H_actual)
+
+for (item in 1:length(plot_item)){
+  plot = model_plot_20(model_20, plot_item[item], modified_ticx[[item]], title[item])
+  plot_list[[length(plot_list) + 1]] <- plot
+}
+
+
+dummy_BF <- draw_dummy_plot("Faculty Rank")
+dummy_PR <- draw_dummy_plot("Research Style")
+
+
+
+
+plot_B_20 <- ggarrange(
+  plot_list[[1]],
+  dummy_BF,
+  dummy_PR,
+  nrow = 1,
+  ncol = 3
+)
+plot_B_20
+
+
+
+
+plot_list <- list()
+plot_item <- c("FR", "RS")
+title <- c("Faculty Rank", "Research Style")
+
+modified_ticx = list(FR_actual, RS_actual)
+
+for (item in 1:length(plot_item)){
+  plot = model_plot(model_30, plot_item[item], modified_ticx[[item]], title[item])
+  plot_list[[length(plot_list) + 1]] <- plot
+}
+
+
+dummy_BF <- draw_dummy_plot_blank_title("Faculty Rank")
+
+plot_B_30 <- ggarrange(
+  dummy_BF,
+  plot_list[[1]],
+  plot_list[[2]],
+  nrow = 1,
+  ncol = 3
+)
+plot_B_30
+
+
+
+plot_list <- list()
+plot_item <- c("H")
+title <- c("h-index")
+
+modified_ticx = list(H_actual)
+
+for (item in 1:length(plot_item)){
+  plot = model_plot(model_50, plot_item[item], modified_ticx[[item]], title[item])
+  plot_list[[length(plot_list) + 1]] <- plot
+}
+
+
+dummy_BF <- draw_dummy_plot_blank_title("Faculty Rank")
+dummy_PR <- draw_dummy_plot_blank_title("Research Style")
+
+
+
+
+plot_B_50 <- ggarrange(
+  plot_list[[1]],
+  dummy_BF,
+  dummy_PR,
+  nrow = 1,
+  ncol = 3
+)
+plot_B_50
+
+
+
+scholar_profile<- plot_grid(plot_B_20, plot_B_30, plot_B_50, nrow = 3)
+filename <- "SR_prediction_B.pdf"
+full_path <- file.path(plot_dir, filename)
+ggsave(
+  full_path,
+  scholar_profile,
+  width = 8.5,
+  height = 5.5,
+  units = "in"
+)
+
+```
+
+
+
+```{r, echo=FALSE}
+dummy_BF <- draw_dummy_plot("Trait Anxiety")
+dummy_PR <- draw_dummy_plot("Deadline Stress")
+dummy_E <- draw_dummy_plot("Extraversion")
+
+
+
+plot_C_20 <- ggarrange(
+  dummy_BF,
+  dummy_PR,
+  dummy_E,
+  nrow = 1,
+  ncol = 3
+)
+plot_C_20
+
+
+
+
+plot_list <- list()
+plot_item <- c("TA", "DS")
+title <- c("Trait Anxiety", "Deadline Stress")
+
+modified_ticx = list(FR_actual, DS_actual)
+
+for (item in 1:length(plot_item)){
+  plot = model_plot(model_30, plot_item[item], modified_ticx[[item]], title[item])
+  plot_list[[length(plot_list) + 1]] <- plot
+}
+
+
+dummy_BF <- draw_dummy_plot_blank_title("Faculty Rank")
+
+plot_C_30 <- ggarrange(
+  plot_list[[1]],
+  plot_list[[2]],
+  dummy_BF,
+  nrow = 1,
+  ncol = 3
+)
+plot_C_30
+
+
+
+plot_list <- list()
+plot_item <- c("E")
+title <- c("h-index")
+
+modified_ticx = list(H_actual)
+
+for (item in 1:length(plot_item)){
+  plot = model_plot(model_50, plot_item[item], modified_ticx[[item]], title[item])
+  plot_list[[length(plot_list) + 1]] <- plot
+}
+
+
+dummy_BF <- draw_dummy_plot_blank_title("Faculty Rank")
+dummy_PR <- draw_dummy_plot_blank_title("Research Style")
+
+
+
+
+plot_C_50 <- ggarrange(
+  dummy_BF,
+  dummy_PR,
+  plot_list[[1]],
+  nrow = 1,
+  ncol = 3
+)
+plot_C_50
+
+
+
+Personality<- plot_grid(plot_C_20, plot_C_30, plot_C_50, nrow = 3)
+filename <- "SR_prediction_C.pdf"
+full_path <- file.path(plot_dir, filename)
+ggsave(
+  full_path,
+  Personality,
+  width = 8.5,
+  height = 5.5,
+  units = "in"
+)
+
+```
+
+
+```{r, echo=FALSE}
+
+
+A_B_C <-
+  plot_grid(Research_tactics, scholar_profile, Personality, nrow = 3) + annotation_custom(grid.polygon(
+    c(0.0, 0.25, 1),
+    c(0.34, 0.34, 0.34),
+    id = c(1, 1, 1),
+    gp = gpar(lwd = 1.5)
+  )) + annotation_custom(grid.polygon(
+    c(0.0, 0.25, 1),
+    c(0.67, 0.67, 0.67),
+    id = c(1, 1, 1),
+    gp = gpar(lwd = 1.5)
+  ))
+
+filename <- "SR_prediction_all.pdf"
+full_path <- file.path(plot_dir, filename)
+ggsave(
+  full_path,
+  A_B_C,
+  width = 8.5,
+  height = 11,
+  units = "in"
+)
+```

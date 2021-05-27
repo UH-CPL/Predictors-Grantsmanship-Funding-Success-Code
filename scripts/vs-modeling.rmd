@@ -184,18 +184,21 @@ dummy_df <- data.frame(x = c(0, 100, 0, 100),
                        y = c(100, 0, 0, 100), 
                        group=c('a', 'a', 'b', 'b'))
 
-draw_dummy_plot <- function() {
+draw_dummy_plot <- function(plot_title) {
   dummy_plot <- ggplot(dummy_df, aes(x=x, y=y, group=group)) + 
     geom_line() +
     theme_minimal() +
-    theme(axis.title.x=element_blank(),
+    theme(
+      plot.title = element_text(hjust = 0.5, size = 10, face = "bold"),
+      axis.title.x=element_blank(),
         axis.text.x=element_blank(),
         axis.ticks.x=element_blank(),
         axis.title.y=element_blank(),
         axis.text.y=element_blank(),
         axis.ticks.y=element_blank(),
         panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank())
+        panel.grid.minor = element_blank()) + labs(title =  plot_title)
+    
   return(dummy_plot)
   dummy_plot
 }
@@ -282,6 +285,8 @@ PR_actual = c("1" = "PR1", "2" = "PR2", "3" = "PR3", "4" = "PR4", "5" = "PR5")
 RS_actual = c("1" = "RS1", "2" = "RS2")
 FR_actual = c("1" = "FR1", "2" = "FR2", "3" = "FR3")
 H_actual = c("0" = "0", "50" = "50", "100" = "100", "150" ="150", "200" = "200")
+
+modified_ticx = list(np_actual, fa_actual, TS_actual, H_actual)
 ```
 
 ## SR 20
@@ -289,7 +294,7 @@ H_actual = c("0" = "0", "50" = "50", "100" = "100", "150" ="150", "200" = "200")
 plot_list <- list()
 plot_item <- c("NP", "FA", "TS", "H")
 title <- c("Number of Proposals", "Funding Agency", "Time of Submission", "h-index")
-modified_ticx = list(np_actual, fa_actual, TS_actual, H_actual)
+
 
 
 for (item in 1:length(plot_item)){
@@ -304,7 +309,7 @@ plot_up <- ggarrange(
     plot_list[[1]],
     plot_list[[2]],
     plot_list[[3]], nrow = 1, ncol = 3, labels = c("A", "", ""))
-dummy_plot <- draw_dummy_plot()
+dummy_plot <- draw_dummy_plot("")
 
 plot_down <- ggarrange(plot_list[[4]],
     dummy_plot,
@@ -439,6 +444,79 @@ ggsave(
   units = "in"
 )
 ```
+
+
+
+
+
+## Function for new plot
+```{r, echo=FALSE}
+model_plot_new <- function(item, modified, title_) {
+  if (item == "NP" | item == "H" | item == "FR") {
+    y_title = expression(paste(italic("P")))
+    y_text = element_text(face = "bold")
+  } else{
+    y_title = ""
+    y_text = element_blank()
+  }
+  
+  if (item == "NP" | item == "FA"| item == "TS" | item == "FR" | item == "RS" | item == "DS" | item == "BF" | item == "PR"){
+    plt = plot_model(BEmodel, type = "pred", terms = item) +
+    theme(
+      plot.title = element_text(hjust = 0.5, size = 10, face = "bold"),
+      panel.grid = element_blank(),
+      axis.title = element_text(face = "bold"),
+      axis.text.x = element_text(
+        face = "bold",
+        size = 8,
+        angle = 30,
+        hjust = 1
+      ),
+      axis.text.y = element_text(face = "bold")
+    ) +
+    labs(y = y_title, x = "", title = title_) + scale_y_continuous(
+      limits = c(0.0, 1),
+      breaks = c(0.0, 0.25, 0.50, 0.75, 1),
+      labels = c(
+        "0.00" = "0%",
+        "0.25" = "25%",
+        "0.50" = "50%",
+        "0.75" = "75%",
+        "1" = "100%"
+      )
+    ) + theme(axis.text.y = y_text, axis.ticks.y = element_blank()) + scale_x_discrete(limits = modified)
+  return(plt)
+  }
+}
+```
+
+
+## Plot in new design
+```{r, echo=FALSE}
+plot_list <- list()
+plot_item <- c("NP", "FA", "TS")
+title <-
+  c("Number of Proposals", "Funding Agency", "Time of Submission")
+modified_ticx = list(np_actual, fa_actual, TS_actual, H_actual)
+
+
+for (item in 1:length(plot_item)) {
+  plot = model_plot(plot_item[item], modified_ticx[[item]], title[item])
+  plot_list[[length(plot_list) + 1]] <- plot
+}
+
+
+
+dummy_plot_BF <- draw_dummy_plot("Break Frequency")
+dummy_plot_PR <- draw_dummy_plot("Pilot Research")
+
+
+
+
+
+
+```
+
 
 ```{r, echo=FALSE}
 # p <- sjPlot::plot_model(BEmodel, type = "pred", grid = FALSE)

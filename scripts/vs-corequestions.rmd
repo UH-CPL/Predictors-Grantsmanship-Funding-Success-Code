@@ -857,11 +857,8 @@ write.csv(Data_CQ,file.path(curated_data_dir, file_name), row.names = FALSE)
 
 ## Funding_WRT_NP
 ```{r, echo=FALSE}
+
 library(ggplot2)
-
-
-
-
 Funding_WRT_NP <- ggplot(Core_Questions, aes(x = RO_F_EG)) + geom_histogram(stat = "count") +
   facet_grid( ~ NP) +
   theme(
@@ -888,6 +885,255 @@ full_path <- file.path(plot_dir, filename)
 ggsave(
   full_path,
   Funding_WRT_NP,
+  width = 8.5,
+  height = 5.5,
+  units = "in"
+)
+```
+
+
+```{r, echo=FALSE}
+
+Funding_NP <-Core_Questions[, c("RO_F_EG", "NP")]
+NP<- c("NP1", "NP2", "NP3")
+
+plot_list<-list()
+for (item in NP){
+  print(item)
+  sub_np <- subset(Funding_NP, NP==item)
+
+  temp <- count(sub_np)
+  temp$NP <- NULL
+  colnames(temp) <- c("item", "count")
+  temp <- temp %>%
+    mutate(
+      cs = rev(cumsum(rev(count))),
+      prop = percent(count / sum(count)),
+      pos = count / 2 + lead(cs, 1),
+      pos = if_else(is.na(pos), count / 2, pos)
+    )
+  temp$pos[is.na(temp$pos)] <- 1
+
+
+  pichart <-
+    ggplot(temp, aes(
+      x = "" ,
+      y = count,
+      fill = fct_inorder(item)
+    )) +
+    geom_col(width = 1) +
+    coord_polar(theta = "y", start = 0) +
+    scale_fill_brewer(palette = "Set3", direction = -4) +
+    geom_label_repel(
+      aes(y = pos, label = paste0(item, " " , prop)),
+      data = temp,
+      size = 4,
+      show.legend = F,
+      nudge_x = 1
+    ) +
+    theme_void() +
+    theme(legend.position = "none", legend.title = element_blank())
+  
+  plot_list[[length(plot_list) + 1]] <- pichart
+  print(pichart)
+}
+
+pie_chart=ggarrange(plotlist = plot_list,
+                      nrow = 1,
+                      ncol = 3)
+
+
+final_plot <- ggarrange(Funding_WRT_NP, pie_chart, nrow = 2, ncol = 1)
+
+filename <- "Funding_WRT_NP_both.pdf"
+full_path <- file.path(plot_dir, filename)
+ggsave(
+  full_path,
+  final_plot,
+  width = 8.5,
+  height = 5.5,
+  units = "in"
+)
+  
+```
+
+```{r, echo=FALSE}
+
+
+
+library(ggplot2)
+Funding_FA_NP <- ggplot(Core_Questions, aes(x = FA)) + geom_histogram(stat = "count") +
+  facet_grid( ~ NP) +
+  theme(
+    axis.title.y = element_text(size=12, face="bold", colour = "black"),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(hjust = 0.5),
+    axis.text.x = element_text(
+      face = "bold",
+      size = 10 ,
+      angle = 30,
+      hjust = 1
+    ),
+    axis.text.y = element_text(
+      face = "bold",
+      size = 10), 
+    strip.text = element_text(size = 12, face = "bold")
+  ) +
+  labs(x = "", y = "Count")
+
+
+Funding_FA_NP
+
+FA_NP <-Core_Questions[, c("FA", "NP")]
+NP<- c("NP1", "NP2", "NP3")
+
+plot_list<-list()
+for (item in NP){
+  print(item)
+  sub_np <- subset(FA_NP, NP==item)
+  temp <- count(sub_np)
+  temp$NP <- NULL
+  colnames(temp) <- c("item", "count")
+  
+  temp <- temp %>%
+    mutate(
+      cs = rev(cumsum(rev(count))),
+      prop = percent(count / sum(count)),
+      pos = count / 2 + lead(cs, 1),
+      pos = if_else(is.na(pos), count / 2, pos)
+    )
+  temp$pos[is.na(temp$pos)] <- 1
+
+  # temp <- temp[order(temp$pos),]
+
+  pichart <-
+    ggplot(temp, aes(
+      x = "" ,
+      y = count,
+      fill = fct_inorder(item)
+    )) +
+    geom_col(width = 1) +
+    coord_polar(theta = "y", start = 0) +
+    scale_fill_brewer(palette = "Set3", direction = -4) +
+    geom_label_repel(
+      aes(y = pos, label = paste0(item, " " , prop)),
+      data = temp,
+      size = 4,
+      show.legend = F,
+      nudge_x = 0.5
+    ) +
+    theme_void() +
+    theme(legend.position = "none", legend.title = element_blank())
+  
+  plot_list[[length(plot_list) + 1]] <- pichart
+  print(pichart)
+}
+
+pie_chart=ggarrange(plotlist = plot_list,
+                      nrow = 1,
+                      ncol = 3)
+
+
+final_plot <- ggarrange(Funding_FA_NP, pie_chart, nrow = 2, ncol = 1)
+
+filename <- "Funding_Agency_NP_both.pdf"
+# filename <- "Funding_Agency_NP_both.jpg"
+full_path <- file.path(plot_dir, filename)
+ggsave(
+  full_path,
+  final_plot,
+  width = 8.5,
+  height = 5.5,
+  units = "in"
+)
+  
+```
+
+
+```{r}
+library(ggplot2)
+RS_NP <- ggplot(Core_Questions, aes(x = RS)) + geom_histogram(stat = "count") +
+  facet_grid( ~ NP) +
+  theme(
+    axis.title.y = element_text(size=12, face="bold", colour = "black"),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(hjust = 0.5),
+    axis.text.x = element_text(
+      face = "bold",
+      size = 10 ,
+      angle = 30,
+      hjust = 1
+    ),
+    axis.text.y = element_text(
+      face = "bold",
+      size = 10), 
+    strip.text = element_text(size = 12, face = "bold")
+  ) +
+  labs(x = "", y = "Count")
+
+
+RS_NP
+
+FA_NP <-Core_Questions[, c("RS", "NP")]
+NP<- c("NP1", "NP2", "NP3")
+
+plot_list<-list()
+for (item in NP){
+  print(item)
+  sub_np <- subset(FA_NP, NP==item)
+  temp <- count(sub_np)
+  temp$NP <- NULL
+  colnames(temp) <- c("item", "count")
+  
+  temp <- temp %>%
+    mutate(
+      cs = rev(cumsum(rev(count))),
+      prop = percent(count / sum(count)),
+      pos = count / 2 + lead(cs, 1),
+      pos = if_else(is.na(pos), count / 2, pos)
+    )
+  temp$pos[is.na(temp$pos)] <- 1
+
+  # temp <- temp[order(temp$pos),]
+
+  pichart <-
+    ggplot(temp, aes(
+      x = "" ,
+      y = count,
+      fill = fct_inorder(item)
+    )) +
+    geom_col(width = 1) +
+    coord_polar(theta = "y", start = 0) +
+    scale_fill_brewer(palette = "Set3", direction = -4) +
+    geom_label_repel(
+      aes(y = pos, label = paste0(item, " " , prop)),
+      data = temp,
+      size = 4,
+      show.legend = F,
+      nudge_x = 0.5
+    ) +
+    theme_void() +
+    theme(legend.position = "none", legend.title = element_blank())
+  
+  plot_list[[length(plot_list) + 1]] <- pichart
+  print(pichart)
+}
+
+pie_chart=ggarrange(plotlist = plot_list,
+                      nrow = 1,
+                      ncol = 3)
+
+
+final_plot <- ggarrange(RS_NP, pie_chart, nrow = 2, ncol = 1)
+
+filename <- "RS_NP_both.pdf"
+# filename <- "Funding_Agency_NP_both.jpg"
+full_path <- file.path(plot_dir, filename)
+ggsave(
+  full_path,
+  final_plot,
   width = 8.5,
   height = 5.5,
   units = "in"
