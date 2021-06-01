@@ -30,6 +30,7 @@ library(sjPlot)
 library(grid)
 library(gridExtra)
 library(ggpubr)
+library(freqtables)
 # require(dplyr)
 # install.packages("aod")
 # knitr::opts_chunk$set(echo = TRUE)
@@ -146,6 +147,10 @@ lm_DF$Rank <- as.factor(lm_DF$Rank)
 lm_DF <- lm_DF %>% dplyr::rename(TS = "T",  FR= "Rank", BF = "BR", E = "EXT", PR = "AR")
 
 ```
+
+
+
+
 
 \newpage
 ## Null Model

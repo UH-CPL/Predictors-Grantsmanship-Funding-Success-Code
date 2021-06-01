@@ -50,6 +50,7 @@ StandardPart <-
     geom_bar(stat = "identity",
              width = 0.5,
              fill = "steelblue") +
+    geom_text(aes(label=cou), vjust=1, color="white", size=3.5) +
     theme_bw() +
     scale_y_continuous(breaks = seq(0, 250, by = 50),
                        limits = c(0, 250)) +
@@ -116,6 +117,7 @@ faculty_rank<-ggplot(temp, aes(x = "" , y = cou, fill = item)) +
     geom_bar(stat = "identity",
              width = 0.5,
              fill = "steelblue") +
+        geom_text(aes(label=cou), vjust=1, color="white", size=3.5) +
     theme_bw() +
     scale_y_continuous(breaks = seq(0, 300, by = 50),
                        limits = c(0, 300)) +
@@ -187,6 +189,7 @@ Gender<-ggplot(temp, aes(x = "" , y = cou, fill = item)) +
     geom_bar(stat = "identity",
              width = 0.5,
              fill = "steelblue") +
+        geom_text(aes(label=cou), vjust=1, color="white", size=3.5) +
     theme_bw() +
     scale_y_continuous(breaks = seq(0, 150, by = 50),
                        limits = c(0, 150)) +

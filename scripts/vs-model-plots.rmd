@@ -82,50 +82,121 @@ summary(model_50)
 ```
 
 
-```{r}
-ggplot(dummy_df, aes(x=x, y=y, group=group)) + 
-    geom_line(scale = 0.9) +
-    # theme_minimal() +
-    theme(
-      plot.title = element_text(hjust = 0.5, size = 8, face = "bold"),
-      axis.title.x=element_text(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(),
-        axis.title.y=element_blank(),
-        axis.text.y=element_blank(),
-        axis.ticks.y=element_blank(),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank()) + labs(title ="", x ="")
-```
 
 
 ## Dummy plot
 
 ```{r, echo=FALSE}
-dummy_df <- data.frame(x = c(0, 100, 0, 100), 
-                       y = c(100, 0, 0, 100), 
+dummy_df <- data.frame(x = c(0, 1, 0, 1), 
+                       y = c(1, 0, 0, 1), 
                        group=c('a', 'a', 'b', 'b'))
 
-draw_dummy_plot <- function(plot_title) {
-  dummy_plot <- ggplot(dummy_df, aes(x=x, y=y, group=group)) + 
-    geom_line(scale = 0.9) +
+y_title = expression(paste(italic("P", "S20%")))
+
+SectionA_draw_dummy_plot <- function(plot_title, y_title) {
+  if (plot_title!=""){
+    title = element_text(hjust = 0.5, size = 8, face = "bold")
+  }
+  
+  if (plot_title==""){
+    title = element_blank()
+  }
+  dummy_plot <- ggplot(dummy_df, aes(x = x, y = y, group = group)) +
+    geom_line(scale = 0.9, color= "gray93") +
     # theme_minimal() +
     theme(
-      plot.title = element_text(hjust = 0.5, size = 8, face = "bold"),
-      axis.title.x=element_text(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(),
-        axis.title.y=element_blank(),
-        axis.text.y=element_blank(),
-        axis.ticks.y=element_blank(),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank()) + labs(title =  plot_title, x= "")
-    
+      plot.title = title,
+      axis.title.x = element_text(),
+      axis.ticks.x=element_blank(),
+      axis.ticks.y=element_blank(),
+      axis.text.x = element_text(
+        face = "bold",
+        size = 7,
+        angle = 30,
+        hjust = 1
+      ),
+      axis.text.y = element_text(face = "bold", size = 7),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank()
+    ) + labs(y = element_blank(), x = "", title = plot_title) +
+    scale_y_continuous(
+      limits = c(0.0, 1),
+      breaks = c(0.0, 0.25, 0.50, 0.75, 1),
+      labels = c(
+        "0.00" = "",
+        "0.25" = "",
+        "0.50" = "",
+        "0.75" = "",
+        "1" = ""
+      )
+    ) +
+    scale_x_continuous(
+      limits = c(0.0, 1),
+      breaks = c(0.0, 0.25, 0.50, 0.75, 1),
+      labels = c(
+        "0.00" = "",
+        "0.25" = "",
+        "0.50" = "",
+        "0.75" = "",
+        "1" = ""
+      )
+    )
+  
   return(dummy_plot)
   dummy_plot
 }
 
 
+
+
+SectionB_draw_dummy_plot <- function(plot_title, y_title) {
+  dummy_plot <- ggplot(dummy_df, aes(x = x, y = y, group = group)) +
+    geom_line(scale = 0.9, color= "gray93") +
+    # theme_minimal() +
+    theme(
+      plot.title = element_text(
+        hjust = 0.5,
+        size = 8,
+        face = "bold"
+      ),
+      axis.title.x = element_text(),
+      axis.ticks.x=element_blank(),
+      axis.text.x = element_text(
+        face = "bold",
+        size = 7,
+        angle = 30,
+        hjust = 1
+      ),
+      axis.text.y = element_text(face = "bold", size = 7),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank()
+    ) + labs(y = y_title, x = "", title = plot_title) +
+    scale_y_continuous(
+      limits = c(0.0, 1),
+      breaks = c(0.0, 0.25, 0.50, 0.75, 1),
+      labels = c(
+        "0.00" = "0%",
+        "0.25" = "25%",
+        "0.50" = "50%",
+        "0.75" = "75%",
+        "1" = "100%"
+      )
+    ) +
+    scale_x_continuous(
+      limits = c(0.0, 1),
+      breaks = c(0.0, 0.25, 0.50, 0.75, 1),
+      labels = c(
+        "0.00" = "",
+        "0.25" = "",
+        "0.50" = "",
+        "0.75" = "",
+        "1" = ""
+      )
+    )
+  
+  return(dummy_plot)
+  dummy_plot
+}
 draw_dummy_plot_blank_title <- function(plot_title) {
   dummy_plot <- ggplot(dummy_df, aes(x=x, y=y, group=group)) + 
     geom_line(scale = 0.9) +
@@ -149,36 +220,37 @@ draw_dummy_plot_blank_title <- function(plot_title) {
 
 ## plot in new orientation
 ```{r, echo=FALSE}
-model_plot_20 <- function(model_name, item, modified, Plot_title) {
+model_plot_sectionA <- function(model_name, item, modified, Plot_title, configuration) {
   print(model_name)
-  if (item == "NP" | item == "H" | item == "FR") {
-    y_title = expression(paste(italic("P")))
+  if (item == "NP" | item == "H" | item == "TA") {
+    y_title = bquote(~italic("P"[.(configuration)]))
+    
+    # labs(title = bquote(italic(.(title_list[i])) ~ .(title_suffix)))
+
     y_text = element_text(face = "bold")
   } else{
-    y_title = ""
+    y_title = element_blank()
     y_text = element_blank()
   }
   
+  
+  if (configuration!=20){
+    plot_title_ = element_blank()
+      
+  } 
+  if (configuration==20){
+    plot_title_ = element_text(hjust = 0.5, face = "bold", size = 8)
+  }
+  
   if (item == "NP" |
-      item == "FA" |
-      item == "TS" |
-      item == "FR" |
-      item == "RS" | item == "DS" | item == "BF" | item == "PR") {
-    
-    
+      item == "H" |
+      item == "TA" ) {
     plt = plot_model(model_name, type = "pred", terms = item) +
       theme(
-        plot.title = element_text(hjust = 0.5, face = "bold", size = 8),
+        plot.title = plot_title_,
         panel.grid = element_blank(),
-        axis.title = element_text(face = "bold"),
-        axis.text.x = element_text(
-          face = "bold",
-          size = 7,
-          angle = 30,
-          hjust = 1
-        ),
-        axis.text.y = element_text(face = "bold", size = 7)
-      ) +
+        axis.text.x = element_text(face = "bold", size = 7, angle = 30, hjust = 1),
+        axis.text.y = element_text(face = "bold", size = 7)) +
       labs(y = y_title, x = "", title = Plot_title) + scale_y_continuous(
         limits = c(0.0, 1),
         breaks = c(0.0, 0.25, 0.50, 0.75, 1),
@@ -194,19 +266,12 @@ model_plot_20 <- function(model_name, item, modified, Plot_title) {
   } else {
     plt = plot_model(model_name, type = "pred", terms = item) +
       theme(
-        plot.title = element_text(hjust = 0.5, face = "bold", size = 8),
+        plot.title = plot_title_,
         panel.grid = element_blank(),
-        axis.title = element_text(face = "bold"),
-        axis.text.x = element_text(
-          face = "bold",
-          size = 7,
-          angle = 30,
-          hjust = 1
-        ),
-        axis.text.y = element_text(face = "bold", size = 7)
-      ) +
-      labs(y = y_title, x = "", title = Plot_title) + scale_y_continuous(
-        limits = c(0.0, 1),
+        axis.text.x = element_text(face = "bold", size = 7, angle = 30, hjust = 1),
+        axis.text.y = element_text(face = "bold", size = 7)) +
+      labs(y = element_blank(), x = "", title = Plot_title) + 
+      scale_y_continuous( limits = c(0.0, 1),
         breaks = c(0.0, 0.25, 0.50, 0.75, 1),
         labels = c(
           "0.00" = "0%",
@@ -215,7 +280,7 @@ model_plot_20 <- function(model_name, item, modified, Plot_title) {
           "0.75" = "75%",
           "1" = "100%"
         )
-      ) + theme(axis.text.y = y_text, axis.ticks.y = element_blank())
+      ) + theme(axis.text.y = y_text, axis.ticks.y = element_blank()) + scale_x_discrete(limits = modified)
     return(plt)
   }
   
@@ -227,21 +292,18 @@ model_plot_20 <- function(model_name, item, modified, Plot_title) {
 ```{r, echo=FALSE}
 model_plot <- function(model_name, item, modified, Plot_title) {
   print(model_name)
-  if (item == "NP" | item == "H" | item == "FR") {
+  if (item == "NP" | item == "H" ) {
     y_title = expression(paste(italic("P")))
     y_text = element_text(face = "bold")
   } else{
-    # y_title = ""
     y_title = expression(paste(italic("P")))
-    # y_text = element_blank()
     y_text = element_text(face = "bold")
   }
   
   if (item == "NP" |
-      item == "FA" |
       item == "TS" |
       item == "FR" |
-      item == "RS" | item == "DS" | item == "BF" | item == "PR") {
+      item == "RS" | item == "DS") {
     plt = plot_model(model_name, type = "pred", terms = item) +
       theme(
         plot.title = element_blank(),
@@ -266,8 +328,8 @@ model_plot <- function(model_name, item, modified, Plot_title) {
           "0.75" = "75%",
           "1" = "100%"
         )
-      # ) + theme(axis.text.y = y_text, axis.ticks.y = element_blank()) + scale_x_discrete(limits = modified)
-      ) + theme(axis.text.y = element_blank(), axis.ticks.y = element_blank()) + scale_x_discrete(limits = modified)
+        ) + theme(axis.text.y = y_text, axis.ticks.y = element_blank()) + scale_x_discrete(limits = modified)
+      # ) + theme(axis.text.y = element_blank(), axis.ticks.y = element_blank()) + scale_x_discrete(limits = modified)
     
     return(plt)
   } else {
@@ -294,8 +356,8 @@ model_plot <- function(model_name, item, modified, Plot_title) {
           "0.75" = "75%",
           "1" = "100%"
         )
-      # ) + theme(axis.text.y = y_text, axis.ticks.y = element_blank())
-      ) + theme(axis.text.y = y_text)
+        # ) + theme(axis.text.y = y_text, axis.ticks.y = element_blank())
+      ) + theme(axis.text.y = element_blank(), axis.title.y = element_blank(), axis.ticks.y = element_blank())+ scale_x_discrete(limits = modified)
     return(plt)
   }
   
@@ -323,26 +385,29 @@ title <- c("Number of Proposals", "Funding Agency", "Time of Submission")
 
 modified_ticx = list(np_actual, fa_actual, TS_actual, H_actual)
 
+configuration = 20
 for (item in 1:length(plot_item)){
-  plot = model_plot_20(model_20, plot_item[item], modified_ticx[[item]], title[item])
+  plot = model_plot_sectionA(model_20, plot_item[item], modified_ticx[[item]], title[item], configuration)
   plot_list[[length(plot_list) + 1]] <- plot
 }
 
 
-dummy_BF <- draw_dummy_plot("Break Frequency")
-dummy_PR <- draw_dummy_plot("Pilot Research")
+dummy_BF <- SectionA_draw_dummy_plot("Break Frequency", "")
+dummy_PR <- SectionA_draw_dummy_plot("Pilot Research", "")
 
 
-plot_A_20 <- ggarrange(
+plot_A_20 <- plot_grid(
   plot_list[[1]],
   plot_list[[2]],
   plot_list[[3]],
   dummy_BF,
   dummy_PR,
   nrow = 1,
-  ncol = 5
+  ncol = 5, 
+  rel_widths = c(1, 1, 1, 1, 1)
 )
 plot_A_20
+
 
 ```
 
@@ -356,15 +421,16 @@ title <- c("", "")
 
 modified_ticx = list(np_actual, fa_actual, FR_actual, RS_actual, H_actual , DS_actual)
 
+configuration = 30
 for (item in 1:length(plot_item)){
-  plot = model_plot(model_30, plot_item[item], modified_ticx[[item]], title[item])
+  plot = model_plot_sectionA(model_30, plot_item[item], modified_ticx[[item]], title[item], configuration)
   plot_list[[length(plot_list) + 1]] <- plot
 }
 
 
-dummy_BF <- draw_dummy_plot_blank_title("")
-dummy_PR <- draw_dummy_plot_blank_title("")
-dummy_TS <- draw_dummy_plot_blank_title("")
+dummy_BF <- SectionA_draw_dummy_plot("", "")
+dummy_PR <- SectionA_draw_dummy_plot("", "")
+dummy_TS <- SectionA_draw_dummy_plot("", "")
 
 
 plot_A_30 <- ggarrange(
@@ -377,6 +443,8 @@ plot_A_30 <- ggarrange(
   ncol = 5
 )
 plot_A_30
+
+ # + annotate(geom = 'text', x=.99, y=.5, label="S 30%", angle = 90, face = "bold")
 ```
 
 ```{r, echo=FALSE}
@@ -385,17 +453,17 @@ plot_item <- c("NP", "FA", "BF", "PR")
 title <- c("", "", "", "")
 
 modified_ticx = list(np_actual, fa_actual, BF_actual, PR_actual, H_actual, H_actual)
-
+configuration = 50
 for (item in 1:length(plot_item)){
-  plot = model_plot(model_50, plot_item[item], modified_ticx[[item]], title[item])
+  plot = model_plot_sectionA(model_50, plot_item[item], modified_ticx[[item]], title[item], configuration)
   plot_list[[length(plot_list) + 1]] <- plot
 }
 
 
-dummy_TS <- draw_dummy_plot_blank_title("")
+dummy_TS <- SectionA_draw_dummy_plot("", "")
 
 
-plot_A_50 <- ggarrange(
+plot_A_50 <- plot_grid(
   plot_list[[1]],
   plot_list[[2]],
   dummy_TS,
@@ -409,7 +477,7 @@ plot_A_50
 
 ```{r, echo=FALSE}
 Research_tactics<- plot_grid(plot_A_20, plot_A_30, plot_A_50, nrow = 3)
-filename <- "SR_prediction_A.pdf"
+filename <- "SR_prediction_A_P.pdf"
 full_path <- file.path(plot_dir, filename)
 ggsave(
   full_path,
@@ -636,3 +704,23 @@ ggsave(
   units = "in"
 )
 ```
+
+
+```{r}
+
+p <- ggplot(mtcars, aes(x = wt, y = mpg)) + 
+  geom_point()
+ 
+# a data frame with all the annotation info
+annotation <- data.frame(
+   x = c(2,4.5),
+   y = c(20,25),
+   label = c("label 1", "label 2")
+)
+
+
+p + geom_label(data=annotation, aes( x=x, y=y, label=label), 
+           color="black", 
+           size=5 , angle=180, fontface="bold" )
+```
+

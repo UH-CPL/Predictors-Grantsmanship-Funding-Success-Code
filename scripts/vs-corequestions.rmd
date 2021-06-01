@@ -49,11 +49,39 @@ data_file_name <- 'StandardPart.csv'
 curated_data_dir <- file.path(project_directory, 'curated-data')
 StandardPart <-
   read.csv(file.path(data_dir, data_file_name), stringsAsFactors = FALSE)
+
 ```
+
+```{r, echo=FALSE}
+# levels(factor(StandardPart$departmental_affiliation))
+
+
+
+for (i in 1:nrow(StandardPart)) {
+
+  # if (final_data$departmental_affiliation[i] == "Other") {
+  #   final_data$departmental_affiliation[i] = final_data$please_write_down_the_depa[i]
+  # }
+  if (StandardPart$departmental_affiliation[i] == "Other") {
+    StandardPart$departmental_affiliation[i] = StandardPart$please_write_down_the_depa[i]
+  }
+
+}
+# 
+# # count(StandardPart$departmental_affiliation)
+# levels(factor(StandardPart$departmental_affiliation))
+
+# levels(factor(StandardPart$please_write_down_the_depa))
+# count(StandardPart$departmental_affiliation)
+```
+
 
 
 ```{r, echo=FALSE}
 title_list = c(
+  "Faculty Rank",
+  "Gender",
+  "Departments",
   "States",
   "Salary dependance on external grants",
   "Percentage of research operations funded by external grants",
@@ -91,61 +119,113 @@ title_list = c(
 
 
 ```{r, echo=FALSE, warning=FALSE}
-Core_Questions<- StandardPart %>% select(record_id, state_do_you_reside, how_many_months_of_your_sa, what_is_your_current_level,
-                  do_you_have_a_deadline_tod, please_indicate_your_workl, where_you_typically_wor,
-                  test,in_a_typical_workday_how_m, in_a_typical_day_how_often,
-                  how_do_you_usually_handle,  funding_proposal, what_is_the_average_number,
-                  funding_agency,  hy, how_far_in_advance_do_you,
-                  what_is_the_length_of_supp, in_the_week_leading_to_a_p, when_you_typically_subm,
-                  stress_level_in_a_fundi, refereed_conference, wha_average_number,
-                  core_rank, if_you_submit_manuscripts,  far_in_advance_do_you,
-                  length_of_supp, in_the_week_leading_to_a_c,
-                  you_typically_subm, ss_level_in_a_fundi)
+Core_Questions <-
+  StandardPart %>% select(
+    faculty_rank,
+    gender,
+    departmental_affiliation,
+    record_id,
+    state_do_you_reside,
+    how_many_months_of_your_sa,
+    what_is_your_current_level,
+    do_you_have_a_deadline_tod,
+    please_indicate_your_workl,
+    where_you_typically_wor,
+    test,
+    in_a_typical_workday_how_m,
+    ti_research,
+    in_a_typical_day_how_often,
+    how_do_you_usually_handle,
+    funding_proposal,
+    what_is_the_average_number,
+    funding_agency,
+    hy,
+    how_far_in_advance_do_you,
+    what_is_the_length_of_supp,
+    in_the_week_leading_to_a_p,
+    when_you_typically_subm,
+    stress_level_in_a_fundi,
+    refereed_conference,
+    wha_average_number,
+    core_rank,
+    if_you_submit_manuscripts,
+    far_in_advance_do_you,
+    length_of_supp,
+    in_the_week_leading_to_a_c,
+    you_typically_subm,
+    ss_level_in_a_fundi
+  )
 
 
 
-Core_Questions<-Core_Questions  %>%  dplyr::rename(
-                                          # h_index="google_scholar_h_index",
-                                          FA = "funding_agency",
-                                           Record_id="record_id",
-                                           State="state_do_you_reside",
-                                           S_D_E="how_many_months_of_your_sa",     ## salary depends on external grants
-                                           RO_F_EG="what_is_your_current_level",   ## Research operations funded by external grants
-                                           Deadline_today="do_you_have_a_deadline_tod",
-                                           Workload_today="please_indicate_your_workl",
-                                           Workplace="where_you_typically_wor",
-                                           RS="test",                         ## Research Style
-                                           TW_W_H="in_a_typical_workday_how_m",    ## Typical week working hours
-                                           # TW_Research="ti_research",              ## Typical week Research
-                                           Break="in_a_typical_day_how_often",     ## Break Frequency
-                                           Email="how_do_you_usually_handle",      ## Email respnse style
-                                           NP="what_is_the_average_number",   ## Average Number of Proposal per year
-                                           Success="hy",                           ## Success Rate in the proposal
-                                           Com_Proposal="how_far_in_advance_do_you",# Composing Proposal
-                                           L_Of_SR="what_is_the_length_of_supp",   ## Length of supporting research
-                                           W_WB_PD="in_the_week_leading_to_a_p",   ## Work load a week before Proposal Deadline
-                                           # Research_WB="week_research",            ## Research percentage a week before Proposal
-                                           # Research_DD="proposal_research",        ## Research percentage in the Proposal deadlines day
-                                           T="when_you_typically_subm",     ## Submit Proposal
-                                           DS="stress_level_in_a_fundi",    ## Stress leven on Proposal Deadline
-                                           A_N_Conf_Pap="wha_average_number"
-                                           )
+Core_Questions <-
+  Core_Questions  %>%  dplyr::rename(
+    FR = "faculty_rank",
+    Gender = "gender",
+    Departmnet = "departmental_affiliation",
+    FA = "funding_agency",
+    Record_id = "record_id",
+    State = "state_do_you_reside",
+    S_D_E = "how_many_months_of_your_sa",
+    ## salary depends on external grants
+    RO_F_EG = "what_is_your_current_level",
+    ## Research operations funded by external grants
+    Deadline_today = "do_you_have_a_deadline_tod",
+    Workload_today = "please_indicate_your_workl",
+    Workplace = "where_you_typically_wor",
+    RS = "test",
+    ## Research Style
+    TW_W_H = "in_a_typical_workday_how_m",
+    ## Typical week working hours
+    
+    TW_Research="ti_research",              ## Typical week Research
+    Break = "in_a_typical_day_how_often",
+    ## Break Frequency
+    Email = "how_do_you_usually_handle",
+    ## Email respnse style
+    NP = "what_is_the_average_number",
+    ## Average Number of Proposal per year
+    Success = "hy",
+    ## Success Rate in the proposal
+    Com_Proposal = "how_far_in_advance_do_you",
+    # Composing Proposal
+    L_Of_SR = "what_is_the_length_of_supp",
+    ## Length of supporting research
+    W_WB_PD = "in_the_week_leading_to_a_p",
+    ## Work load a week before Proposal Deadline
+    # Research_WB="week_research",            ## Research percentage a week before Proposal
+    # Research_DD="proposal_research",        ## Research percentage in the Proposal deadlines day
+    T = "when_you_typically_subm",
+    ## Submit Proposal
+    DS = "stress_level_in_a_fundi",
+    ## Stress leven on Proposal Deadline
+    A_N_Conf_Pap = "wha_average_number"
+  )
 
 
-East = 'Connecticut|Maryland|Massachusetts|^New Jersey$|^New York$|Pennsylvania'
-West = 'Arizona|California|Colorado|Nevada|^New Mexico$|Oregon|^Utah$'
+East = 'Connecticut|Maryland|Massachusetts|^New Jersey$|^New York$|Pennsylvania|^Virginia$|^North Carolina$'
+
+
 Midwest = 'Illinois|Michigan|Minnesota|Ohio|Wisconsin'
-South = 'Florida|Georgia|Tennessee|Texas|Virginia|Alabama|^North Carolina$|^oklahoma$'
 
 
-  Core_Questions <- Core_Questions %>%
-    mutate(States_ewns = case_when(str_detect(State, East)~'East',
-                                   str_detect(State, West)~'West',
-                                   str_detect(State, Midwest)~'Midwest',
-                                   str_detect(State, South)~'South'))
-  Core_Questions$State <- Core_Questions$States_ewns
-  
-  Core_Questions$States_ewns <- NULL
+West = 'Arizona|California|Colorado|Nevada|^New Mexico$|Oregon|^Utah$'
+
+South = 'Florida|Georgia|Tennessee|Texas|Alabama|^oklahoma$'
+
+
+Core_Questions <- Core_Questions %>%
+  mutate(
+    States_ewns = case_when(
+      str_detect(State, East) ~ 'East',
+      str_detect(State, West) ~ 'West',
+      str_detect(State, Midwest) ~ 'Midwest',
+      str_detect(State, South) ~ 'South'
+    )
+  )
+Core_Questions$State <- Core_Questions$States_ewns
+
+Core_Questions$States_ewns <- NULL
 ```
 
 
@@ -340,6 +420,10 @@ for(i in 1:nrow(Core_Questions)){
   
   
 }
+
+
+file_name = "Selected_coreQuestions.csv"
+write.csv(Core_Questions,file.path(curated_data_dir, file_name), row.names = FALSE)
 ```
 
 
@@ -461,6 +545,9 @@ for(i in 1:nrow(Core_Questions)){
 
 
 ```{r, echo=FALSE}
+
+
+
 list1 = c("East", "West", "Midwest", "South")
 list2 = c("Two months", "Three months", "Other")
 
@@ -891,7 +978,6 @@ ggsave(
 )
 ```
 
-
 ```{r, echo=FALSE}
 
 Funding_NP <-Core_Questions[, c("RO_F_EG", "NP")]
@@ -1050,8 +1136,7 @@ ggsave(
   
 ```
 
-
-```{r}
+```{r, echo=FALSE}
 library(ggplot2)
 RS_NP <- ggplot(Core_Questions, aes(x = RS)) + geom_histogram(stat = "count") +
   facet_grid( ~ NP) +
