@@ -1,9 +1,9 @@
 ---
 title: "DataPreprocessing"
 output:
-  pdf_document: default
   html_document:
     df_print: paged
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -214,8 +214,8 @@ final_data$google_scholar_h_index[236] <- 32
 
 ```{r, echo=FALSE}
 
-final_data<- final_data[!is.na(final_data$google_scholar_h_index),]
-final_data<- final_data[final_data$funding_proposal !="No",]
+# final_data<- final_data[!is.na(final_data$google_scholar_h_index),]
+# final_data<- final_data[final_data$funding_proposal !="No",]
 ```
 
 ```{r, echo=FALSE}
