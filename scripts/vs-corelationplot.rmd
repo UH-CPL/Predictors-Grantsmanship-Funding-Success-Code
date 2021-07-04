@@ -283,17 +283,15 @@ for (i in 1:nrow(Corelation_DF)) {
 
 table(Corelation_DF$SR)
 
-cols.num <-
-  c("RS", "WH", "BF", "NP", "SR", "AP", "AR", "DWH", "T", "DS", "FA")
-Corelation_DF[cols.num] <-
-  sapply(Corelation_DF[cols.num], as.numeric)
-# Corelation_DF <- Corelation_DF[complete.cases(Corelation_DF),]
+cols.num <-  c("RS", "WH", "BF", "NP", "SR", "AP", "AR", "DWH", "T", "DS", "FA")
+Corelation_DF[cols.num] <-  sapply(Corelation_DF[cols.num], as.numeric)
 levels(factor(Corelation_DF$FC))
 ```
 
 
 ```{r, echo=FALSE}
-file_name = 'KeyData.csv'
+# file_name = 'KeyData.csv'
+file_name = 'AllKeyData.csv'
 write.csv(Corelation_DF,
           file.path(curated_data_dir, file_name),
           row.names = FALSE)
@@ -399,8 +397,8 @@ rank_factor <- factor(Corelation_DF$Rank)
 Corelation_DF$Rank <- as.numeric(rank_factor)
 
 # Corelation_DF$BR<-factor(Corelation_DF$BR)
-M_proposal <- cor(Corelation_DF[, c(1:25)], use = "complete.obs")
-res1 <- cor.mtest(Corelation_DF[, c(1:25)], conf.level = .95)
+M_proposal <- cor(Corelation_DF[, c(1:26)], use = "complete.obs")
+res1 <- cor.mtest(Corelation_DF[, c(1:26)], conf.level = .95)
 
 # significance_plot<-
 corrplot(

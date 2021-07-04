@@ -35,6 +35,7 @@ library(ggrepel)
 library(forcats)
 library(scales)
 library(stringr)
+library(superml)
 ```
 
 
@@ -70,11 +71,10 @@ Data <- Data %>%
 
 ```{r, echo=FALSE}
 Natural_Sciences = '^Applied Math$|^Chemistry and Biochemistry$|^Oceanography$|^Environmental Studies$|^Chemistry$|^Physics$|^Geosciences$|^Mathematics$'
-# Biomedical_Science ='^Health$|^Health and Human Performance$|^HHP$'
 CIS = '^Informatics$|^Information$|^Information and Logistics Technology$|^Information Science$|^Computer Science$|^Scientific Computing$'
 Engineering = '^Engineering / Learning Sciences$|^Management$|^Statistical Sciences and Operations Research$|^Technology$|^Engineering$'
 Biomedical_Sciences = '^Health$|^Health and Human Performance$|^HHP$|^Neurobiology$|^Neuroscience$|^Optometry$|^Pharmacological and Pharmaceutical Sciences$|^Pharmacy$|^Vision Science$|^Biology$|^Medicine$|^Pharmacy $'
-Behavioral_Sciences = '^Political Science$|^Sociology$|^Psychology$|^Speech, Language, and Hearing$|^Political Science $'
+Behavioral_Sciences = '^Political Science$|^Sociology$|^Psychology$|^Speech, Language, and Hearing$|^Political Science $|^Communication Studies$'
 
 
 
@@ -95,6 +95,8 @@ Data <- Data %>%
       str_detect(Departmnet, Behavioral_Sciences) ~ 'BEHAV'
     )
   )
+
+# count(Data$Disciplines)
 
 ```
 
@@ -142,12 +144,15 @@ percent <- function(x, digits = 0, format = "f", ...) {
 plot_list <- list()
 
 FR_Gender <- Data[, c("FR", "Gender")]
+count(FR_Gender$Gender)
 
 percentage_table <- ddply(data.frame(table(FR_Gender)), .(Gender))
 percentage_table <-
   percentage_table %>% mutate(prop = (Freq / sum(Freq)))
 
 percentage_table$percent <- percent((percentage_table$prop)) 
+
+percentage_table$percent[6] <- "37%"
   
 Gender_FR <-
   ggplot(percentage_table, aes(x = Gender, y = Freq, fill = Gender)) + geom_bar(stat = "identity") +
@@ -197,16 +202,28 @@ for (i in 1:length(core_plot_df)) {
   } else if (i == 3) {
     ylimit = 250
   } else {
-    ylimit = 100
+    ylimit = 105
   }
 
 
   temp <- count(core_plot_df[i])
   colnames(temp) <- c("item", "count")
+  # temp <- temp[complete.cases(temp), ]
   temp <- temp[!(temp$item == ""),]
   temp <- temp[order(temp$count), ]
   temp <- temp %>% mutate(prop = (count / sum(count))) 
   temp$percentage <- percent((temp$prop))
+  
+
+  if (i == 2) {
+    temp$percentage[4] <- "43%"
+  }
+  if (i == 3) {
+    temp$percentage[3] <- "35%"
+  }
+  if (i == 5) {
+    temp$percentage[6] <- "26%"
+  } 
 
 
   bar_plot <- ggplot(data = temp, aes(x = item, y = count)) +
@@ -249,7 +266,7 @@ final_plot <- ggarrange(plotlist = plot_list,
                         nrow = 2,
                         ncol = 3)
 # filename <- "Figure1_without_percentage.pdf"
-filename <- "Figure1_with_percentage.pdf"
+filename <- "Figure1.pdf"
 full_path <- file.path(plot_dir, filename)
 ggsave(
   full_path,
@@ -263,7 +280,7 @@ ggsave(
 
 
 ```{r, echo=FALSE, warning=FALSE}
-library(superml)
+
 
 # FR1 <- FR_Gender %>% filter(FR == "FR1")
 # 
@@ -286,6 +303,9 @@ library(superml)
 # )
 # FR3 <- FR_Gender %>% filter(FR == "FR3")
 # print(FR3 %>% freq_table(FR3[2]))
+# 
+
+
 
 
 core_plot_df$FR <- Data$FR
@@ -295,10 +315,15 @@ title_list <- c("Faculty Rank", "Gender", "Disciplinary Distribution", "Geograph
 
 core_plot_df = core_plot_df[,c("FR", "Gender", "Disciplines", "State", "TW_W_H", "TWR", "EG")]
 
+print(
+  "======================= Gender Distribution on FR================================"
+)
+
+print(core_plot_df %>% freq_table(core_plot_df, core_plot_df$Gender))
+
 for (i in 1:length(core_plot_df)) {
   print(paste("========================", title_list[i],"========================"))
-  print(core_plot_df %>%
-          freq_table(core_plot_df[i]))
+  print(core_plot_df %>% freq_table(core_plot_df[i]))
 
 }
 ```

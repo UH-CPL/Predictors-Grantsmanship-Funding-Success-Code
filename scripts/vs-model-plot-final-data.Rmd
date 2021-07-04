@@ -1,6 +1,6 @@
 ---
-title: "ModelingPlot"
-output: html_document
+title: "Success Rate Prediction"
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
@@ -48,7 +48,7 @@ data_processing_model <- function(data_file_name) {
   curated_data_dir <- file.path(project_directory, 'curated-data')
   plot_dir <- file.path(project_directory, 'Plots')
   
-  print(data_file_name)
+  # print(data_file_name)
   lm_DF <-
     read.csv(file.path(curated_data_dir, data_file_name),
              stringsAsFactors = FALSE)
@@ -69,55 +69,55 @@ data_processing_model <- function(data_file_name) {
   NullModel <- glm(SR ~ 1, data = lm_DF, family = "binomial")
   FullModel <- glm(SR ~ ., data = lm_DF, family = "binomial")
   BEmodel <- stepAIC(FullModel, direction = "backward", trace = FALSE)
-  summary(BEmodel)
-  return(BEmodel)
+  
+  if (data_file_name == "ModelData_SR20.csv"){
+      model_20 <- glm(SR ~ H + NP + FA + DS, family = "binomial", data = lm_DF)
+      return(model_20)
+  }
+
+  else{
+    return(BEmodel)
+  }
+  
 }
 
 ```
-
-## Configuration 20
+\newpage
+## Moderately Successful SR_20
 ```{r, echo=FALSE}
-model_20 <- data_processing_model("model_data_conf20.csv")
+model_20 <- data_processing_model("ModelData_SR20.csv")
 summary(model_20)
+
+
 ```
 
-
-
-## Configuration 30
-```{r, echo=FALSE}
-model_30 <- data_processing_model("model_data_conf30.csv")
-summary(model_30)
-```
-
-
-
-## Configuration 50
-```{r, echo=FALSE}
-model_50 <- data_processing_model("model_data_conf50.csv")
-summary(model_50)
-```
 
 ```{r, echo=FALSE}
 
 Zcrit<-1.96   ### critical value for 95% confidence intervals
   
 ilink <- family(model_20)$linkinv
-NP<-c("1","2","3",rep("1",16))
-FA<-c(rep("1",3),"1","2","3","4","5","6",rep("1",10))
-TS<-c(rep("1",9),"1","2",rep("1",8))
-RS<-c(rep("1",11),"1","2", rep("1",6))
-H<-rep(29.476965,19)
-TA<-rep(41.25745,19)
-tmpd<-data.frame(NP,FA,TS,RS,H,TA)
+NP<-c("1","2","3",rep("1",9))
+FA<-c(rep("1",3),"1","2","3","4","5","6",rep("1",3))
+DS<-c(rep("1",9),"1","2", rep("1",1))
+H<-rep(29.56824,12)
+tmpd<-data.frame(NP,FA,DS,H)
 ndata <- cbind(tmpd, setNames(as_tibble(predict(model_20, tmpd, se.fit = TRUE)[1:2]),
                                    c('fit_link','se_link')))
 Model_Data_20 <- mutate(ndata,
                 fit_resp  = ilink(fit_link),
                 Lower_limit = ilink(fit_link - (Zcrit * se_link)),
                 Upper_limit = ilink(fit_link + (Zcrit * se_link)))
-Model_Data_20
+# Model_Data_20
 ```
 
+
+\newpage
+## Successful SR_30
+```{r, echo=FALSE}
+model_30 <- data_processing_model("ModelData_SR30.csv")
+summary(model_30)
+```
 
 
 ```{r, echo=FALSE}
@@ -125,48 +125,52 @@ Model_Data_20
 Zcrit<-1.96   ### critical value for 95% confidence intervals
   
 ilink <- family(model_30)$linkinv
-NP<-c("1","2","3",rep("1",15))
-FA<-c(rep("1",3),"1","2","3","4","5","6",rep("1",9))
-FR<-c(rep("1",9),"1","2", "3", rep("1",6))
-RS<-c(rep("1",12),"1","2", rep("1",4))
-DS<-c(rep("1",14),"1","2", rep("1",2))
-H<-rep(29.476965,18)
-TA<-rep(41.25745,18)
-tmpd<-data.frame(NP,FA,FR,RS,DS,H,TA)
+NP<-c("1","2","3",rep("1",16))
+FA<-c(rep("1",3),"1","2","3","4","5","6",rep("1",10))
+RS<-c(rep("1",9),"1","2", rep("1",8))
+DS<-c(rep("1",11),"1","2", rep("1",6))
+TS<-c(rep("1",13),"1","2", rep("1",4))
+DWH<-c(rep("1",15),"1","2", rep("1",2))
+H<-rep(29.56824,19)
+TA<-rep(41.33747,19)
+tmpd<-data.frame(NP,FA,RS,DS,TS,DWH,H,TA)
 ndata <- cbind(tmpd, setNames(as_tibble(predict(model_30, tmpd, se.fit = TRUE)[1:2]),
                                    c('fit_link','se_link')))
 Model_Data_30 <- mutate(ndata,
                 fit_resp  = ilink(fit_link),
                 Lower_limit = ilink(fit_link - (Zcrit * se_link)),
                 Upper_limit = ilink(fit_link + (Zcrit * se_link)))
-Model_Data_30
+# Model_Data_30
 
 # summary(model_30)
 ```
-
+\newpage
+## Highly Successful SR_50
+```{r, echo=FALSE}
+model_50 <- data_processing_model("ModelData_SR50.csv")
+summary(model_50)
+```
 
 ```{r, echo=FALSE}
 ilink <- family(model_50)$linkinv
-NP<-as.factor(c("1","2","3",rep("1",15)))
-FA<-as.factor(c(rep("1",3),"1","2","3","4","5","6",rep("1",9)))
-BF<-as.factor(c(rep("1",9),"1","2",rep("1",7)))
-DS<-as.factor(c(rep("1",11),"1","2",rep("1",5)))
-PR<-as.factor(c(rep("1",13),"1","2","3","4","5"))
-H<-rep(29.47697,18)
-E<-rep(5.98916,18)
-OP<-rep(7.46342,18)
-AV<-rep(18.82927,18)
-Task<-rep(28.37669,18)
-tmpd<-data.frame(NP,FA,BF,DS,PR,H,E,OP,AV,Task)
+NP<-as.factor(c("1","2","3",rep("1",19)))
+FA<-as.factor(c(rep("1",3),"1","2","3","4","5","6",rep("1",13)))
+BF<-as.factor(c(rep("1",9),"1","2",rep("1",11)))
+DS<-as.factor(c(rep("1",11),"1","2",rep("1",9)))
+PR<-as.factor(c(rep("1",13),"1","2","3","4","5", rep("1",4)))
+H<-rep(29.56824,22)
+E<-rep(5.957816,22)
+AV<-rep(18.81638,22)
+Task<-rep(28.44665,22)
+tmpd<-data.frame(NP,FA,BF,DS,PR,H,E,AV,Task)
 ndata <- cbind(tmpd, setNames(as_tibble(predict(model_50, tmpd, se.fit = TRUE)[1:2]),
                               c('fit_link','se_link')))
 Model_Data_50 <- mutate(ndata,
                 fit_resp  = ilink(fit_link),
                 Lower_limit = ilink(fit_link - (Zcrit * se_link)),
                 Upper_limit = ilink(fit_link + (Zcrit * se_link)))
-Model_Data_50
+# Model_Data_50
 ```
-
 
 
 
@@ -183,13 +187,14 @@ slice_df <- function(DF, R1, R2, Item, Conf){
       
 Model_Data <- slice_df(Model_Data_20, 1, 3, "NP", "20")
 Model_Data <- rbind(Model_Data, slice_df(Model_Data_20, 4, 9, "FA", "20"))
-Model_Data <- rbind(Model_Data, slice_df(Model_Data_20, 10, 11, "TS", "20"))
+Model_Data <- rbind(Model_Data, slice_df(Model_Data_20, 10, 11, "DS", "20"))
+# Model_Data <- rbind(Model_Data, slice_df(Model_Data_20, 10, 11, "TS", "20"))
 
 Model_Data <- rbind(Model_Data, slice_df(Model_Data_30, 1, 3, "NP", "30"))
 Model_Data <- rbind(Model_Data, slice_df(Model_Data_30, 4, 9, "FA", "30"))
-Model_Data <- rbind(Model_Data, slice_df(Model_Data_30, 10, 12, "FR", "30"))
-Model_Data <- rbind(Model_Data, slice_df(Model_Data_30, 13, 14, "RS", "30"))
-Model_Data <- rbind(Model_Data, slice_df(Model_Data_30, 15, 16, "DS", "30"))
+# Model_Data <- rbind(Model_Data, slice_df(Model_Data_30, 10, 12, "FR", "30"))
+# Model_Data <- rbind(Model_Data, slice_df(Model_Data_30, 13, 14, "RS", "30"))
+# Model_Data <- rbind(Model_Data, slice_df(Model_Data_30, 15, 16, "DS", "30"))
 
 Model_Data <- rbind(Model_Data, slice_df(Model_Data_50, 1, 3, "NP", "50"))
 Model_Data <- rbind(Model_Data, slice_df(Model_Data_50, 4, 9, "FA", "50"))
@@ -197,9 +202,7 @@ Model_Data <- rbind(Model_Data, slice_df(Model_Data_50, 10, 11, "BF", "50"))
 Model_Data <- rbind(Model_Data, slice_df(Model_Data_50, 14, 18, "PR", "50"))
 
 
-filter(Model_Data, Conf == "20")
 ```
-
 
 ```{r, echo=FALSE}
 
@@ -261,7 +264,7 @@ sectionA_plots <-
         scale_x_discrete(labels = modified_ticks) +
         scale_color_manual(values = color)
       
-      print(plot)
+      # print(plot)
       
     } else{
       plot <- ggplot(Data, aes(x = Levels, y = fit_resp, colour = Levels)) +
@@ -289,10 +292,11 @@ sectionA_plots <-
                   axis.ticks.x = element_blank()) +
         scale_x_discrete(labels = modified_ticks) +
         scale_color_manual(values = color)
-      print(plot)
+      # print(plot)
     }
   }
 ```
+
 
 
 ```{r, echo=FALSE}
@@ -352,9 +356,35 @@ continous_features_plots <-
           plot.title = plot_title_,
           panel.grid = element_blank(),
           axis.text.x = element_text(face = "bold", size = 6),
-          axis.text.y = element_text(face = "bold", size = 6)
+          axis.text.y = element_blank()
         ) +
-        labs(y = y_title, x = "", title = Plot_title) + scale_y_continuous(
+        labs(y = element_blank(), x = "", title = Plot_title) + scale_y_continuous(
+          limits = c(0.0, 1),
+          breaks = c(0.0, 0.25, 0.50, 0.75, 1),
+          labels = c(
+            "0.00" = "0%",
+            "0.25" = "25%",
+            "0.50" = "50%",
+            "0.75" = "75%",
+            "1" = "100%"
+          )
+        ) + theme(
+          axis.ticks.y = element_blank(),
+          axis.ticks.x = element_blank()
+        )
+      return(plt)
+    } else if(item == "AV") {
+      
+      plt = plot_model(model_name, type = "pred", terms = item) +
+        geom_vline(xintercept = 18.8, linetype="dashed", color = "gray", size=1)+
+        theme_bw()+
+        theme(
+          plot.title = plot_title_,
+          panel.grid = element_blank(),
+          axis.text.x = element_text(face = "bold", size = 6),
+          axis.text.y = element_blank()
+        ) +
+        labs(y = element_blank(), x = "", title = Plot_title) + scale_y_continuous(
           limits = c(0.0, 1),
           breaks = c(0.0, 0.25, 0.50, 0.75, 1),
           labels = c(
@@ -372,7 +402,7 @@ continous_features_plots <-
     } else {
       
       plt = plot_model(model_name, type = "pred", terms = item) +
-        geom_vline(xintercept = 6, linetype="dashed", color = "gray", size=1)+
+        geom_vline(xintercept = 5.9, linetype="dashed", color = "gray", size=1)+
         theme_bw()+
         theme(
           plot.title = element_blank(),
@@ -400,7 +430,7 @@ continous_features_plots <-
   }
 ```
 
-## Dummy plot
+
 
 ```{r, echo=FALSE}
 dummy_df <- data.frame(
@@ -463,7 +493,7 @@ SectionA_draw_dummy_plot <- function(plot_title, y_title) {
     )
   
   return(dummy_plot)
-  dummy_plot
+  # dummy_plot
 }
 
 
@@ -580,7 +610,7 @@ SectionC_draw_dummy_plot <-
         )
       )
     return(dummy_plot)
-    dummy_plot
+    # dummy_plot
   }
 
 # draw_dummy_plot_blank_title <- function(plot_title) {
@@ -604,6 +634,7 @@ SectionC_draw_dummy_plot <-
 
 ```
 
+
 ```{r, echo=FALSE}
 np_actual = c("1" = "NP1", "2" = "NP2", "3"="NP3")
 fa_actual = c("1" = "NSF", "2" = "NIH", "3" = "DOE", "4" = "DOD", "5" = "NASA", "6" = "OT")
@@ -620,18 +651,31 @@ H_actual = c("0" = "0", "50" = "50", "100" = "100", "150" ="150", "200" = "200")
 
 
 ```{r, echo=FALSE}
+# add_bottom_legend <- function() {
+#   theme(legend.position="bottom")
+# }
+# 
+# np_color = c("#4CAEE3", "#ee9a00", "red")
+# legend_plot = sectionA_plots(Model_Data, "NP", np_actual, "title[item]", "20", np_color)
+# legend_plot
+# legend_timeline<<-get_legend(legend_plot + add_bottom_legend())
+# legend_timeline
+```
+
+
+```{r, echo=FALSE}
 orange = "#ee9a00"
 blue = "#4CAEE3"
 
 np_color = c("gray", "red", "red")
-FA_color = c("gray", "black", "black", blue, "black", blue)
-ts_color = c("gray", orange)
-color_list <- list(np_color, FA_color, ts_color)
+FA_color = c("gray", "black", "black", "red", "black", orange)
+# ts_color = c("gray", orange)
+color_list <- list(np_color, FA_color)
 
 
 plot_list <- list()
-plot_item <- c("NP", "FA", "TS")
-title <- c("Number of Proposals", "Funding Agency", "Time of Submission")
+plot_item <- c("NP", "FA")
+title <- c("Number of Proposals", "Funding Agency")
 
 modified_ticx = list(np_actual, fa_actual, TS_actual, H_actual)
 # color_list <- list(np_color, FA_color, ts_color)
@@ -650,13 +694,12 @@ dummy_PR <- SectionA_draw_dummy_plot("Pilot Research", "")
 plot_A_20 <- ggarrange(
   plot_list[[1]],
   plot_list[[2]],
-  plot_list[[3]],
   dummy_BF,
   dummy_PR,
   nrow = 1,
-  ncol = 5
+  ncol = 4
 )
-plot_A_20
+# plot_A_20
 
 
 
@@ -666,9 +709,9 @@ title <- c("", "")
 
 
 np_color = c("gray", "red", "red")
-FA_color = c("gray", "black", "black", orange, "black", blue)
-ts_color = c("gray", orange)
-color_list <- list(np_color, FA_color, ts_color)
+FA_color = c("gray", "black", "black", orange, "black", orange)
+# ts_color = c("gray", orange)
+color_list <- list(np_color, FA_color)
 
 modified_ticx = list(np_actual, fa_actual, FR_actual, RS_actual, H_actual , DS_actual)
 
@@ -681,19 +724,18 @@ for (item in 1:length(plot_item)){
 
 dummy_BF <- SectionA_draw_dummy_plot("", "")
 dummy_PR <- SectionA_draw_dummy_plot("", "")
-dummy_TS <- SectionA_draw_dummy_plot("", "")
 
 
 plot_A_30 <- ggarrange(
   plot_list[[1]],
   plot_list[[2]],
-  dummy_TS,
+  # dummy_TS,
   dummy_BF,
   dummy_PR,
   nrow = 1,
-  ncol = 5
+  ncol = 4
 )
-plot_A_30
+# plot_A_30
 
  # + annotate(geom = 'text', x=.99, y=.5, label="S 30%", angle = 90, face = "bold")
 
@@ -702,10 +744,10 @@ plot_list <- list()
 plot_item <- c("NP", "FA", "BF", "PR")
 title <- c("", "", "", "")
 
-np_color = c("gray", blue, "red")
-FA_color = c("gray", "black", orange, "black", "black", blue)
-BF_color = c("gray", orange)
-PR_color = c("gray", orange, blue , orange, blue, "black")
+np_color = c("gray", orange, "red")
+FA_color = c("gray", "black", "black", blue, "black", orange)
+BF_color = c("gray", blue)
+PR_color = c("gray", blue, orange , blue, orange)
 color_list <- list(np_color, FA_color, BF_color, PR_color)
 
 modified_ticx = list(np_actual, fa_actual, BF_actual, PR_actual, H_actual, H_actual)
@@ -722,18 +764,17 @@ dummy_TS <- SectionA_draw_dummy_plot("", "")
 plot_A_50 <- ggarrange(
   plot_list[[1]],
   plot_list[[2]],
-  dummy_TS,
   plot_list[[3]],
   plot_list[[4]],
   nrow = 1,
-  ncol = 5
+  ncol = 4
 )
-plot_A_50
+# plot_A_50
 
 
 library(cowplot)
 Research_tactics<- plot_grid(plot_A_20, plot_A_30, plot_A_50, nrow = 3)
-filename <- "SR_prediction_SectionA_colored.pdf"
+filename <- "sectionA.pdf"
 full_path <- file.path(plot_dir, filename)
 ggsave(
   full_path,
@@ -742,232 +783,98 @@ ggsave(
   height = 5.5,
   units = "in"
 )
+```
+
+## Section B
+```{r, echo=FALSE}
+
+plot1 = continous_features_plots(model_20, "H", H_actual, "h-index", 20)
+plot2 = continous_features_plots(model_30, "H", H_actual, "h-index", 30)
+plot3 = continous_features_plots(model_50, "H", H_actual, "h-index", 50)
+
+sectionB <- ggarrange(
+  plot1,
+  plot2,
+  plot3,
+  nrow = 3,
+  ncol = 1
+)
+# sectionB
+
 
 ```
 
+## Section C
 ```{r, echo=FALSE}
-plot_list <- list()
-plot_item <- c("H")
-title <- c("h-index")
-
-modified_ticx = list(H_actual)
-configuration = 20
-for (item in 1:length(plot_item)){
-  plot = continous_features_plots(model_20, plot_item[item], modified_ticx[[item]], title[item], configuration)
-  plot_list[[length(plot_list) + 1]] <- plot
-}
 
 
-dummy_BF <- SectionA_draw_dummy_plot("Faculty Rank", "")
-dummy_PR <- SectionA_draw_dummy_plot("Research Style", "")
+plot_item <- c("DS")
+title <- c("Deadline Stress")
 
 
-
-
-plot_B_20 <- ggarrange(
-  plot_list[[1]],
-  dummy_BF,
-  dummy_PR,
-  nrow = 1,
-  ncol = 3
-)
-plot_B_20
-
-
-
-
-plot_list <- list()
-plot_item <- c("FR", "RS")
-title <- c("Faculty Rank", "Research Style")
-
-
-FR_color = c("gray", orange, "black")
-RS_color = c("gray", orange)
-color_list <- list(FR_color, RS_color)
-
-modified_ticx = list(FR_actual, RS_actual)
-configuration = 30
-for (item in 1:length(plot_item)){
-  plot = sectionA_plots(Model_Data, plot_item[item], modified_ticx[[item]], title[item], configuration, color_list[[item]])
-  plot_list[[length(plot_list) + 1]] <- plot
-}
-
-
-dummy_BF <- SectionB_draw_dummy_plot("Faculty Rank", "", 30)
-
-plot_B_30 <- ggarrange(
-  dummy_BF,
-  plot_list[[1]],
-  plot_list[[2]],
-  nrow = 1,
-  ncol = 3
-)
-plot_B_30
-
-
-
-plot_list <- list()
-plot_item <- c("H")
-title <- c("h-index")
-
-modified_ticx = list(H_actual)
-
-configuration = 50
-for (item in 1:length(plot_item)){
-  plot = continous_features_plots(model_50, plot_item[item], modified_ticx[[item]], title[item], configuration)
-  plot_list[[length(plot_list) + 1]] <- plot
-}
-
-
-dummy_BF <- SectionA_draw_dummy_plot("", "")
-dummy_PR <- SectionA_draw_dummy_plot("", "")
-
-
-
-
-plot_B_50 <- ggarrange(
-  plot_list[[1]],
-  dummy_BF,
-  dummy_PR,
-  nrow = 1,
-  ncol = 3
-)
-plot_B_50
-
-
-
-scholar_profile<- plot_grid(plot_B_20, plot_B_30, plot_B_50, nrow = 3)
-filename <- "SR_prediction_SectionB_colored.pdf"
-full_path <- file.path(plot_dir, filename)
-ggsave(
-  full_path,
-  scholar_profile,
-  width = 8.5,
-  height = 5.5,
-  units = "in"
-)
-
-```
-
-## SectionC plots
-```{r, echo=FALSE}
-dummy_BF <- SectionC_draw_dummy_plot("Trait Anxiety", "", 20)
-dummy_PR <- SectionA_draw_dummy_plot("Deadline Stress", "")
-dummy_E <- SectionA_draw_dummy_plot("Extraversion", "")
-
-
-plot_C_20 <- ggarrange(
-  dummy_BF,
-  dummy_PR,
-  dummy_E,
-  nrow = 1,
-  ncol = 3
-)
-plot_C_20
-
-
-
-
-plot_list <- list()
-plot_item <- c("TA")
-title <- c("Trait Anxiety", "Deadline Stress")
-
-modified_ticx = list(FR_actual)
-
-for (item in 1:length(plot_item)){
-  plot = continous_features_plots(model_30, plot_item[item], modified_ticx[[item]], title[item], 30)
-  plot_list[[length(plot_list) + 1]] <- plot
-}
-
-
-plot_item <- c( "DS")
-title <- c("Trait Anxiety", "Deadline Stress")
+DS_color = c("gray", blue)
+color_list <- list(DS_color)
 
 modified_ticx = list(DS_actual)
-DS_color = c("gray", orange)
+
+configuration = "20"
 for (item in 1:length(plot_item)){
-  plot = sectionA_plots(Model_Data, plot_item[item], modified_ticx[[item]], title[item], "30", DS_color)
-  plot_list[[length(plot_list) + 1]] <- plot
+  plotDS = sectionA_plots(Model_Data, plot_item[item], modified_ticx[[item]], title[item], configuration, color_list[[item]])
+  
 }
 
-dummy_BF <- SectionA_draw_dummy_plot("", "")
+plot1 <- SectionA_draw_dummy_plot("Trait Anxiety", "")
+plot2 <- SectionA_draw_dummy_plot("Extraversion", "")
+plot3 <- SectionA_draw_dummy_plot("Avoidance coping", "")
+plot4 <- continous_features_plots(model_30, "TA", FR_actual, "Trait Anxiety", 30)
+plot5 <- SectionA_draw_dummy_plot("", "")
+plot6 <- SectionA_draw_dummy_plot("", "")
 
-plot_C_30 <- ggarrange(
-  plot_list[[1]],
-  plot_list[[2]],
-  dummy_BF,
-  nrow = 1,
-  ncol = 3
+plot7 <- SectionA_draw_dummy_plot("", "")
+plot8 = continous_features_plots(model_50, "E", H_actual, "", "")
+plot9 = continous_features_plots(model_50, "AV", H_actual, "", "")
+
+sectionC <- ggarrange(
+  plotDS,
+  plot1,
+  plot2,
+  plot3,
+  plot5,
+  plot4,
+  plot5,
+  plot6,
+  plot5,
+  plot7,
+  plot8,
+  plot9,
+  nrow = 3,
+  ncol = 4
 )
-plot_C_30
-
-
-
-plot_list <- list()
-plot_item <- c("E")
-title <- c("h-index")
-
-modified_ticx = list(H_actual)
-
-for (item in 1:length(plot_item)){
-  plot = continous_features_plots(model_50, plot_item[item], modified_ticx[[item]], title[item], "")
-  plot_list[[length(plot_list) + 1]] <- plot
-}
-
-
-
-dummy_BF <- SectionB_draw_dummy_plot("Faculty Rank", "", 50)
-dummy_PR <- SectionA_draw_dummy_plot("", "")
-
-
-
-
-plot_C_50 <- ggarrange(
-  dummy_BF,
-  dummy_PR,
-  plot_list[[1]],
-  nrow = 1,
-  ncol = 3
-)
-plot_C_50
-
-
-
-Personality<- plot_grid(plot_C_20, plot_C_30, plot_C_50, nrow = 3)
-filename <- "SR_prediction_SectionC_colored.pdf"
-full_path <- file.path(plot_dir, filename)
-ggsave(
-  full_path,
-  Personality,
-  width = 8.5,
-  height = 5.5,
-  units = "in"
-)
-
+# sectionC
 ```
 
-
 ```{r, echo=FALSE}
-A_B_C <-
-  plot_grid(Research_tactics, scholar_profile, Personality, nrow = 3, labels = c("A", "B", "C")) + annotation_custom(grid.polygon(
-    c(0.0, 0.25, 1),
-    c(0.34, 0.34, 0.34),
-    id = c(1, 1, 1),
-    gp = gpar(lwd = 1.5)
-  )) + annotation_custom(grid.polygon(
-    c(0.0, 0.25, 1),
-    c(0.67, 0.67, 0.67),
-    id = c(1, 1, 1),
+
+section_BC <- plot_grid(sectionB, sectionC, rel_widths = c(1, 2), ncol = 2, labels = c("b", "c"))
+# section_BC
+
+final_plot <- plot_grid(Research_tactics, section_BC, nrow = 2, labels = c("a", "")) + annotation_custom(grid.polygon(
+    c(0, 0.5, 1, 0.337, 0.337),
+    c(0.5, 0.5, 0.5, 0, 0.5),
+    id = c(1, 1, 1, 2, 2),
     gp = gpar(lwd = 1.5)
   ))
+# final_plot
 
-filename <- "SR_prediction_allSection_colored.pdf"
+
+filename <- "SR_prediction_full_sample_ABC.pdf"
 full_path <- file.path(plot_dir, filename)
 ggsave(
   full_path,
-  A_B_C,
+  final_plot,
   width = 8.5,
   height = 11,
   units = "in"
 )
 ```
+

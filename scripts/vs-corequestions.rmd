@@ -203,15 +203,15 @@ Core_Questions <-
   )
 
 
-East = 'Connecticut|Maryland|Massachusetts|^New Jersey$|^New York$|Pennsylvania|^Virginia$|^North Carolina$'
+levels(factor(Core_Questions$State))
 
+East = 'Connecticut|Maryland|Massachusetts|^New Jersey$|^New York$|Pennsylvania|^Virginia$|^North Carolina$'
 
 Midwest = 'Illinois|Michigan|Minnesota|Ohio|Wisconsin'
 
-
 West = 'Arizona|California|Colorado|Nevada|^New Mexico$|Oregon|^Utah$'
 
-South = 'Florida|Georgia|Tennessee|Texas|Alabama|^oklahoma$'
+South = 'Florida|Georgia|Tennessee|Texas|Alabama|^Oklahoma$'
 
 
 Core_Questions <- Core_Questions %>%
@@ -546,8 +546,6 @@ write.csv(Core_Questions,file.path(curated_data_dir, file_name), row.names = FAL
 
 ```{r, echo=FALSE}
 
-
-
 list1 = c("East", "West", "Midwest", "South")
 list2 = c("Two months", "Three months", "Other")
 
@@ -604,9 +602,6 @@ list27 = c(
   "1 day before",
   "2 or more days before"
 )
-
-# "Extremely less",
-# "Significantly less",
 
 list28 = c("Significantly less", "Less", "About the same", "More", "Significantly more")
 

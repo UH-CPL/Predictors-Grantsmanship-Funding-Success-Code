@@ -1,9 +1,9 @@
 ---
-title: "DataPreprocessing"
+# title: "DataPreprocessing"
 output:
+  pdf_document: default
   html_document:
     df_print: paged
-  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -214,8 +214,8 @@ final_data$google_scholar_h_index[236] <- 32
 
 ```{r, echo=FALSE}
 
-# final_data<- final_data[!is.na(final_data$google_scholar_h_index),]
-# final_data<- final_data[final_data$funding_proposal !="No",]
+final_data<- final_data[!is.na(final_data$google_scholar_h_index),]
+final_data<- final_data[final_data$funding_proposal !="No",]
 ```
 
 ```{r, echo=FALSE}
@@ -368,9 +368,69 @@ final_data <- final_data  %>% dplyr::rename(
 
 ```{r, echo=FALSE}
 # View(final_data)
+# final_data$email <- NULL
 file_name='AllData.csv'
 write.csv(final_data,file.path(curated_data_dir, file_name), row.names = FALSE)
 
-print(paste("The number of rows", nrow(final_data)))
+# print(paste("The number of rows", nrow(final_data)))
+```
+
+```{r, echo=FALSE}
+# levels(factor(final_data$P_SR)) 
+
+
+final_data <- final_data %>%
+  mutate(P_SR = recode(P_SR, "< 10%" = 0, "10-20%" = 0, "20-30%" = 0, "30-50%" = 0, "50-75%" = 1, "75-90%" = 1, "> 90%" = 1))
+# table(final_data$P_SR)
+```
+
+```{r, echo=FALSE}
+final_data <- filter(final_data, P_SR == "1")
+file_name='Most_Successful.csv'
+write.csv(final_data,file.path(curated_data_dir, file_name), row.names = FALSE)
+```
+
+
+```{r, echo=FALSE}
+
+
+
+
+ggplot(data = final_data, aes(visit_a_friend)) + geom_bar() + theme_bw() +
+  scale_x_continuous( breaks = 1:5,
+  labels =
+    c("Not at all",
+      "Not much",
+      "Neutral",
+      "Somewhat",
+      "Very much"
+    )
+) + labs(x= "", title = "Visit a Friend") + theme(plot.title = element_text(hjust = 0.5))
+
+
+
+ggplot(data = final_data, aes(spend_time_with_a_special)) + geom_bar() + theme_bw() +
+  scale_x_continuous( breaks = 1:5,
+  labels =
+    c("Not at all",
+      "Not much",
+      "Neutral",
+      "Somewhat",
+      "Very much"
+    )
+) + labs(x= "", title = "Spend time with a special person") + theme(plot.title = element_text(hjust = 0.5))
+
+
+
+ggplot(data = final_data, aes(phone_a_friend)) + geom_bar() + theme_bw() +
+  scale_x_continuous( breaks = 1:5,
+  labels =
+    c("Not at all",
+      "Not much",
+      "Neutral",
+      "Somewhat",
+      "Very much"
+    )
+) + labs(x= "", title = "Phone a friend") + theme(plot.title = element_text(hjust = 0.5))
 ```
 

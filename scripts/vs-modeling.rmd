@@ -65,21 +65,19 @@ project_directory <- dirname(root_dir)
 data_dir <- file.path(project_directory, 'raw-data')
 curated_data_dir <- file.path(project_directory, 'curated-data')
 plot_dir <- file.path(project_directory, 'Plots')
+data_file_name <- 'AllKeyData.csv'
 # data_file_name <- 'KeyData.csv'
-data_file_name <- 'KeyData_399.csv'
+# data_file_name <- 'KeyData_399.csv'
 # data_file_name_std <- 'StandardPart.csv'
 
 
-Data <-
-  read.csv(file.path(curated_data_dir, data_file_name),
-           stringsAsFactors = FALSE)
+Data <-  read.csv(file.path(curated_data_dir, data_file_name), stringsAsFactors = FALSE)
 Data <- Data[complete.cases(Data),]
 
-Data <- Data %>% dplyr::rename(FA = "Funding_Agency")
-count(Data$SR)
-Data <- Data %>%
-  mutate(SR = recode(SR, "1" = 0, "2" = 0, "3" = 1, "4" = 1, "5" = 1, "6" = 1, "7"= 1))
+# Data <- Data %>% dplyr::rename(FA = "Funding_Agency")
 
+count(Data$SR)
+Data <- Data %>%  mutate(SR = recode(SR, "1" = 0, "2" = 0, "3" = 0, "4" = 1, "5" = 1, "6" = 1, "7"= 1))
 count(Data$SR)
 
 ```
@@ -120,14 +118,14 @@ count(Data$SR)
 
 ```{r, echo=FALSE}
 Data$SR <- as.factor(Data$SR)
-lm_DF <- as.data.frame((Data[, 2:25]))
+lm_DF <- as.data.frame((Data[, 1:25]))
 
 
 lm_DF$Rank <- as.factor(Data$Rank)
 lm_DF$RS <- as.factor(lm_DF$RS)
 lm_DF$WH <- as.factor(lm_DF$WH)
 lm_DF$NP <- as.factor(lm_DF$NP)
-lm_DF$BR <- as.factor(lm_DF$BR)
+lm_DF$BF <- as.factor(lm_DF$BF)
 lm_DF$DWH <- as.factor(lm_DF$DWH)
 lm_DF$FA <- as.factor(lm_DF$FA)
 lm_DF$T <- as.factor(lm_DF$T)
@@ -135,17 +133,19 @@ lm_DF$DS <- as.factor(lm_DF$DS)
 lm_DF$AR <- as.factor(lm_DF$AR)
 
 
-lbl <- LabelEncoder$new()
-lbl$fit(lm_DF$Rank)
-lm_DF$Rank <- lbl$fit_transform(lm_DF$Rank)
-
-
-lm_DF <- lm_DF %>%
-  mutate(Rank = recode(Rank, "0" = 1, "1" = 2, "2" = 3))
+# lbl <- LabelEncoder$new()
+# lbl$fit(lm_DF$Rank)
+# lm_DF$Rank <- lbl$fit_transform(lm_DF$Rank)
+# 
+# 
+# lm_DF <- lm_DF %>%
+#   mutate(Rank = recode(Rank, "0" = 1, "1" = 2, "2" = 3))
 lm_DF$Rank <- as.factor(lm_DF$Rank)
 
-lm_DF <- lm_DF %>% dplyr::rename(TS = "T",  FR= "Rank", BF = "BR", E = "EXT", PR = "AR")
+lm_DF <- lm_DF %>% dplyr::rename(TS = "T",  FR= "Rank", E = "EXT", PR = "AR")
 
+
+mean(lm_DF$E)
 ```
 
 
@@ -184,343 +184,6 @@ BEmodel$anova
 summary(BEmodel)
 ```
 
-```{r, echo=FALSE}
-dummy_df <- data.frame(x = c(0, 100, 0, 100), 
-                       y = c(100, 0, 0, 100), 
-                       group=c('a', 'a', 'b', 'b'))
-
-draw_dummy_plot <- function(plot_title) {
-  dummy_plot <- ggplot(dummy_df, aes(x=x, y=y, group=group)) + 
-    geom_line() +
-    theme_minimal() +
-    theme(
-      plot.title = element_text(hjust = 0.5, size = 10, face = "bold"),
-      axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(),
-        axis.title.y=element_blank(),
-        axis.text.y=element_blank(),
-        axis.ticks.y=element_blank(),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank()) + labs(title =  plot_title)
-    
-  return(dummy_plot)
-  dummy_plot
-}
-
-```
-
-
-
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
-model_plot <- function(item, modified, title_) {
-  if (item == "NP" | item == "H" | item == "FR") {
-    y_title = expression(paste(italic("P")))
-    y_text = element_text(face = "bold")
-  } else{
-    y_title = ""
-    y_text = element_blank()
-  }
-  
-  if (item == "NP" | item == "FA"| item == "TS" | item == "FR" | item == "RS" | item == "DS" | item == "BF" | item == "PR"){
-    plt = plot_model(BEmodel, type = "pred", terms = item) +
-    theme(
-      plot.title = element_text(hjust = 0.5, size = 10, face = "bold"),
-      panel.grid = element_blank(),
-      axis.title = element_text(face = "bold"),
-      axis.text.x = element_text(
-        face = "bold",
-        size = 8,
-        angle = 30,
-        hjust = 1
-      ),
-      axis.text.y = element_text(face = "bold")
-    ) +
-    labs(y = y_title, x = "", title = title_) + scale_y_continuous(
-      limits = c(0.0, 1),
-      breaks = c(0.0, 0.25, 0.50, 0.75, 1),
-      labels = c(
-        "0.00" = "0%",
-        "0.25" = "25%",
-        "0.50" = "50%",
-        "0.75" = "75%",
-        "1" = "100%"
-      )
-    ) + theme(axis.text.y = y_text, axis.ticks.y = element_blank()) + scale_x_discrete(limits = modified)
-  return(plt)
-  } else {
-    plt = plot_model(BEmodel, type = "pred", terms = item) +
-    theme(
-      plot.title = element_text(hjust = 0.5, size = 10, face = "bold"),
-      panel.grid = element_blank(),
-      axis.title = element_text(face = "bold"),
-      axis.text.x = element_text(
-        face = "bold",
-        size = 8,
-        angle = 30,
-        hjust = 1
-      ),
-      axis.text.y = element_text(face = "bold")
-    ) +
-    labs(y = y_title, x = "", title = title_) + scale_y_continuous(
-      limits = c(0.0, 1),
-      breaks = c(0.0, 0.25, 0.50, 0.75, 1),
-      labels = c(
-        "0.00" = "0%",
-        "0.25" = "25%",
-        "0.50" = "50%",
-        "0.75" = "75%",
-        "1" = "100%"
-      )
-    ) + theme(axis.text.y = y_text, axis.ticks.y = element_blank())
-  return(plt)
-  }
-  
-}
-```
-
-
-```{r, echo=FALSE}
-np_actual = c("1" = "NP1", "2" = "NP2", "3"="NP3")
-fa_actual = c("1" = "NSF", "2" = "NIH", "3" = "DOE", "4" = "DOD", "5" = "NASA", "6" = "OTHER")
-TS_actual = c("1" = "TS1", "2" = "TS2")
-DS_actual = c("1" = "DS1", "2" = "DS2")
-BF_actual = c("1" = "BF1", "2" = "BF2")
-PR_actual = c("1" = "PR1", "2" = "PR2", "3" = "PR3", "4" = "PR4", "5" = "PR5")
-RS_actual = c("1" = "RS1", "2" = "RS2")
-FR_actual = c("1" = "FR1", "2" = "FR2", "3" = "FR3")
-H_actual = c("0" = "0", "50" = "50", "100" = "100", "150" ="150", "200" = "200")
-
-modified_ticx = list(np_actual, fa_actual, TS_actual, H_actual)
-```
-
-## SR 20
-```{r, echo=FALSE}
-plot_list <- list()
-plot_item <- c("NP", "FA", "TS", "H")
-title <- c("Number of Proposals", "Funding Agency", "Time of Submission", "h-index")
-
-
-
-for (item in 1:length(plot_item)){
-  plot = model_plot(plot_item[item], modified_ticx[[item]], title[item])
-  plot_list[[length(plot_list) + 1]] <- plot
-}
-
-
-
-
-plot_up <- ggarrange(
-    plot_list[[1]],
-    plot_list[[2]],
-    plot_list[[3]], nrow = 1, ncol = 3, labels = c("A", "", ""))
-dummy_plot <- draw_dummy_plot("")
-
-plot_down <- ggarrange(plot_list[[4]],
-    dummy_plot,
-    labels = c("B", "C"),
-    ncol = 2,
-    nrow = 1)
-
-final_plot <- ggarrange(plot_up, plot_down, ncol = 1,
-    nrow = 2
-  ) + annotation_custom(grid.polygon(
-    c(0, 0.5, 1, 0.507, 0.507),
-    c(0.5, 0.5, 0.5, 0, 0.5),
-    id = c(1, 1, 1, 2, 2),
-    gp = gpar(lwd = 1.5)
-  ))
-
-
-
-final_plot
-
-# final_plot<-ggarrange(first_row_A, Second_row_B, nrow = 2)
-# final_plot
-
-filename <- "SR_prediction_20.pdf"
-# filename <- "SR_prediction_20.jpg"
-full_path <- file.path(plot_dir, filename)
-ggsave(
-  full_path,
-  final_plot,
-  width = 8.5,
-  height = 5.5,
-  units = "in"
-)
-```
-
-## SR 30
-```{r, echo=FALSE}
-plot_list <- list()
-plot_item <- c("NP", "FA", "FR", "RS", "TA", "DS")
-title <- c("Number of Proposals", "Funding Agency", "Faculty Rank", "Research Style", "Trait Anxiety", "Deadline Stress")
-modified_ticx = list(np_actual, fa_actual, FR_actual, RS_actual, H_actual , DS_actual)
-
-for (item in 1:length(plot_item)){
-  plot = model_plot(plot_item[item], modified_ticx[[item]], title[item])
-  plot_list[[length(plot_list) + 1]] <- plot
-}
-
-
-
-
-plot_up <- ggarrange(
-    plot_list[[1]],
-    plot_list[[2]], nrow = 1, ncol = 2, labels = c("A", ""))
-
-plot_down <- ggarrange(plot_list[[3]],
-    plot_list[[4]], plot_list[[5]], plot_list[[6]],
-    labels = c("B", "", "C", ""),
-    ncol = 4,
-    nrow = 1)
-
-final_plot <- ggarrange(plot_up, plot_down, ncol = 1,
-    nrow = 2
-  ) + annotation_custom(grid.polygon(
-    c(0, 0.5, 1, 0.507, 0.507),
-    c(0.5, 0.5, 0.5, 0, 0.5),
-    id = c(1, 1, 1, 2, 2),
-    gp = gpar(lwd = 1.5)
-  ))
-
-
-final_plot
-
-
-filename <- "SR_prediction_30.pdf"
-# filename <- "SR_prediction_30.jpg"
-full_path <- file.path(plot_dir, filename)
-ggsave(
-  full_path,
-  final_plot,
-  width = 8.5,
-  height = 5.5,
-  units = "in"
-)
-```
-
-
-## SR 50
-```{r, echo=FALSE}
-plot_list <- list()
-plot_item <- c("NP", "FA", "BF","PR", "H", "E")
-title <- c("Number of Proposals", "Funding Agency", "Break Frequency", "Pilot Research", "h-index", "Extraversion")
-modified_ticx = list(np_actual, fa_actual, BR_actual, PR_actual, H_actual, H_actual)
-
-
-for (item in 1:length(plot_item)){
-  plot = model_plot(plot_item[item], modified_ticx[[item]], title[item])
-  plot_list[[length(plot_list) + 1]] <- plot
-}
- 
-
-plot_up <- ggarrange(
-    plot_list[[1]],
-    plot_list[[2]],
-    plot_list[[3]],
-    plot_list[[4]], nrow = 1, ncol = 4, labels = c("A", "", "", ""))
-
-plot_down <- ggarrange(plot_list[[5]], plot_list[[6]],
-    labels = c("B", "C"),
-    ncol = 2,
-    nrow = 1)
-
-final_plot <- ggarrange(plot_up, plot_down, ncol = 1,
-    nrow = 2
-  ) + annotation_custom(grid.polygon(
-    c(0, 0.5, 1, 0.507, 0.507),
-    c(0.5, 0.5, 0.5, 0, 0.5),
-    id = c(1, 1, 1, 2, 2),
-    gp = gpar(lwd = 1.5)
-  ))
-
-final_plot
-
-
-filename <- "SR_prediction_50.pdf"
-# filename <- "SR_prediction_50.jpg"
-full_path <- file.path(plot_dir, filename)
-ggsave(
-  full_path,
-  final_plot,
-  width = 8.5,
-  height = 5.5,
-  units = "in"
-)
-```
-
-
-
-
-
-## Function for new plot
-```{r, echo=FALSE}
-model_plot_new <- function(item, modified, title_) {
-  if (item == "NP" | item == "H" | item == "FR") {
-    y_title = expression(paste(italic("P")))
-    y_text = element_text(face = "bold")
-  } else{
-    y_title = ""
-    y_text = element_blank()
-  }
-  
-  if (item == "NP" | item == "FA"| item == "TS" | item == "FR" | item == "RS" | item == "DS" | item == "BF" | item == "PR"){
-    plt = plot_model(BEmodel, type = "pred", terms = item) +
-    theme(
-      plot.title = element_text(hjust = 0.5, size = 10, face = "bold"),
-      panel.grid = element_blank(),
-      axis.title = element_text(face = "bold"),
-      axis.text.x = element_text(
-        face = "bold",
-        size = 8,
-        angle = 30,
-        hjust = 1
-      ),
-      axis.text.y = element_text(face = "bold")
-    ) +
-    labs(y = y_title, x = "", title = title_) + scale_y_continuous(
-      limits = c(0.0, 1),
-      breaks = c(0.0, 0.25, 0.50, 0.75, 1),
-      labels = c(
-        "0.00" = "0%",
-        "0.25" = "25%",
-        "0.50" = "50%",
-        "0.75" = "75%",
-        "1" = "100%"
-      )
-    ) + theme(axis.text.y = y_text, axis.ticks.y = element_blank()) + scale_x_discrete(limits = modified)
-  return(plt)
-  }
-}
-```
-
-
-## Plot in new design
-```{r, echo=FALSE}
-plot_list <- list()
-plot_item <- c("NP", "FA", "TS")
-title <-
-  c("Number of Proposals", "Funding Agency", "Time of Submission")
-modified_ticx = list(np_actual, fa_actual, TS_actual, H_actual)
-
-
-for (item in 1:length(plot_item)) {
-  plot = model_plot(plot_item[item], modified_ticx[[item]], title[item])
-  plot_list[[length(plot_list) + 1]] <- plot
-}
-
-
-
-dummy_plot_BF <- draw_dummy_plot("Break Frequency")
-dummy_plot_PR <- draw_dummy_plot("Pilot Research")
-
-
-
-
-
-
-```
 
 
 ```{r, echo=FALSE}
@@ -552,7 +215,7 @@ FSmodel$anova
 \newpage
 ## Forward Selection model
 ```{r, echo=FALSE}
-FSmodel <- glm(SR ~ NP + DS + H + RS + FA + TA + Rank, data = lm_DF, family = "binomial")
+# FSmodel <- glm(SR ~ NP + DS + H + RS + FA + TA + Rank, data = lm_DF, family = "binomial")
 
 summary(FSmodel)
 ```
@@ -718,7 +381,7 @@ anova(NullModel,BEmodel,FSmodel,SWmodel,FullModel,test="LRT")
 
 
 ```{r, echo=FALSE}
-file_name = 'ModelData_SR20.csv'
+file_name = 'ModelData_SR30.csv'
 write.csv(lm_DF,
           file.path(curated_data_dir, file_name),
           row.names = FALSE)
