@@ -104,12 +104,13 @@ Data <- Data %>%
 
 ```{r, echo=FALSE}
 # colnames(Data)
-core_plot_df <- Data[,c("Disciplines", "State", "TW_W_H", "TWR", "EG")]
+core_plot_df <- Data[,c("Gender", "Disciplines", "State", "TW_W_H", "TWR", "EG")]
 ```
 
 
 
 ```{r, echo=FALSE}
+list_gender = c("Female", "Male")
 list0 = c("BIO", "BEHAV", "ENG", "CIS", "NAT")
 list1 = c("East", "West", "Midwest", "South")
 list2 = c("< 30", "30-40", "40-50", "> 50")
@@ -121,12 +122,13 @@ list4 = c("NF",
           "75-100",
           "FF")
 Ticks_list <-
-  list(list0,
+  list(list_gender, 
+       list0,
        list1,
        list2,
        list3,
        list4)
-title_list <- c("Disciplinary Distribution", "Geographic Distribution", "Weekly Workload [hrs]",  "Research Load [%]", "Funding Coverage [%]")
+title_list <- c("Gender Distribution", "Disciplinary Distribution", "Geographic Distribution", "Weekly Workload [hrs]",  "Research Load [%]", "Funding Coverage [%]")
 ```
 
 
@@ -141,65 +143,68 @@ percent <- function(x, digits = 0, format = "f", ...) {
 ```{r, echo=FALSE, warning=FALSE}
 
 
-plot_list <- list()
-
-FR_Gender <- Data[, c("FR", "Gender")]
-count(FR_Gender$Gender)
-
-percentage_table <- ddply(data.frame(table(FR_Gender)), .(Gender))
-percentage_table <-
-  percentage_table %>% mutate(prop = (Freq / sum(Freq)))
-
-percentage_table$percent <- percent((percentage_table$prop)) 
-
-percentage_table$percent[6] <- "37%"
-  
-Gender_FR <-
-  ggplot(percentage_table, aes(x = Gender, y = Freq, fill = Gender)) + geom_bar(stat = "identity") +
-  facet_grid( ~ FR) +
-  geom_text(
-    aes(y = Freq, label = percent),
-    vjust = -0.10,
-    color = "black",
-    size = 2.5,
-    face = "bold"
-  ) +
-  theme(
-    axis.title.y = element_text(
-      size = 8,
-      face = "bold",
-      colour = "black"
-    ),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    legend.position = 'none',
-    plot.title = element_text(hjust = 0.5, size = 10),
-    axis.text.x = element_text(face = "bold", size = 7),
-    axis.text.y = element_text(face = "bold", size = 7),
-    strip.text = element_text(size = 6, face = "bold")
-  ) +
-  labs(x = "", y = "Count", title = "Gender per Faculty Rank")
-# Gender_FR
-
- 
-plot_list[[length(plot_list) + 1]] <- Gender_FR
+# plot_list <- list()
+# 
+# FR_Gender <- Data[, c("FR", "Gender")]
+# count(FR_Gender$Gender)
+# 
+# percentage_table <- ddply(data.frame(table(FR_Gender)), .(Gender))
+# percentage_table <-
+#   percentage_table %>% mutate(prop = (Freq / sum(Freq)))
+# 
+# percentage_table$percent <- percent((percentage_table$prop)) 
+# 
+# percentage_table$percent[6] <- "37%"
+#   
+# Gender_FR <-
+#   ggplot(percentage_table, aes(x = Gender, y = Freq, fill = Gender)) + geom_bar(stat = "identity") +
+#   facet_grid( ~ FR) +
+#   geom_text(
+#     aes(y = Freq, label = percent),
+#     vjust = -0.10,
+#     color = "black",
+#     size = 2.5,
+#     face = "bold"
+#   ) +
+#   theme(
+#     axis.title.y = element_text(
+#       size = 8,
+#       face = "bold",
+#       colour = "black"
+#     ),
+#     panel.grid.major = element_blank(),
+#     panel.grid.minor = element_blank(),
+#     legend.position = 'none',
+#     plot.title = element_text(hjust = 0.5, size = 10),
+#     axis.text.x = element_text(face = "bold", size = 7),
+#     axis.text.y = element_text(face = "bold", size = 7),
+#     strip.text = element_text(size = 6, face = "bold")
+#   ) +
+#   labs(x = "", y = "Count", title = "Gender per Faculty Rank")
+# # Gender_FR
+# 
+#  
+# plot_list[[length(plot_list) + 1]] <- Gender_FR
 ```
 
 
 
 ```{r, echo=FALSE, warning=FALSE}
 
+plot_list <- list()
 
 for (i in 1:length(core_plot_df)) {
   y_title = ""
-  if (title_list[i] == "Weekly Workload [hrs]") {
+  if (title_list[i] == "Weekly Workload [hrs]" | title_list[i] == "Gender Distribution") {
     y_title = "Count"
   }
 
 
-  if (i < 3) {
+  if (i == 1) {
+    ylimit = 300
+  }  else if (i == 2 | i == 3) {
     ylimit = 200
-  } else if (i == 3) {
+  }  else if (i == 4) {
     ylimit = 250
   } else {
     ylimit = 105
@@ -214,17 +219,54 @@ for (i in 1:length(core_plot_df)) {
   temp <- temp %>% mutate(prop = (count / sum(count))) 
   temp$percentage <- percent((temp$prop))
   
+  if (i == 1) {
+    temp$percentage[2] <- "67.5%"
+    temp$percentage[1] <- "32.5%"
+    
+  #   bar_plot <- ggplot(data = temp, aes(x = reorder(item, -count, decreasing = FALSE), count)) +
+  #   geom_bar(stat = "identity",
+  #            width = 0.5,
+  #            fill = "steelblue") +
+  #   geom_text(
+  #     aes(label = percentage),
+  #     # vjust = 0.5,
+  #     vjust = -0.25,
+  #     color = "black",
+  #     # angle = 90,
+  #     size = 2.5,
+  #     face = "bold"
+  #   ) +
+  #   theme_bw() +
+  #   scale_y_continuous(breaks = seq(0, ylimit, by = 50),
+  #                      limits = c(0, ylimit)) +
+  #   labs(x = "", y = y_title, title = title_list[i]) +
+  #   theme(
+  #     axis.title.y = element_text(
+  #       size = 8,
+  #       face = "bold",
+  #       colour = "black"
+  #     ),
+  #     panel.grid.major = element_blank(),
+  #     panel.grid.minor = element_blank(),
+  #     plot.title = element_text(hjust = 0.5, size = 10),
+  #     axis.text.x = element_text(face = "bold", size = 7),
+  #     axis.text.y = element_text(face = "bold", size = 7)
+  #   ) + scale_x_discrete(limits = Ticks_list[[i]])
+  # # print(bar_plot)
+  # 
+  # plot_list[[length(plot_list) + 1]] <- bar_plot
+  }
 
-  if (i == 2) {
+  if (i == 3) {
     temp$percentage[4] <- "43%"
   }
-  if (i == 3) {
+  if (i == 4) {
     temp$percentage[3] <- "35%"
   }
-  if (i == 5) {
+  if (i == 6) {
     temp$percentage[6] <- "26%"
-  } 
-
+  }
+  
 
   bar_plot <- ggplot(data = temp, aes(x = item, y = count)) +
     geom_bar(stat = "identity",
@@ -258,6 +300,7 @@ for (i in 1:length(core_plot_df)) {
   # print(bar_plot)
 
   plot_list[[length(plot_list) + 1]] <- bar_plot
+  
 
 }
 
@@ -266,7 +309,7 @@ final_plot <- ggarrange(plotlist = plot_list,
                         nrow = 2,
                         ncol = 3)
 # filename <- "Figure1_without_percentage.pdf"
-filename <- "Figure1.pdf"
+filename <- "Figure_Descriptive_Statistics_version1.pdf"
 full_path <- file.path(plot_dir, filename)
 ggsave(
   full_path,
@@ -308,24 +351,24 @@ ggsave(
 
 
 
-core_plot_df$FR <- Data$FR
-core_plot_df$Gender <- Data$Gender
-title_list <- c("Faculty Rank", "Gender", "Disciplinary Distribution", "Geographic Distribution", "Weekly Workload [hrs]",  "Research Load [%]", "Funding Coverage [%]")
-
-
-core_plot_df = core_plot_df[,c("FR", "Gender", "Disciplines", "State", "TW_W_H", "TWR", "EG")]
-
-print(
-  "======================= Gender Distribution on FR================================"
-)
-
-print(core_plot_df %>% freq_table(core_plot_df, core_plot_df$Gender))
-
-for (i in 1:length(core_plot_df)) {
-  print(paste("========================", title_list[i],"========================"))
-  print(core_plot_df %>% freq_table(core_plot_df[i]))
-
-}
+# core_plot_df$FR <- Data$FR
+# core_plot_df$Gender <- Data$Gender
+# title_list <- c("Faculty Rank", "Gender", "Disciplinary Distribution", "Geographic Distribution", "Weekly Workload [hrs]",  "Research Load [%]", "Funding Coverage [%]")
+# 
+# 
+# core_plot_df = core_plot_df[,c("FR", "Gender", "Disciplines", "State", "TW_W_H", "TWR", "EG")]
+# 
+# print(
+#   "======================= Gender Distribution on FR================================"
+# )
+# 
+# print(core_plot_df %>% freq_table(core_plot_df, core_plot_df$Gender))
+# 
+# for (i in 1:length(core_plot_df)) {
+#   print(paste("========================", title_list[i],"========================"))
+#   print(core_plot_df %>% freq_table(core_plot_df[i]))
+# 
+# }
 ```
 
 

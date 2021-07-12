@@ -68,15 +68,23 @@ data_processing_model <- function(data_file_name) {
   
   NullModel <- glm(SR ~ 1, data = lm_DF, family = "binomial")
   FullModel <- glm(SR ~ ., data = lm_DF, family = "binomial")
-  BEmodel <- stepAIC(FullModel, direction = "backward", trace = FALSE)
+  BEmodel <-
+    stepAIC(FullModel, direction = "backward", trace = FALSE)
   
-  if (data_file_name == "ModelData_SR20.csv"){
-      model_20 <- glm(SR ~ H + NP + FA + DS, family = "binomial", data = lm_DF)
-      return(model_20)
-  }
-
-  else{
-    return(BEmodel)
+  if (data_file_name == "ModelData_SR20.csv") {
+    model_20 <-
+      glm(SR ~ H + NP + FA + DS, family = "binomial", data = lm_DF)
+    return(model_20)
+  } else if (data_file_name == "ModelData_SR30.csv") {
+    model_30 <-
+      glm(SR ~ NP + DS + H + FA + TA, family = "binomial", data = lm_DF)
+    return(model_30)
+  } else{
+    model_50 <-
+      glm(SR ~ NP + FA + H + E + BF + DS + AV + PR,
+          family = "binomial",
+          data = lm_DF)
+    return(model_50)
   }
   
 }
@@ -125,15 +133,12 @@ summary(model_30)
 Zcrit<-1.96   ### critical value for 95% confidence intervals
   
 ilink <- family(model_30)$linkinv
-NP<-c("1","2","3",rep("1",16))
-FA<-c(rep("1",3),"1","2","3","4","5","6",rep("1",10))
-RS<-c(rep("1",9),"1","2", rep("1",8))
-DS<-c(rep("1",11),"1","2", rep("1",6))
-TS<-c(rep("1",13),"1","2", rep("1",4))
-DWH<-c(rep("1",15),"1","2", rep("1",2))
-H<-rep(29.56824,19)
-TA<-rep(41.33747,19)
-tmpd<-data.frame(NP,FA,RS,DS,TS,DWH,H,TA)
+NP<-c("1","2","3",rep("1",10))
+FA<-c(rep("1",3),"1","2","3","4","5","6",rep("1",4))
+DS<-c(rep("1",9),"1","2", rep("1",2))
+H<-rep(29.56824,13)
+TA<-rep(41.33747,13)
+tmpd<-data.frame(NP,FA,DS,H,TA)
 ndata <- cbind(tmpd, setNames(as_tibble(predict(model_30, tmpd, se.fit = TRUE)[1:2]),
                                    c('fit_link','se_link')))
 Model_Data_30 <- mutate(ndata,
@@ -153,16 +158,15 @@ summary(model_50)
 
 ```{r, echo=FALSE}
 ilink <- family(model_50)$linkinv
-NP<-as.factor(c("1","2","3",rep("1",19)))
-FA<-as.factor(c(rep("1",3),"1","2","3","4","5","6",rep("1",13)))
-BF<-as.factor(c(rep("1",9),"1","2",rep("1",11)))
-DS<-as.factor(c(rep("1",11),"1","2",rep("1",9)))
-PR<-as.factor(c(rep("1",13),"1","2","3","4","5", rep("1",4)))
-H<-rep(29.56824,22)
-E<-rep(5.957816,22)
-AV<-rep(18.81638,22)
-Task<-rep(28.44665,22)
-tmpd<-data.frame(NP,FA,BF,DS,PR,H,E,AV,Task)
+NP<-as.factor(c("1","2","3",rep("1",18)))
+FA<-as.factor(c(rep("1",3),"1","2","3","4","5","6",rep("1",12)))
+BF<-as.factor(c(rep("1",9),"1","2",rep("1",10)))
+DS<-as.factor(c(rep("1",11),"1","2",rep("1",8)))
+PR<-as.factor(c(rep("1",13),"1","2","3","4","5", rep("1",3)))
+H<-rep(29.56824,21)
+E<-rep(5.957816,21)
+AV<-rep(18.81638,21)
+tmpd<-data.frame(NP,FA,BF,DS,PR,H,E,AV)
 ndata <- cbind(tmpd, setNames(as_tibble(predict(model_50, tmpd, se.fit = TRUE)[1:2]),
                               c('fit_link','se_link')))
 Model_Data_50 <- mutate(ndata,
@@ -192,9 +196,10 @@ Model_Data <- rbind(Model_Data, slice_df(Model_Data_20, 10, 11, "DS", "20"))
 
 Model_Data <- rbind(Model_Data, slice_df(Model_Data_30, 1, 3, "NP", "30"))
 Model_Data <- rbind(Model_Data, slice_df(Model_Data_30, 4, 9, "FA", "30"))
+Model_Data <- rbind(Model_Data, slice_df(Model_Data_30, 10, 11, "DS", "30"))
 # Model_Data <- rbind(Model_Data, slice_df(Model_Data_30, 10, 12, "FR", "30"))
 # Model_Data <- rbind(Model_Data, slice_df(Model_Data_30, 13, 14, "RS", "30"))
-# Model_Data <- rbind(Model_Data, slice_df(Model_Data_30, 15, 16, "DS", "30"))
+
 
 Model_Data <- rbind(Model_Data, slice_df(Model_Data_50, 1, 3, "NP", "50"))
 Model_Data <- rbind(Model_Data, slice_df(Model_Data_50, 4, 9, "FA", "50"))
@@ -204,18 +209,22 @@ Model_Data <- rbind(Model_Data, slice_df(Model_Data_50, 14, 18, "PR", "50"))
 
 ```
 
+
 ```{r, echo=FALSE}
 
-sectionA_plots <-
+get_legend_plot <-
   function(Data,
            item,
            modified_ticks,
            title,
            configuration, color) {
     
+    axis_text_size <- 8
+    # var_size = c('var1'=2, 'var2'=1)
+    
     if (item == "NP" | item == "H" | item == "TA") {
       y_title = bquote( ~ italic("P"[.(configuration)]))
-      y_text = element_text(face = "bold", size = 6)
+      y_text = element_text(face = "bold", size = axis_text_size)
     } else{
       y_title = element_blank()
       y_text = element_blank()
@@ -229,7 +238,86 @@ sectionA_plots <-
     if (configuration == 20) {
       plot_title_ = element_text(hjust = 0.5,
                                  face = "bold",
-                                 size = 7)
+                                 size = axis_text_size)
+    }
+    
+    
+    Data <- filter(Data, Conf == configuration & Features == item)
+    
+    if (item == "NP" |
+        item == "H" |
+        item == "TA") {
+      plot <- ggplot(Data, aes(x = Levels, y = fit_resp, colour = Levels)) +
+        geom_errorbar(aes(ymin = Lower_limit, ymax = Upper_limit), size = 1.1) +
+        theme_bw() +
+        theme(
+          axis.text.y = y_text,
+          plot.title = plot_title_,
+          panel.grid = element_blank(),
+          axis.text.x = element_text(face = "bold", size = axis_text_size),
+          legend.position = "bottom", 
+          legend.direction = "horizontal",
+          legend.title = element_blank(),
+        #   legend.key.size = unit(2,"cm"),
+        #   # legend.key.size = unit(1, 'cm'), #change legend key size
+        # legend.key.height = unit(2, 'cm'), #change legend key height
+        legend.key.width = unit(2, 'cm'),
+          legend.text = element_text(size = 20)
+        ) +
+        labs(y = y_title, x = "", title = title) + scale_y_continuous(
+          limits = c(0.0, 1),
+          breaks = c(0.0, 0.25, 0.50, 0.75, 1),
+          labels = c(
+            "0.00" = "0%",
+            "0.25" = "25%",
+            "0.50" = "50%",
+            "0.75" = "75%",
+            "1" = "100%"
+          )
+        ) + theme(axis.ticks.y = element_blank(),
+                  axis.ticks.x = element_blank()) +
+        scale_x_discrete(labels = modified_ticks) +
+        scale_color_manual(values = color, breaks=c("1", "2", "3"),
+                       labels=c("*     ", "**     ", "***")) + coord_flip()
+    }
+  }
+
+
+np_color = c("#4CAEE3", "#ee9a00", "red")
+Legend_plot = get_legend_plot(Model_Data, "NP", np_actual, "title", 20, np_color)
+Legend_plot
+legend <- get_legend(Legend_plot)
+```
+
+```{r, echo=FALSE}
+
+
+sectionA_plots <-
+  function(Data,
+           item,
+           modified_ticks,
+           title,
+           configuration, color) {
+    
+    axis_text_size <- 8
+    
+    if (item == "NP" | item == "H" | item == "TA") {
+      y_title = bquote( ~ italic("P"[.(configuration)]))
+      y_text = element_text(face = "bold", size = axis_text_size)
+    } else{
+      y_title = element_blank()
+      y_text = element_blank()
+    }
+    
+    
+    if (configuration != 20) {
+      plot_title_ = element_blank()
+      
+    }
+    if (configuration == 20) {
+      plot_title_ = element_text(hjust = 0.5,
+                                 face = "bold",
+                                 size = axis_text_size)
     }
     
     
@@ -245,7 +333,7 @@ sectionA_plots <-
           axis.text.y = y_text,
           plot.title = plot_title_,
           panel.grid = element_blank(),
-          axis.text.x = element_text(face = "bold", size = 6),
+          axis.text.x = element_text(face = "bold", size = axis_text_size),
           # axis.text.y = element_text(face = "bold", size = 6),
           legend.position = "none"
         ) +
@@ -274,7 +362,7 @@ sectionA_plots <-
           axis.text.y = y_text,
           plot.title = plot_title_,
           panel.grid = element_blank(),
-          axis.text.x = element_text(face = "bold", size = 6),
+          axis.text.x = element_text(face = "bold", size = axis_text_size),
           # axis.text.y = element_text(face = "bold", size = 6),
           legend.position = "none"
         ) +
@@ -306,6 +394,7 @@ continous_features_plots <-
            modified_ticks,
            Plot_title,
            configuration) {
+    axis_text_size <- 8
       y_title = bquote(~ italic("P"[.(configuration)]))
       
       y_text = element_text(face = "bold")
@@ -319,7 +408,7 @@ continous_features_plots <-
     if (configuration == "20") {
       plot_title_ = element_text(hjust = 0.5,
                                  face = "bold",
-                                 size = 7)
+                                 size = axis_text_size)
     }
     
     if (item == "H") {
@@ -329,8 +418,8 @@ continous_features_plots <-
         theme(
           plot.title = plot_title_,
           panel.grid = element_blank(),
-          axis.text.x = element_text(face = "bold", size = 6),
-          axis.text.y = element_text(face = "bold", size = 6)
+          axis.text.x = element_text(face = "bold", size = axis_text_size),
+          axis.text.y = element_text(face = "bold", size = axis_text_size)
         ) +
         labs(y = y_title, x = "", title = Plot_title) + scale_y_continuous(
           limits = c(0.0, 1),
@@ -355,7 +444,7 @@ continous_features_plots <-
         theme(
           plot.title = plot_title_,
           panel.grid = element_blank(),
-          axis.text.x = element_text(face = "bold", size = 6),
+          axis.text.x = element_text(face = "bold", size = axis_text_size),
           axis.text.y = element_blank()
         ) +
         labs(y = element_blank(), x = "", title = Plot_title) + scale_y_continuous(
@@ -381,7 +470,7 @@ continous_features_plots <-
         theme(
           plot.title = plot_title_,
           panel.grid = element_blank(),
-          axis.text.x = element_text(face = "bold", size = 6),
+          axis.text.x = element_text(face = "bold", size = axis_text_size),
           axis.text.y = element_blank()
         ) +
         labs(y = element_blank(), x = "", title = Plot_title) + scale_y_continuous(
@@ -407,7 +496,7 @@ continous_features_plots <-
         theme(
           plot.title = element_blank(),
           panel.grid = element_blank(),
-          axis.text.x = element_text(face = "bold", size = 6),
+          axis.text.x = element_text(face = "bold", size = axis_text_size),
           axis.text.y = element_blank()
         ) +
         labs(y = element_blank(), x = "", title = Plot_title) + scale_y_continuous(
@@ -442,9 +531,10 @@ dummy_df <- data.frame(
 y_title = expression(paste(italic("P", "S20%")))
 
 SectionA_draw_dummy_plot <- function(plot_title, y_title) {
+  axis_text_size <- 8
   if (plot_title != "") {
     title = element_text(hjust = 0.5,
-                         size = 7,
+                         size = 8,
                          face = "bold")
   }
   
@@ -461,11 +551,11 @@ SectionA_draw_dummy_plot <- function(plot_title, y_title) {
       axis.ticks.y = element_blank(),
       axis.text.x = element_text(
         face = "bold",
-        size = 6,
+        size = axis_text_size,
         angle = 30,
         hjust = 1
       ),
-      axis.text.y = element_text(face = "bold", size = 6),
+      axis.text.y = element_text(face = "bold", size = axis_text_size),
       panel.grid.major = element_blank(),
       panel.grid.minor = element_blank()
     ) + labs(y = element_blank(), x = "", title = plot_title) +
@@ -512,11 +602,11 @@ SectionB_draw_dummy_plot <-
         axis.ticks.y = element_blank(),
         axis.text.x = element_text(
           face = "bold",
-          size = 7,
+          size = 8,
           angle = 30,
           hjust = 1
         ),
-        axis.text.y = element_text(face = "bold", size = 6),
+        axis.text.y = element_text(face = "bold", size = 8),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank()
       ) + labs(y = y_title, x = "", title = plot_title) +
@@ -649,20 +739,7 @@ H_actual = c("0" = "0", "50" = "50", "100" = "100", "150" ="150", "200" = "200")
 
 
 
-
-```{r, echo=FALSE}
-# add_bottom_legend <- function() {
-#   theme(legend.position="bottom")
-# }
-# 
-# np_color = c("#4CAEE3", "#ee9a00", "red")
-# legend_plot = sectionA_plots(Model_Data, "NP", np_actual, "title[item]", "20", np_color)
-# legend_plot
-# legend_timeline<<-get_legend(legend_plot + add_bottom_legend())
-# legend_timeline
-```
-
-
+## SectionA
 ```{r, echo=FALSE}
 orange = "#ee9a00"
 blue = "#4CAEE3"
@@ -747,7 +824,7 @@ title <- c("", "", "", "")
 np_color = c("gray", orange, "red")
 FA_color = c("gray", "black", "black", blue, "black", orange)
 BF_color = c("gray", blue)
-PR_color = c("gray", blue, orange , blue, orange)
+PR_color = c("gray", blue, orange , blue, blue)
 color_list <- list(np_color, FA_color, BF_color, PR_color)
 
 modified_ticx = list(np_actual, fa_actual, BF_actual, PR_actual, H_actual, H_actual)
@@ -774,15 +851,18 @@ plot_A_50 <- ggarrange(
 
 library(cowplot)
 Research_tactics<- plot_grid(plot_A_20, plot_A_30, plot_A_50, nrow = 3)
-filename <- "sectionA.pdf"
-full_path <- file.path(plot_dir, filename)
-ggsave(
-  full_path,
-  Research_tactics,
-  width = 8.5,
-  height = 5.5,
-  units = "in"
-)
+# filename <- "sectionA.pdf"
+# full_path <- file.path(plot_dir, filename)
+# ggsave(
+#   full_path,
+#   Research_tactics,
+#   width = 8.5,
+#   height = 5.5,
+#   units = "in"
+# )
+
+Research_tactics <- plot_grid(Research_tactics, legend, nrow = 2, rel_heights = c(1, .03))
+
 ```
 
 ## Section B
@@ -820,7 +900,7 @@ modified_ticx = list(DS_actual)
 configuration = "20"
 for (item in 1:length(plot_item)){
   plotDS = sectionA_plots(Model_Data, plot_item[item], modified_ticx[[item]], title[item], configuration, color_list[[item]])
-  
+  plotDS30 = sectionA_plots(Model_Data, "DS", modified_ticx[[item]], "", 30, c("gray", orange))
 }
 
 plot1 <- SectionA_draw_dummy_plot("Trait Anxiety", "")
@@ -839,7 +919,7 @@ sectionC <- ggarrange(
   plot1,
   plot2,
   plot3,
-  plot5,
+  plotDS30,
   plot4,
   plot5,
   plot6,
@@ -856,18 +936,27 @@ sectionC <- ggarrange(
 ```{r, echo=FALSE}
 
 section_BC <- plot_grid(sectionB, sectionC, rel_widths = c(1, 2), ncol = 2, labels = c("b", "c"))
-# section_BC
 
-final_plot <- plot_grid(Research_tactics, section_BC, nrow = 2, labels = c("a", "")) + annotation_custom(grid.polygon(
-    c(0, 0.5, 1, 0.337, 0.337),
-    c(0.5, 0.5, 0.5, 0, 0.5),
-    id = c(1, 1, 1, 2, 2),
-    gp = gpar(lwd = 1.5)
-  ))
-# final_plot
+final_plot <-
+  plot_grid(Research_tactics,
+            section_BC,
+            nrow = 2,
+            labels = c("a", "")) + annotation_custom(grid.polygon(
+              c(0, 0.5, 1, 0.336, 0.336),
+              c(0.5, 0.5, 0.5, 0, 0.5),
+              id = c(1, 1, 1, 2, 2),
+              gp = gpar(lwd = 1.5))) +  annotation_custom(grid.polygon(
+              c(0, 0.25, 1, 1, 1),
+              c(0.525, 0.525, 0.525, 0, 0.525),
+              id = c(1, 1, 1, 2, 2),
+              gp = gpar(lwd = 1.5)))  
 
 
-filename <- "SR_prediction_full_sample_ABC.pdf"
+
+
+
+
+filename <- "Figure_SR_prediction_version5.pdf"
 full_path <- file.path(plot_dir, filename)
 ggsave(
   full_path,
