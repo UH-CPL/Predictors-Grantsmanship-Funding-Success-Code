@@ -112,6 +112,7 @@ title_list = c(
   "Stress level on conference deadlines wrt regular working days"
 )
 
+# colnames(StandardPart)
 ```
 
 
@@ -120,7 +121,7 @@ title_list = c(
 
 ```{r, echo=FALSE, warning=FALSE}
 Core_Questions <-
-  StandardPart %>% select(
+  StandardPart %>% dplyr::select(
     faculty_rank,
     gender,
     departmental_affiliation,
@@ -153,7 +154,8 @@ Core_Questions <-
     length_of_supp,
     in_the_week_leading_to_a_c,
     you_typically_subm,
-    ss_level_in_a_fundi
+    ss_level_in_a_fundi,
+    please_write_about_any_oth
   )
 
 
@@ -199,20 +201,17 @@ Core_Questions <-
     ## Submit Proposal
     DS = "stress_level_in_a_fundi",
     ## Stress leven on Proposal Deadline
-    A_N_Conf_Pap = "wha_average_number"
+    A_N_Conf_Pap = "wha_average_number",
+    Comments = "please_write_about_any_oth"
   )
 
 
 levels(factor(Core_Questions$State))
 
 East = 'Connecticut|Maryland|Massachusetts|^New Jersey$|^New York$|Pennsylvania|^Virginia$|^North Carolina$'
-
 Midwest = 'Illinois|Michigan|Minnesota|Ohio|Wisconsin'
-
 West = 'Arizona|California|Colorado|Nevada|^New Mexico$|Oregon|^Utah$'
-
 South = 'Florida|Georgia|Tennessee|Texas|Alabama|^Oklahoma$'
-
 
 Core_Questions <- Core_Questions %>%
   mutate(
@@ -226,6 +225,7 @@ Core_Questions <- Core_Questions %>%
 Core_Questions$State <- Core_Questions$States_ewns
 
 Core_Questions$States_ewns <- NULL
+
 ```
 
 

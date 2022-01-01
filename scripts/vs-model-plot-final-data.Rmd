@@ -27,6 +27,7 @@ library(grid)
 library(gridExtra)
 library(ggpubr)
 library(freqtables)
+library(cowplot)
 ```
 
 
@@ -211,6 +212,19 @@ Model_Data <- rbind(Model_Data, slice_df(Model_Data_50, 14, 18, "PR", "50"))
 
 
 ```{r, echo=FALSE}
+np_actual = c("1" = "NP1", "2" = "NP2", "3"="NP3")
+fa_actual = c("1" = "NSF", "2" = "NIH", "3" = "DOE", "4" = "DOD", "5" = "NASA", "6" = "OT")
+TS_actual = c("1" = "TS1", "2" = "TS2")
+DS_actual = c("1" = "DS1", "2" = "DS2")
+BF_actual = c("1" = "BF1", "2" = "BF2")
+PR_actual = c("1" = "PR1", "2" = "PR2", "3" = "PR3", "4" = "PR4", "5" = "PR5")
+RS_actual = c("1" = "RS1", "2" = "RS2")
+FR_actual = c("1" = "FR1", "2" = "FR2", "3" = "FR3")
+H_actual = c("0" = "0", "50" = "50", "100" = "100", "150" ="150", "200" = "200")
+```
+
+
+```{r, echo=FALSE}
 
 get_legend_plot <-
   function(Data,
@@ -223,7 +237,7 @@ get_legend_plot <-
     # var_size = c('var1'=2, 'var2'=1)
     
     if (item == "NP" | item == "H" | item == "TA") {
-      y_title = bquote( ~ italic("P"[.(configuration)]))
+      y_title = bquote( ~ italic("P"[.(paste0("G", configuration))]))
       y_text = element_text(face = "bold", size = axis_text_size)
     } else{
       y_title = element_blank()
@@ -287,11 +301,13 @@ np_color = c("#4CAEE3", "#ee9a00", "red")
 Legend_plot = get_legend_plot(Model_Data, "NP", np_actual, "title", 20, np_color)
 Legend_plot
 legend <- get_legend(Legend_plot)
+
+# 
+ y_title = bquote( ~ italic("P"[.(29)]))
+ print(y_title)
 ```
 
 ```{r, echo=FALSE}
-
-
 sectionA_plots <-
   function(Data,
            item,
@@ -302,7 +318,7 @@ sectionA_plots <-
     axis_text_size <- 8
     
     if (item == "NP" | item == "H" | item == "TA") {
-      y_title = bquote( ~ italic("P"[.(configuration)]))
+      y_title = bquote( ~ italic("P"[.(paste0("G", configuration))]))
       y_text = element_text(face = "bold", size = axis_text_size)
     } else{
       y_title = element_blank()
@@ -314,7 +330,7 @@ sectionA_plots <-
       plot_title_ = element_blank()
       
     }
-    if (configuration == 20) {
+    if (configuration == 30) {
       plot_title_ = element_text(hjust = 0.5,
                                  face = "bold",
                                  size = axis_text_size)
@@ -393,9 +409,9 @@ continous_features_plots <-
            item,
            modified_ticks,
            Plot_title,
-           configuration) {
+           configuration, clr) {
     axis_text_size <- 8
-      y_title = bquote(~ italic("P"[.(configuration)]))
+      y_title = bquote(~ italic("P"[.(paste0("G", configuration))]))
       
       y_text = element_text(face = "bold")
     
@@ -405,7 +421,7 @@ continous_features_plots <-
       plot_title_ = element_blank()
       
     }
-    if (configuration == "20") {
+    if (configuration == "30") {
       plot_title_ = element_text(hjust = 0.5,
                                  face = "bold",
                                  size = axis_text_size)
@@ -413,9 +429,12 @@ continous_features_plots <-
     
     if (item == "H") {
       plt = plot_model(model_name, type = "pred", terms = item) +
+        geom_line(aes(colour = item), size = 1) +
+        scale_color_manual(values = c(clr)) +
         geom_vline(xintercept = 29.4, linetype="dashed", color = "gray", size=1)+
         theme_bw()+
         theme(
+          legend.position = "none",
           plot.title = plot_title_,
           panel.grid = element_blank(),
           axis.text.x = element_text(face = "bold", size = axis_text_size),
@@ -439,9 +458,12 @@ continous_features_plots <-
     } else if(item == "TA") {
       
       plt = plot_model(model_name, type = "pred", terms = item) +
+        geom_line(aes(colour = item), size = 1) +
+        scale_color_manual(values = c(clr)) +
         geom_vline(xintercept = 41.3, linetype="dashed", color = "gray", size=1)+
         theme_bw()+
         theme(
+          legend.position = "none",
           plot.title = plot_title_,
           panel.grid = element_blank(),
           axis.text.x = element_text(face = "bold", size = axis_text_size),
@@ -465,9 +487,12 @@ continous_features_plots <-
     } else if(item == "AV") {
       
       plt = plot_model(model_name, type = "pred", terms = item) +
+        geom_line(aes(colour = item), size = 1) +
+        scale_color_manual(values = c(clr)) +
         geom_vline(xintercept = 18.8, linetype="dashed", color = "gray", size=1)+
         theme_bw()+
         theme(
+          legend.position = "none",
           plot.title = plot_title_,
           panel.grid = element_blank(),
           axis.text.x = element_text(face = "bold", size = axis_text_size),
@@ -491,9 +516,12 @@ continous_features_plots <-
     } else {
       
       plt = plot_model(model_name, type = "pred", terms = item) +
+        geom_line(aes(colour = item), size = 1) +
+        scale_color_manual(values = c(clr)) +
         geom_vline(xintercept = 5.9, linetype="dashed", color = "gray", size=1)+
         theme_bw()+
         theme(
+          legend.position = "none",
           plot.title = element_blank(),
           panel.grid = element_blank(),
           axis.text.x = element_text(face = "bold", size = axis_text_size),
@@ -591,7 +619,7 @@ SectionA_draw_dummy_plot <- function(plot_title, y_title) {
 
 SectionB_draw_dummy_plot <-
   function(plot_title, y_title, configuration) {
-    y_title = bquote( ~ italic("P"[.(configuration)]))
+    y_title = bquote( ~ italic("P"[.(paste0("G", configuration))]))
     dummy_plot <- ggplot(dummy_df, aes(x = x, y = y, group = group)) +
       geom_line(scale = 0.9, color = "white") +
       theme_bw() +
@@ -652,7 +680,7 @@ SectionC_draw_dummy_plot <-
     }
     
     if (plot_title == "Trait Anxiety") {
-      y_title = bquote(~ italic("P"[.(configuration)]))
+      y_title = bquote(~ italic("P"[.(paste0("G", configuration))]))
     }
     if (plot_title != "Trait Anxiety") {
       y_title = element_blank()
@@ -725,19 +753,6 @@ SectionC_draw_dummy_plot <-
 ```
 
 
-```{r, echo=FALSE}
-np_actual = c("1" = "NP1", "2" = "NP2", "3"="NP3")
-fa_actual = c("1" = "NSF", "2" = "NIH", "3" = "DOE", "4" = "DOD", "5" = "NASA", "6" = "OT")
-TS_actual = c("1" = "TS1", "2" = "TS2")
-DS_actual = c("1" = "DS1", "2" = "DS2")
-BF_actual = c("1" = "BF1", "2" = "BF2")
-PR_actual = c("1" = "PR1", "2" = "PR2", "3" = "PR3", "4" = "PR4", "5" = "PR5")
-RS_actual = c("1" = "RS1", "2" = "RS2")
-FR_actual = c("1" = "FR1", "2" = "FR2", "3" = "FR3")
-H_actual = c("0" = "0", "50" = "50", "100" = "100", "150" ="150", "200" = "200")
-```
-
-
 
 ## SectionA
 ```{r, echo=FALSE}
@@ -750,39 +765,39 @@ FA_color = c("gray", "black", "black", "red", "black", orange)
 color_list <- list(np_color, FA_color)
 
 
-plot_list <- list()
-plot_item <- c("NP", "FA")
-title <- c("Number of Proposals", "Funding Agency")
-
-modified_ticx = list(np_actual, fa_actual, TS_actual, H_actual)
+# plot_list <- list()
+# plot_item <- c("NP", "FA")
+# title <- c("Number of Proposals", "Funding Agency")
+# 
+# modified_ticx = list(np_actual, fa_actual, TS_actual, H_actual)
 # color_list <- list(np_color, FA_color, ts_color)
 
-configuration = "20"
-for (item in 1:length(plot_item)){
-  plot = sectionA_plots(Model_Data, plot_item[item], modified_ticx[[item]], title[item], configuration, color_list[[item]])
-  plot_list[[length(plot_list) + 1]] <- plot
-}
+# configuration = "20"
+# for (item in 1:length(plot_item)){
+#   plot = sectionA_plots(Model_Data, plot_item[item], modified_ticx[[item]], title[item], configuration, color_list[[item]])
+#   plot_list[[length(plot_list) + 1]] <- plot
+# }
 
 
-dummy_BF <- SectionA_draw_dummy_plot("Break Frequency", "")
-dummy_PR <- SectionA_draw_dummy_plot("Pilot Research", "")
-
-
-plot_A_20 <- ggarrange(
-  plot_list[[1]],
-  plot_list[[2]],
-  dummy_BF,
-  dummy_PR,
-  nrow = 1,
-  ncol = 4
-)
+# dummy_BF <- SectionA_draw_dummy_plot("Break Frequency", "")
+# dummy_PR <- SectionA_draw_dummy_plot("Pilot Research", "")
+# 
+# 
+# plot_A_20 <- ggarrange(
+#   plot_list[[1]],
+#   plot_list[[2]],
+#   dummy_BF,
+#   dummy_PR,
+#   nrow = 1,
+#   ncol = 4
+# )
 # plot_A_20
 
 
 
 plot_list <- list()
 plot_item <- c("NP", "FA")
-title <- c("", "")
+title <- c("Number of Proposals", "Funding Agency")
 
 
 np_color = c("gray", "red", "red")
@@ -799,8 +814,8 @@ for (item in 1:length(plot_item)){
 }
 
 
-dummy_BF <- SectionA_draw_dummy_plot("", "")
-dummy_PR <- SectionA_draw_dummy_plot("", "")
+dummy_BF <- SectionA_draw_dummy_plot("Break Frequency", "")
+dummy_PR <- SectionA_draw_dummy_plot("Pilot Research", "")
 
 
 plot_A_30 <- ggarrange(
@@ -849,8 +864,8 @@ plot_A_50 <- ggarrange(
 # plot_A_50
 
 
-library(cowplot)
-Research_tactics<- plot_grid(plot_A_20, plot_A_30, plot_A_50, nrow = 3)
+# Research_tactics<- plot_grid(plot_A_20, plot_A_30, plot_A_50, nrow = 3)
+Research_tactics<- ggarrange(plot_A_30, plot_A_50, nrow = 2)
 # filename <- "sectionA.pdf"
 # full_path <- file.path(plot_dir, filename)
 # ggsave(
@@ -861,25 +876,25 @@ Research_tactics<- plot_grid(plot_A_20, plot_A_30, plot_A_50, nrow = 3)
 #   units = "in"
 # )
 
-Research_tactics <- plot_grid(Research_tactics, legend, nrow = 2, rel_heights = c(1, .03))
+Research_tactics <- plot_grid(Research_tactics, legend, nrow = 2, rel_heights = c(1, .05))
 
 ```
 
 ## Section B
 ```{r, echo=FALSE}
 
-plot1 = continous_features_plots(model_20, "H", H_actual, "h-index", 20)
-plot2 = continous_features_plots(model_30, "H", H_actual, "h-index", 30)
-plot3 = continous_features_plots(model_50, "H", H_actual, "h-index", 50)
+# plot1 = continous_features_plots(model_20, "H", H_actual, "h-index", 20)
+plot2 = continous_features_plots(model_30, "H", H_actual, "h-index", 30, blue)
+plot3 = continous_features_plots(model_50, "H", H_actual, "h-index", 50, orange)
 
 sectionB <- ggarrange(
-  plot1,
+  # plot1,
   plot2,
   plot3,
-  nrow = 3,
+  nrow = 2,
   ncol = 1
 )
-# sectionB
+sectionB
 
 
 ```
@@ -899,38 +914,56 @@ modified_ticx = list(DS_actual)
 
 configuration = "20"
 for (item in 1:length(plot_item)){
-  plotDS = sectionA_plots(Model_Data, plot_item[item], modified_ticx[[item]], title[item], configuration, color_list[[item]])
-  plotDS30 = sectionA_plots(Model_Data, "DS", modified_ticx[[item]], "", 30, c("gray", orange))
+  # plotDS = sectionA_plots(Model_Data, plot_item[item], modified_ticx[[item]], title[item], configuration, color_list[[item]])
+  plotDS30 = sectionA_plots(Model_Data, "DS", modified_ticx[[item]], title[item], 30, c("gray", orange))
 }
 
-plot1 <- SectionA_draw_dummy_plot("Trait Anxiety", "")
+# plot1 <- SectionA_draw_dummy_plot("Trait Anxiety", "")
+
+
 plot2 <- SectionA_draw_dummy_plot("Extraversion", "")
 plot3 <- SectionA_draw_dummy_plot("Avoidance coping", "")
-plot4 <- continous_features_plots(model_30, "TA", FR_actual, "Trait Anxiety", 30)
-plot5 <- SectionA_draw_dummy_plot("", "")
-plot6 <- SectionA_draw_dummy_plot("", "")
 
+
+plot4 <- continous_features_plots(model_30, "TA", FR_actual, "Trait Anxiety", 30, blue)
+plot5 <- SectionA_draw_dummy_plot("", "")
+
+plot6 <- SectionA_draw_dummy_plot("", "")
 plot7 <- SectionA_draw_dummy_plot("", "")
-plot8 = continous_features_plots(model_50, "E", H_actual, "", "")
-plot9 = continous_features_plots(model_50, "AV", H_actual, "", "")
+plot8 = continous_features_plots(model_50, "E", H_actual, "", "", orange)
+plot9 = continous_features_plots(model_50, "AV", H_actual, "", "", blue)
 
 sectionC <- ggarrange(
-  plotDS,
-  plot1,
-  plot2,
-  plot3,
   plotDS30,
   plot4,
-  plot5,
+  plot2,
+  plot3,
+  
   plot6,
-  plot5,
   plot7,
   plot8,
   plot9,
-  nrow = 3,
+  nrow = 2,
   ncol = 4
 )
-# sectionC
+
+# sectionC <- ggarrange(
+#   plotDS,
+#   plot1,
+#   plot2,
+#   plot3,
+#   plotDS30,
+#   plot4,
+#   plot5,
+#   plot6,
+#   plot5,
+#   plot7,
+#   plot8,
+#   plot9,
+#   nrow = 3,
+#   ncol = 4
+# )
+sectionC
 ```
 
 ```{r, echo=FALSE}
@@ -942,13 +975,13 @@ final_plot <-
             section_BC,
             nrow = 2,
             labels = c("a", "")) + annotation_custom(grid.polygon(
-              c(0, 0.5, 1, 0.336, 0.336),
-              c(0.5, 0.5, 0.5, 0, 0.5),
+              x = c(0, 0.5, 1, 0.336, 0.336),
+              y = c(0.5, 0.5, 0.5, 0, 0.5),
               id = c(1, 1, 1, 2, 2),
               gp = gpar(lwd = 1.5))) +  annotation_custom(grid.polygon(
-              c(0, 0.25, 1, 1, 1),
-              c(0.525, 0.525, 0.525, 0, 0.525),
-              id = c(1, 1, 1, 2, 2),
+              # c(0, 0.25, 1, 1, 1),
+              y = c(0.525, 0.525, 0.525, 0.525),
+              id = NULL,
               gp = gpar(lwd = 1.5)))  
 
 
@@ -956,7 +989,7 @@ final_plot <-
 
 
 
-filename <- "Figure_SR_prediction_version5.pdf"
+filename <- "Figure_SR_prediction_version9.pdf"
 full_path <- file.path(plot_dir, filename)
 ggsave(
   full_path,
@@ -966,4 +999,3 @@ ggsave(
   units = "in"
 )
 ```
-

@@ -52,9 +52,24 @@ Data <-
 
 ```{r, echo=FALSE}
 
+
+
 Data <- Data[,c("FR", "Gender", "Departmnet", "State", "TW_W_H", "TW_Research", "RO_F_EG")]
 
-# count(Data$FR)
+## for the comments only
+# Data <- filter(Data, Comments != "")
+# Data <- Data[,c("FR", "Gender", "Departmnet", "State", "TW_W_H", "TW_Research", "RO_F_EG", "Comments")]
+
+# colnames(Data)
+# Data <- subset(Data, Comments != "Your survey was comprehensive" & 
+#                Comments != "No ideas" & 
+#                Comments != "n/a" & 
+#                Comments != "None." &
+#                Comments != "None  " &
+#                Comments != "No comment" &
+#                Comments != "The questions don't really make sense in my case. I don't think the questionnaire was thought through well.")
+# 
+# Data$Comments <- NULL
 Data <- Data %>%
   mutate(FR = recode(FR, "Assistant Professor" = "FR1", "Associate Professor" = "FR2", "Professor" = "FR3" ))
 # count(Data$State)
@@ -105,6 +120,8 @@ Data <- Data %>%
 ```{r, echo=FALSE}
 # colnames(Data)
 core_plot_df <- Data[,c("Gender", "Disciplines", "State", "TW_W_H", "TWR", "EG")]
+
+table(core_plot_df$Gender)
 ```
 
 
@@ -114,7 +131,7 @@ list_gender = c("Female", "Male")
 list0 = c("BIO", "BEHAV", "ENG", "CIS", "NAT")
 list1 = c("East", "West", "Midwest", "South")
 list2 = c("< 30", "30-40", "40-50", "> 50")
-list3 = c("0-20", "30", "40", "50", "60", "70-90")
+list3 = c("<20", "30", "40", "50", "60", ">70")
 list4 = c("NF",
           "1-25",
           "25-50",
@@ -196,19 +213,21 @@ plot_list <- list()
 for (i in 1:length(core_plot_df)) {
   y_title = ""
   if (title_list[i] == "Weekly Workload [hrs]" | title_list[i] == "Gender Distribution") {
-    y_title = "Count"
+    y_title = "# of Participants"
   }
+  
+  ylimit  = 120
 
 
-  if (i == 1) {
-    ylimit = 300
-  }  else if (i == 2 | i == 3) {
-    ylimit = 200
-  }  else if (i == 4) {
-    ylimit = 250
-  } else {
-    ylimit = 105
-  }
+  # if (i == 1) {
+  #   ylimit = 300
+  # }  else if (i == 2 | i == 3) {
+  #   ylimit = 200
+  # }  else if (i == 4) {
+  #   ylimit = 250
+  # } else {
+  #   ylimit = 105
+  # }
 
 
   temp <- count(core_plot_df[i])
@@ -220,8 +239,8 @@ for (i in 1:length(core_plot_df)) {
   temp$percentage <- percent((temp$prop))
   
   if (i == 1) {
-    temp$percentage[2] <- "67.5%"
-    temp$percentage[1] <- "32.5%"
+    # temp$percentage[2] <- "67.5%"
+    # temp$percentage[1] <- "32.5%"
     
   #   bar_plot <- ggplot(data = temp, aes(x = reorder(item, -count, decreasing = FALSE), count)) +
   #   geom_bar(stat = "identity",
@@ -257,21 +276,21 @@ for (i in 1:length(core_plot_df)) {
   # plot_list[[length(plot_list) + 1]] <- bar_plot
   }
 
-  if (i == 3) {
-    temp$percentage[4] <- "43%"
-  }
-  if (i == 4) {
-    temp$percentage[3] <- "35%"
-  }
-  if (i == 6) {
-    temp$percentage[6] <- "26%"
-  }
+  # if (i == 3) {
+  #   temp$percentage[4] <- "43%"
+  # }
+  # if (i == 4) {
+  #   temp$percentage[3] <- "35%"
+  # }
+  # if (i == 6) {
+  #   temp$percentage[6] <- "26%"
+  # }
   
 
   bar_plot <- ggplot(data = temp, aes(x = item, y = count)) +
     geom_bar(stat = "identity",
              width = 0.5,
-             fill = "steelblue") +
+             fill = "seagreen3") +
     geom_text(
       aes(label = percentage),
       # vjust = 0.5,
@@ -297,7 +316,7 @@ for (i in 1:length(core_plot_df)) {
       axis.text.x = element_text(face = "bold", size = 7),
       axis.text.y = element_text(face = "bold", size = 7)
     ) + scale_x_discrete(limits = Ticks_list[[i]])
-  # print(bar_plot)
+  print(bar_plot)
 
   plot_list[[length(plot_list) + 1]] <- bar_plot
   
@@ -309,7 +328,7 @@ final_plot <- ggarrange(plotlist = plot_list,
                         nrow = 2,
                         ncol = 3)
 # filename <- "Figure1_without_percentage.pdf"
-filename <- "Figure_Descriptive_Statistics_version1.pdf"
+filename <- "Figure1_proposal_comments_only.pdf"
 full_path <- file.path(plot_dir, filename)
 ggsave(
   full_path,
@@ -374,6 +393,90 @@ ggsave(
 
 
 
+```{r, echo=FALSE}
+file_name='QQ_Bridge.csv'
+QQ <-  read.csv(file.path(curated_data_dir, file_name), stringsAsFactors = FALSE)
+
+drops <- c("P_ID", "Comment")
+QQ <- QQ[ , !(names(QQ) %in% drops)]
+
+# table(c(QQ$NA1, QQ$NA2), QQ$S_G30)
+
+melt(QQ)
 
 
+mdata <- melt(QQ, id=c("S_G30", "S_G50", "S_F75", "S_FF", "S_G50FF"))
+mdata_group <- mdata %>% group_by(variable) %>% summarise(B = count(variable))
+table(QQ$IS2)
+```
+
+```{r, echo=FALSE}
+
+library(corrplot)
+library(RColorBrewer)
+M <-cor(QQ, use = "complete.obs")
+corrplot(M, type="upper", order="hclust", col=brewer.pal(n=8, name="RdYlBu"))
+```
+
+
+
+
+```{r, echo=FALSE}
+
+M_proposal <- cor(QQ, use = "complete.obs")
+res1 <- cor.mtest(QQ, conf.level = .95)
+
+# significance_plot<-
+corrplot(
+  M_proposal,
+  p.mat = res1$p,
+  method = "color",
+  type = "upper",
+  # title = "Q-Q Correlation",
+  sig.level = c(.001, .01, .05),
+  pch.cex = .9,
+  diag = FALSE,
+  insig = "label_sig",
+  pch.col = "black",
+  col = colorRampPalette(c("brown1", "white", "dodgerblue"))(200),
+  tl.col = "black",
+  mar = c(0, 0, 1, 0)
+)
+```
+```{r, echo=FALSE}
+library(ggcorrplot)
+
+
+QQ_Cor<- ggcorrplot(M_proposal, hc.order = TRUE, type = "lower",
+   outline.col = "white",
+   ggtheme = ggplot2::theme_gray,
+   colors = c("#6D9EC1", "white", "#E46726")) + ggtitle("Q-Q Correlation")+ theme(plot.title = element_text(hjust = 0.5))
+QQ_Cor
+```
+
+
+
+```{r, echo=FALSE}
+
+dat <- read.table(text="A   B   C   D
+A1   a   v   a
+A2   v   v   a
+A3   a   a   a", header=TRUE)
+
+
+library(plyr)
+library(ggplot2)
+library(reshape2)
+
+# transform your data 
+mat <- rbind.fill.matrix(apply(QQ[-1], 1, function(i) t(as.matrix(table(i)))))
+mat[is.na(mat)] <- 0
+rownames(mat) <- colnames(QQ)
+
+# plot   
+ggplot(melt(mat), aes(Var2, Var1, fill=value)) + 
+                 geom_tile() +
+                 scale_fill_gradient(limits=c(0,3), low="white") +
+                 geom_text( aes(label=value))
+```
 

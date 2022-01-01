@@ -1,8 +1,8 @@
 ---
 title: "Chi-squared Test"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -65,3 +65,14 @@ faculty_gender <- chisq.test(Data_s_p)
 faculty_gender
 
 ```
+
+
+## Chi-square test on Percentage of Gender all vs comment
+```{r, warning=FALSE}
+gender_sample <-c(42, 58)
+gender_population <-c(32.5, 67.5)
+Gender <- data.frame(gender_sample, gender_population)
+Gender_test <- chisq.test(Gender)
+Gender_test
+```
+

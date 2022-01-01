@@ -57,11 +57,27 @@ colnames(Data) <-
 
 ```{r, echo=FALSE}
 Corelation_DF <-
-  data.frame(Data[, c(1, 8:17)], Raw_Data[, c(6, 15:17, 22, 26:27, 29:33, 43, 44, 10)])
+  data.frame(Data[, c(1, 8:17)], Raw_Data[, c(4:7, 15:17, 22, 26:27, 29:33, 43, 44, 10)])
+
+
+
+
+for (i in 1:nrow(Corelation_DF)) {
+  if (Corelation_DF$departmental_affiliation[i] == "Other") {
+    Corelation_DF$departmental_affiliation[i] = Corelation_DF$please_write_down_the_depa[i]
+  }
+
+}
+
+Corelation_DF$please_write_down_the_depa <- NULL
+
+
 Corelation_DF <-
   Corelation_DF  %>%  dplyr::rename(
     H = "google_scholar_h_index",
     RS = "test",
+    Departmnet = departmental_affiliation,
+    State = state_do_you_reside,
     ## Research Style
     WH = "in_a_typical_workday_how_m",
     ## Typical week working hours
@@ -90,13 +106,69 @@ Corelation_DF <-
   )
 
 
-table(Corelation_DF$FC)
+# colnames(Corelation_DF)
+# 
+# table(Corelation_DF$FC)
 
 Corelation_DF <- Corelation_DF %>%
   mutate(FC = recode(FC, "Not funded" = 1, "25-1%" = 2, "50-25%" = 3, "75-50%" = 4, "100-75%" = 5, "Fully funded" = 6))
-table(Corelation_DF$FC)
+
 ```
 
+
+```{r, echo=FALSE}
+Natural_Sciences = '^Applied Math$|^Chemistry and Biochemistry$|^Oceanography$|^Environmental Studies$|^Chemistry$|^Physics$|^Geosciences$|^Mathematics$'
+CIS = '^Informatics$|^Information$|^Information and Logistics Technology$|^Information Science$|^Computer Science$|^Scientific Computing$'
+Engineering = '^Engineering / Learning Sciences$|^Management$|^Statistical Sciences and Operations Research$|^Technology$|^Engineering$'
+Biomedical_Sciences = '^Health$|^Health and Human Performance$|^HHP$|^Neurobiology$|^Neuroscience$|^Optometry$|^Pharmacological and Pharmaceutical Sciences$|^Pharmacy$|^Vision Science$|^Biology$|^Medicine$|^Pharmacy $'
+Behavioral_Sciences = '^Political Science$|^Sociology$|^Psychology$|^Speech, Language, and Hearing$|^Political Science $|^Communication Studies$'
+
+
+
+
+
+Corelation_DF <- Corelation_DF %>%
+  mutate(
+    Disciplines = case_when(
+      # str_detect(Departmnet, Natural_Sciences) ~ 'Natural Sciences',
+      str_detect(Departmnet, Natural_Sciences) ~ 'NAT',
+      # str_detect(Departmnet, CIS) ~ 'Computer & Information Sciences',
+      str_detect(Departmnet, CIS) ~ 'CIS',
+      # str_detect(Departmnet, Engineering) ~ 'Engineering',
+      str_detect(Departmnet, Engineering) ~ 'ENG',
+      # str_detect(Departmnet, Biomedical_Sciences) ~ 'Biomedical Sciences',
+      str_detect(Departmnet, Biomedical_Sciences) ~ 'BIO',
+      # str_detect(Departmnet, Behavioral_Sciences) ~ 'Behavioral Sciences'
+      str_detect(Departmnet, Behavioral_Sciences) ~ 'BEHAV'
+    )
+  )
+```
+
+
+
+
+
+```{r, echo=FALSE}
+
+East = 'Connecticut|Maryland|Massachusetts|^New Jersey$|^New York$|Pennsylvania|^Virginia$|^North Carolina$'
+Midwest = 'Illinois|Michigan|Minnesota|Ohio|Wisconsin'
+West = 'Arizona|California|Colorado|Nevada|^New Mexico$|Oregon|^Utah$'
+South = 'Florida|Georgia|Tennessee|Texas|Alabama|^Oklahoma$'
+
+Corelation_DF <- Corelation_DF %>%
+  mutate(
+    State_Geo_location = case_when(
+      str_detect(State, East) ~ 'East',
+      str_detect(State, West) ~ 'West',
+      str_detect(State, Midwest) ~ 'Midwest',
+      str_detect(State, South) ~ 'South'
+    )
+  )
+Corelation_DF$State <- Corelation_DF$State_Geo_location
+
+Core_Questions$State <- NULL
+
+```
 
 
 ```{r, echo=FALSE}
@@ -286,6 +358,11 @@ table(Corelation_DF$SR)
 cols.num <-  c("RS", "WH", "BF", "NP", "SR", "AP", "AR", "DWH", "T", "DS", "FA")
 Corelation_DF[cols.num] <-  sapply(Corelation_DF[cols.num], as.numeric)
 levels(factor(Corelation_DF$FC))
+
+Corelation_DF$Departmnet <- NULL
+Corelation_DF$State <- NULL
+
+
 ```
 
 
