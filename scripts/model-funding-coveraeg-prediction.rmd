@@ -1,5 +1,5 @@
 ---
-title: "Funding Coverage Prediction"
+title: "Grant Funding Record Models"
 output:
   pdf_document: default
   html_document: default
@@ -33,9 +33,9 @@ plot_dir <- file.path(project_directory, 'Plots')
 
 ```
 
-# Not_funded + 1-25% VS Rest
+
 ```{r, echo=FALSE}
-data_file_name <- "AllKeyData.csv"
+data_file_name <- "KeyData.csv"
 lm_DF <-
   read.csv(file.path(curated_data_dir, data_file_name),
            stringsAsFactors = FALSE)
@@ -76,7 +76,7 @@ lm_DF$FC <- as.factor(lm_DF$FC)
 NullModel <- glm(FC ~ 1, data = lm_DF, family = "binomial")
 FullModel <- glm(FC ~ ., data = lm_DF, family = "binomial")
 BEmodel_25 <- stepAIC(FullModel, direction = "backward", trace = FALSE)
-summary(BEmodel_25)
+# summary(BEmodel_25)
 ```
 
 
@@ -84,7 +84,7 @@ summary(BEmodel_25)
 
 ```{r, echo=FALSE}
 Zcrit<-1.96   ### critical value for 95% confidence intervals
-  
+
 ilink <- family(BEmodel_25)$linkinv
 NP<-c("1","2","3",rep("1",12))
 FA<-c(rep("1",3),"1","2","3","4","5","6",rep("1",6))
@@ -104,12 +104,9 @@ Model_Data_25 <- mutate(ndata,
 ```
 
 
-
-\newpage
-# Not_funded + 1-25%-50% VS Rest
 ```{r, echo=FALSE}
 
-data_file_name <- "AllKeyData.csv"
+data_file_name <- "KeyData.csv"
 lm_DF <-
   read.csv(file.path(curated_data_dir, data_file_name),
            stringsAsFactors = FALSE)
@@ -147,19 +144,18 @@ lm_DF$PR <- as.factor(lm_DF$PR)
 lm_DF$FR <- as.factor(lm_DF$FR)
 lm_DF$FC <- as.factor(lm_DF$FC)
 
-# mean(lm_DF$NASA)
 
 NullModel <- glm(FC ~ 1, data = lm_DF, family = "binomial")
 FullModel <- glm(FC ~ ., data = lm_DF, family = "binomial")
 BEmodel_50 <- stepAIC(FullModel, direction = "backward", trace = FALSE)
-summary(BEmodel_50)
+
 
 ```
 
 
 ```{r, echo=FALSE}
 Zcrit<-1.96   ### critical value for 95% confidence intervals
-  
+
 ilink <- family(BEmodel_50)$linkinv
 NP<-c("1","2","3",rep("1",12))
 FA<-c(rep("1",3),"1","2","3","4","5","6",rep("1",6))
@@ -188,12 +184,10 @@ Model_Data_50 <- mutate(ndata,
 
 
 
-
-\newpage
-# Not_funded + 1-25%-50-75% VS Rest
+# Well Funded Record
 ```{r, echo=FALSE}
 
-data_file_name <- "AllKeyData.csv"
+data_file_name <- "KeyData.csv"
 lm_DF <-
   read.csv(file.path(curated_data_dir, data_file_name),
            stringsAsFactors = FALSE)
@@ -204,7 +198,8 @@ lm_DF <-
   lm_DF %>% dplyr::rename(TS = "T",
                           FR = "Rank",
                           E = "EXT",
-                          PR = "AR")
+                          PR = "AR", 
+                          O ="OP")
 
 lm_DF <-
   lm_DF %>%  mutate(FC = recode(
@@ -231,19 +226,18 @@ lm_DF$PR <- as.factor(lm_DF$PR)
 lm_DF$FR <- as.factor(lm_DF$FR)
 lm_DF$FC <- as.factor(lm_DF$FC)
 
-# mean(lm_DF$TWR)
 
 
 NullModel <- glm(FC ~ 1, data = lm_DF, family = "binomial")
 FullModel <- glm(FC ~ ., data = lm_DF, family = "binomial")
 BEmodel_75 <- stepAIC(FullModel, direction = "backward", trace = FALSE)
-summary(BEmodel_75)
+
 
 ```
 
 ```{r, echo=FALSE}
 
-BEmodel_75 <- glm(formula = FC ~ OP + H + RS + TWR + FA + TS, family = "binomial", data = lm_DF)
+BEmodel_75 <- glm(formula = FC ~ O + H + RS + TWR + FA + TS, family = "binomial", data = lm_DF)
 summary(BEmodel_75)
 
 ```
@@ -261,40 +255,43 @@ TS<-c(rep("1",8),"1","2",rep("1",3))
 
 # TA<-rep(41.33747,15)
 # E<-rep(5.957816,15)
-OP<-rep(7.513648,13)
+O<-rep(7.513648,13)
 H<-rep(29.56824,13)
 TWR<-rep(42.08437,13)
 
 
-tmpd<-data.frame(FA,RS,TS,OP,H,TWR)
+tmpd<-data.frame(FA,RS,TS,O,H,TWR)
 ndata <- cbind(tmpd, setNames(as_tibble(predict(BEmodel_75, tmpd, se.fit = TRUE)[1:2]),
                                    c('fit_link','se_link')))
 Model_Data_75 <- mutate(ndata,
                 fit_resp  = ilink(fit_link),
                 Lower_limit = ilink(fit_link - (Zcrit * se_link)),
                 Upper_limit = ilink(fit_link + (Zcrit * se_link)))
-# Model_Data_75
+
 ```
 
 
 
 
 \newpage
-# Full Funed VS Rest
+# Full Funded Record
 ```{r, echo=FALSE}
 
-data_file_name <- "AllKeyData.csv"
+data_file_name <- "KeyData.csv"
 lm_DF <-
   read.csv(file.path(curated_data_dir, data_file_name),
            stringsAsFactors = FALSE)
 lm_DF$SR <- NULL
+lm_DF$Disciplines <- NULL
+lm_DF$State_Geo_location <- NULL
 
 # count(lm_DF$FC)
 lm_DF <-
   lm_DF %>% dplyr::rename(TS = "T",
                           FR = "Rank",
                           E = "EXT",
-                          PR = "AR")
+                          PR = "AR",
+                          O = "OP")
 
 lm_DF <-
   lm_DF %>%  mutate(FC = recode(
@@ -330,7 +327,7 @@ BEmodel_FF <- stepAIC(FullModel, direction = "backward", trace = FALSE)
 # summary(BEmodel_FF)
 
 
-BEmodel_FF <- glm(FC ~ OP + TWR + FA, family = "binomial", data = lm_DF)
+BEmodel_FF <- glm(FC ~ O + TWR + FA, family = "binomial", data = lm_DF)
 summary(BEmodel_FF)
 ```
 
@@ -342,11 +339,11 @@ Zcrit<-1.96   ### critical value for 95% confidence intervals
 ilink <- family(BEmodel_75)$linkinv
 
 FA<-c("1","2","3","4","5","6",rep("1",2))
-OP<-rep(7.513648,8)
+O<-rep(7.513648,8)
 TWR<-rep(42.08437,8)
 
 
-tmpd<-data.frame(FA,OP,TWR)
+tmpd<-data.frame(FA,O,TWR)
 ndata <- cbind(tmpd, setNames(as_tibble(predict(BEmodel_FF, tmpd, se.fit = TRUE)[1:2]),
                                    c('fit_link','se_link')))
 Model_Data_FF <- mutate(ndata,
@@ -359,10 +356,10 @@ Model_Data_FF <- mutate(ndata,
 
 
 \newpage
-# Full Funed VS Rest
+# Combined Grantsmanship and Grant Funding Record
 ```{r, echo=FALSE}
 
-data_file_name <- "AllKeyData.csv"
+data_file_name <- "KeyData.csv"
 lm_DF <-
   read.csv(file.path(curated_data_dir, data_file_name),
            stringsAsFactors = FALSE)
@@ -373,7 +370,9 @@ lm_DF <-
   lm_DF %>% dplyr::rename(TS = "T",
                           FR = "Rank",
                           E = "EXT",
-                          PR = "AR")
+                          PR = "AR",
+                          O = "OP",
+                          A = "AGR")
 
 lm_DF <-
   lm_DF %>%  mutate(FC = recode(
@@ -412,9 +411,9 @@ lm_DF$SR <- NULL
 NullModel <- glm(Y5Zff ~ 1, data = lm_DF, family = "binomial")
 FullModel <- glm(Y5Zff ~ ., data = lm_DF, family = "binomial")
 BEmodel_FFSR50 <- stepAIC(FullModel, direction = "backward", trace= FALSE)
-summary(BEmodel_FFSR50)
+# summary(BEmodel_FFSR50)
 
-BEmodel_FFSR50 <- glm(Y5Zff ~ E + AGR + TWR + NP, family = "binomial", data = lm_DF)
+BEmodel_FFSR50 <- glm(Y5Zff ~ E + A + TWR + NP, family = "binomial", data = lm_DF)
 summary(BEmodel_FFSR50)
 ```
 
@@ -425,11 +424,11 @@ ilink <- family(BEmodel_FFSR50)$linkinv
 
 NP<-c("1","2","3",rep("1",3))
 E<-rep(5.957816,6)
-AGR<-rep(7.528536,6)
+A<-rep(7.528536,6)
 TWR<-rep(42.08437,6)
 
 
-tmpd<-data.frame(NP,E,AGR,TWR)
+tmpd<-data.frame(NP,E,A,TWR)
 ndata <- cbind(tmpd, setNames(as_tibble(predict(BEmodel_FFSR50, tmpd, se.fit = TRUE)[1:2]),
                                    c('fit_link','se_link')))
 Model_Data_FFS50 <- mutate(ndata,
@@ -471,9 +470,17 @@ sectionA_plots <-
            title,
            configuration, color, suff) {
     
+    axis_text_size <- 8
+    
+
+    
     if (item == "FA" | item == "H" | item == "NP") {
       y_title = bquote( ~ italic("P"[.(paste0(suff, configuration))]))
-      y_text = element_text(face = "bold", size = 6)
+      y_text = element_text(face = "bold", size = axis_text_size)
+          if (configuration == "FF"){
+            y_title = bquote( ~ italic("P"[.(paste0(suff, ""))]))
+      
+    }
     } else{
       y_title = element_blank()
       y_text = element_blank()
@@ -493,6 +500,12 @@ sectionA_plots <-
     
     Data <- filter(Data, Conf == configuration & Features == item)
     
+    if (item == "FA") {
+      font_face = "bold"
+    } else{
+      font_face = "bold.italic"
+    }
+    
     if (item == "FA" |
         item == "H" |
         item == "NP") {
@@ -503,7 +516,7 @@ sectionA_plots <-
           axis.text.y = y_text,
           plot.title = plot_title_,
           panel.grid = element_blank(),
-          axis.text.x = element_text(face = "bold", size = 6),
+          axis.text.x = element_text(face = "bold", size = axis_text_size),
           # axis.text.y = element_text(face = "bold", size = 6),
           legend.position = "none"
         ) +
@@ -532,7 +545,7 @@ sectionA_plots <-
           axis.text.y = y_text,
           plot.title = plot_title_,
           panel.grid = element_blank(),
-          axis.text.x = element_text(face = "bold", size = 6),
+          axis.text.x = element_text(face = "bold", size = axis_text_size),
           # axis.text.y = element_text(face = "bold", size = 6),
           legend.position = "none"
         ) +
@@ -566,6 +579,8 @@ continous_features_plots <-
            configuration,
            suff,
            clr) {
+    
+    axis_text_size <- 8
     y_title = bquote( ~ italic("P"[.(paste0(suff, configuration))]))
     
     y_text = element_text(face = "bold")
@@ -579,7 +594,7 @@ continous_features_plots <-
     if (configuration == "75" | configuration == "S50FF") {
       plot_title_ = element_text(hjust = 0.5,
                                  face = "bold",
-                                 size = 7)
+                                 size = axis_text_size)
     }
     
     if (item == "H") {
@@ -597,8 +612,8 @@ continous_features_plots <-
           legend.position = "none",
           plot.title = plot_title_,
           panel.grid = element_blank(),
-          axis.text.x = element_text(face = "bold", size = 6),
-          axis.text.y = element_text(face = "bold", size = 6)
+          axis.text.x = element_text(face = "bold", size = axis_text_size),
+          axis.text.y = element_text(face = "bold", size = axis_text_size)
         ) +
         labs(y = y_title, x = "", title = Plot_title) + scale_y_continuous(
           limits = c(0.0, 1),
@@ -628,7 +643,7 @@ continous_features_plots <-
           legend.position = "none",
           plot.title = plot_title_,
           panel.grid = element_blank(),
-          axis.text.x = element_text(face = "bold", size = 6),
+          axis.text.x = element_text(face = "bold", size = axis_text_size),
           axis.text.y = element_blank()
         ) +
         labs(y = element_blank(), x = "", title = Plot_title) + scale_y_continuous(
@@ -661,7 +676,7 @@ continous_features_plots <-
           legend.position = "none",
           plot.title = plot_title_,
           panel.grid = element_blank(),
-          axis.text.x = element_text(face = "bold", size = 6),
+          axis.text.x = element_text(face = "bold", size = axis_text_size),
           axis.text.y = element_blank()
         ) +
         labs(y = element_blank(), x = "", title = Plot_title) + scale_y_continuous(
@@ -692,7 +707,7 @@ continous_features_plots <-
           legend.position = "none",
           plot.title = plot_title_,
           panel.grid = element_blank(),
-          axis.text.x = element_text(face = "bold", size = 6),
+          axis.text.x = element_text(face = "bold", size = axis_text_size),
           axis.text.y = element_blank()
         ) +
         labs(y = element_blank(), x = "", title = Plot_title) + scale_y_continuous(
@@ -723,7 +738,7 @@ continous_features_plots <-
           legend.position = "none",
           plot.title = plot_title_,
           panel.grid = element_blank(),
-          axis.text.x = element_text(face = "bold", size = 6),
+          axis.text.x = element_text(face = "bold", size = axis_text_size),
           axis.text.y = element_blank()
         ) +
         labs(y = element_blank(), x = "", title = Plot_title) + scale_y_continuous(
@@ -755,6 +770,8 @@ dummy_df <- data.frame(
 y_title = expression(paste(italic("P", "S20%")))
 
 SectionA_draw_dummy_plot <- function(plot_title, y_title) {
+  
+  axis_text_size <- 8
   if (plot_title != "") {
     title = element_text(hjust = 0.5,
                          size = 7,
@@ -778,7 +795,7 @@ SectionA_draw_dummy_plot <- function(plot_title, y_title) {
         angle = 30,
         hjust = 1
       ),
-      axis.text.y = element_text(face = "bold", size = 6),
+      axis.text.y = element_text(face = "bold", size = axis_text_size),
       panel.grid.major = element_blank(),
       panel.grid.minor = element_blank()
     ) + labs(y = element_blank(), x = "", title = plot_title) +
@@ -814,6 +831,8 @@ SectionA_draw_dummy_plot <- function(plot_title, y_title) {
 
 SectionB_draw_dummy_plot <-
   function(plot_title, y_title, configuration, suff) {
+    
+    axis_text_size <- 8
     y_title = bquote( ~ italic("P"[.(paste0(suff, configuration))]))
     dummy_plot <- ggplot(dummy_df, aes(x = x, y = y, group = group)) +
       geom_line(scale = 0.9, color = "white") +
@@ -829,7 +848,7 @@ SectionB_draw_dummy_plot <-
           angle = 30,
           hjust = 1
         ),
-        axis.text.y = element_text(face = "bold", size = 6),
+        axis.text.y = element_text(face = "bold", size = axis_text_size),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank()
       ) + labs(y = y_title, x = "", title = plot_title) +
@@ -897,7 +916,7 @@ SectionC_draw_dummy_plot <-
           angle = 30,
           hjust = 1
         ),
-        axis.text.y = element_text(face = "bold", size = 6),
+        axis.text.y = element_text(face = "bold", size = axis_text_size),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank()
       ) + labs(y = y_title, x = "", title = plot_title) +
@@ -949,14 +968,14 @@ SectionC_draw_dummy_plot <-
 
 
 ```{r, echo=FALSE, warning=FALSE}
-np_actual = c("1" = "NP1", "2" = "NP2", "3"="NP3")
+np_actual = c("1" = expression(bolditalic(NP[1])), "2" = expression(bolditalic(NP[2])), "3"=expression(bolditalic(NP[3])))
 fa_actual = c("1" = "NSF", "2" = "NIH", "3" = "DOE", "4" = "DOD", "5" = "NASA", "6" = "OT")
-TS_actual = c("1" = "TS1", "2" = "TS2")
-DS_actual = c("1" = "DS1", "2" = "DS2")
-BF_actual = c("1" = "BF1", "2" = "BF2")
-PR_actual = c("1" = "PR1", "2" = "PR2", "3" = "PR3", "4" = "PR4", "5" = "PR5")
-RS_actual = c("1" = "RS1", "2" = "RS2")
-FR_actual = c("1" = "FR1", "2" = "FR2", "3" = "FR3")
+TS_actual = c("1" = expression(bolditalic(TS[1])), "2" = expression(bolditalic(TS[2])))
+DS_actual = c("1" = expression(bolditalic(DS[1])), "2" = expression(bolditalic(DS[2])))
+BF_actual = c("1" = expression(bolditalic(BF[1])), "2" = expression(bolditalic(BF[2])))
+PR_actual = c("1" = expression(bolditalic(PR[1])), "2" = expression(bolditalic(PR[2])), "3" = expression(bolditalic(PR[3])), "4" = expression(bolditalic(PR[4])), "5" = expression(bolditalic(PR[5])))
+RS_actual = c("1" = expression(bolditalic(RS[1])), "2" = expression(bolditalic(RS[2])))
+FR_actual = c("1" = expression(bolditalic(FR[1])), "2" = expression(bolditalic(FR[2])), "3" = expression(bolditalic(FR[3])))
 H_actual = c("0" = "0", "50" = "50", "100" = "100", "150" ="150", "200" = "200")
 ```
 
@@ -964,7 +983,6 @@ H_actual = c("0" = "0", "50" = "50", "100" = "100", "150" ="150", "200" = "200")
 
 
 ```{r, echo=FALSE}
-
 get_legend_plot <-
   function(Data,
            item,
@@ -1038,7 +1056,7 @@ get_legend_plot <-
 
 np_color = c("#4CAEE3", "#ee9a00", "red")
 Legend_plot = get_legend_plot(Model_Data, "NP", np_actual, "title", 25, np_color)
-Legend_plot
+# Legend_plot
 legend <- get_legend(Legend_plot)
 ```
 
@@ -1126,7 +1144,7 @@ modified_ticx = list(fa_actual, TS_actual)
 
 configuration = "75"
 for (item in 1:length(plot_item)){
-  plot = sectionA_plots(Model_Data, plot_item[item], modified_ticx[[item]], title[item], configuration, color_list[[item]], "F")
+  plot = sectionA_plots(Model_Data, plot_item[item], modified_ticx[[item]], title[item], configuration, color_list[[item]], "$")
   plot_list[[length(plot_list) + 1]] <- plot
 }
 
@@ -1141,7 +1159,7 @@ plot_A_75 <- ggarrange(
   ncol = 3
 )
 
-plot_A_75
+# plot_A_75
 
 
 
@@ -1159,7 +1177,7 @@ modified_ticx = list(fa_actual)
 
 configuration = "FF"
 for (item in 1:length(plot_item)){
-  plot = sectionA_plots(Model_Data, plot_item[item], modified_ticx[[item]], title[item], configuration, color_list[[item]], "")
+  plot = sectionA_plots(Model_Data, plot_item[item], modified_ticx[[item]], title[item], configuration, color_list[[item]], "$$")
   plot_list[[length(plot_list) + 1]] <- plot
 }
 
@@ -1175,12 +1193,12 @@ plot_A_FF <- ggarrange(
   ncol = 3
 )
 
-plot_A_FF
+# plot_A_FF
 
 
 
 Research_tactics <- plot_grid(plot_A_75, plot_A_FF, nrow = 2)
-Research_tactics
+# Research_tactics
 
 Research_tactics <- plot_grid(Research_tactics, legend, nrow = 2, rel_heights = c(1, .05))
 ```
@@ -1203,28 +1221,28 @@ Research_tactics <- plot_grid(Research_tactics, legend, nrow = 2, rel_heights = 
 
 
 
-plot5 = continous_features_plots(BEmodel_75, "H", H_actual, "h-index", 75, "F", blue)
+plot5 = continous_features_plots(BEmodel_75, "H", H_actual, "h-index", 75, "$", blue)
 RS_color = c("gray", blue)
 plot6 = sectionA_plots(Model_Data, "RS", RS_actual, "Research Style", "75", RS_color, "F")
 # plot7 = continous_features_plots(BEmodel_FF, "H", H_actual, "h-index", "FF")
-plot7 <- SectionB_draw_dummy_plot("", "", "FF", "")
+plot7 <- SectionB_draw_dummy_plot("", "", "$$", "")
 plot8 <- SectionA_draw_dummy_plot("", "")
 
 
 sectionB <- plot_grid(plot5, plot6, plot7, plot8, nrow = 2, ncol = 2)
-sectionB
+# sectionB
 ```
 
 
 
 ```{r, echo=FALSE, warning=FALSE}
 plot1 <- SectionA_draw_dummy_plot("Openness", "")
-plot2 = continous_features_plots(BEmodel_75, "OP", H_actual, "Openness", "75", "F", blue)
-plot3 = continous_features_plots(BEmodel_FF, "OP", H_actual, "", "", "", blue)
+plot2 = continous_features_plots(BEmodel_75, "O", H_actual, "Openness", "75", "F", blue)
+plot3 = continous_features_plots(BEmodel_FF, "O", H_actual, "", "", "", blue)
 
 
 sectionC <- plot_grid(plot2, plot3, nrow = 2, ncol = 1)
-sectionC
+# sectionC
 ```
 
 
@@ -1257,7 +1275,7 @@ final_plot <-
 
 
 
-filename <- "Figure_FC_prediction_verision4.pdf"
+filename <- "Figure3.pdf"
 full_path <- file.path(plot_dir, filename)
 ggsave(
   full_path,
@@ -1274,8 +1292,6 @@ ggsave(
 
 
 ```{r, echo=FALSE, warning=FALSE}
-
-
 FFS50_plots <-
   function(Data,
            item,
@@ -1283,14 +1299,8 @@ FFS50_plots <-
            title,
            configuration,
            color) {
-    if (item == "FA" | item == "H" | item == "NP") {
-      y_title = bquote(~ italic("P"[.(configuration)]))
-      y_text = element_text(face = "bold", size = 6)
-    } else{
-      y_title = element_blank()
-      y_text = element_blank()
-    }
-    
+
+    axis_text_size <- 8
     
     if (configuration != 25) {
       plot_title_ = element_blank()
@@ -1305,6 +1315,14 @@ FFS50_plots <-
     
     Data <- filter(Data, Conf == configuration & Features == item)
     
+        if (item == "FA" | item == "H" | item == "NP") {
+      y_title = bquote(~ italic("P"[.("S50$$")]))
+      y_text = element_text(face = "bold", size = axis_text_size)
+    } else{
+      y_title = element_blank()
+      y_text = element_blank()
+    }
+    
     if (item == "FA" |
         item == "H" |
         item == "NP") {
@@ -1316,7 +1334,7 @@ FFS50_plots <-
           axis.text.y = y_text,
           plot.title = plot_title_,
           panel.grid = element_blank(),
-          axis.text.x = element_text(face = "bold", size = 6),
+          axis.text.x = element_text(face = "bold", size = axis_text_size),
           # axis.text.y = element_text(face = "bold", size = 6),
           legend.position = "none"
         ) +
@@ -1351,16 +1369,16 @@ color_list <- list(FA_color)
 modified_ticx = list(np_actual)
 
 plot_S50_FF = FFS50_plots(Model_Data, plot_item[item], modified_ticx[[item]], title[item], "S50FF", color_list[[item]])
-plot_S50_FF
+# plot_S50_FF
 
 plot2 = continous_features_plots(BEmodel_FFSR50, "TWR", H_actual, "Typical Week Research", "S50FF", "", orange)
-plot2
+# plot2
 
 plot3 = continous_features_plots(BEmodel_FFSR50, "E", H_actual, "Extraversion", "S50FF", "", blue)
-plot3
+# plot3
 
-plot4 = continous_features_plots(BEmodel_FFSR50, "AGR", H_actual, "Agreeableness", "S50FF",  "", blue)
-plot4
+plot4 = continous_features_plots(BEmodel_FFSR50, "A", H_actual, "Agreeableness", "S50FF",  "", blue)
+# plot4
 
 
 
@@ -1375,7 +1393,7 @@ final_plot <-
 
 final_plot <- plot_grid(final_plot, legend, nrow = 2, rel_heights = c(1, .05))
 
-filename <- "Figure_FCS50_prediction_verision4.pdf"
+filename <- "Figure4.pdf"
 full_path <- file.path(plot_dir, filename)
 ggsave(
   full_path,
@@ -1388,22 +1406,22 @@ ggsave(
 ```
 
 
-```{r, echo=FALSE}
-plt = plot_model(BEmodel_FFSR50,
-                 type = "pred",
-                 terms = "TWR") +
-  geom_line(aes(color="TWR"), size =1)+
-  geom_smooth( method = "pred")+
-  # scale_color_manual(values = c("red")) +
-  # scale_fill_manual(values = c("green")) +
-  geom_vline(
-    xintercept = 42.08437,
-    linetype = "dashed",
-    color = "gray",
-    size = 1
-  ) +
-  theme_bw()+ theme(legend.position = "none")
+<!-- ```{r, echo=FALSE} -->
+<!-- plt = plot_model(BEmodel_FFSR50, -->
+<!--                  type = "pred", -->
+<!--                  terms = "TWR") + -->
+<!--   geom_line(aes(color="TWR"), size =1)+ -->
+<!--   geom_smooth( method = "pred")+ -->
+<!--   # scale_color_manual(values = c("red")) + -->
+<!--   # scale_fill_manual(values = c("green")) + -->
+<!--   geom_vline( -->
+<!--     xintercept = 42.08437, -->
+<!--     linetype = "dashed", -->
+<!--     color = "gray", -->
+<!--     size = 1 -->
+<!--   ) + -->
+<!--   theme_bw()+ theme(legend.position = "none") -->
 
-plt
-```
+<!-- plt -->
+<!-- ``` -->
 

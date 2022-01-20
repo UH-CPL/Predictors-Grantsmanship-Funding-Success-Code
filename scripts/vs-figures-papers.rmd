@@ -51,9 +51,6 @@ Data <-
 ```
 
 ```{r, echo=FALSE}
-
-
-
 Data <- Data[,c("FR", "Gender", "Departmnet", "State", "TW_W_H", "TW_Research", "RO_F_EG")]
 
 ## for the comments only
@@ -121,7 +118,11 @@ Data <- Data %>%
 # colnames(Data)
 core_plot_df <- Data[,c("Gender", "Disciplines", "State", "TW_W_H", "TWR", "EG")]
 
-table(core_plot_df$Gender)
+
+core_plot_df <- core_plot_df %>%
+  mutate(TWR = recode(TWR, "0-20" = "< 20", "70-90" = "> 70", "100" = "> 70"))
+
+table(core_plot_df$TWR)
 ```
 
 
@@ -131,7 +132,7 @@ list_gender = c("Female", "Male")
 list0 = c("BIO", "BEHAV", "ENG", "CIS", "NAT")
 list1 = c("East", "West", "Midwest", "South")
 list2 = c("< 30", "30-40", "40-50", "> 50")
-list3 = c("<20", "30", "40", "50", "60", ">70")
+list3 = c("< 20", "30", "40", "50", "60", "> 70")
 list4 = c("NF",
           "1-25",
           "25-50",
@@ -213,21 +214,21 @@ plot_list <- list()
 for (i in 1:length(core_plot_df)) {
   y_title = ""
   if (title_list[i] == "Weekly Workload [hrs]" | title_list[i] == "Gender Distribution") {
-    y_title = "# of Participants"
+    y_title = "# of Respondents"
   }
   
-  ylimit  = 120
+  # ylimit  = 120
 
 
-  # if (i == 1) {
-  #   ylimit = 300
-  # }  else if (i == 2 | i == 3) {
-  #   ylimit = 200
-  # }  else if (i == 4) {
-  #   ylimit = 250
-  # } else {
-  #   ylimit = 105
-  # }
+  if (i == 1) {
+    ylimit = 300
+  }  else if (i == 2 | i == 3) {
+    ylimit = 200
+  }  else if (i == 4) {
+    ylimit = 250
+  } else {
+    ylimit = 105
+  }
 
 
   temp <- count(core_plot_df[i])
@@ -239,8 +240,8 @@ for (i in 1:length(core_plot_df)) {
   temp$percentage <- percent((temp$prop))
   
   if (i == 1) {
-    # temp$percentage[2] <- "67.5%"
-    # temp$percentage[1] <- "32.5%"
+    temp$percentage[2] <- "67.5%"
+    temp$percentage[1] <- "32.5%"
     
   #   bar_plot <- ggplot(data = temp, aes(x = reorder(item, -count, decreasing = FALSE), count)) +
   #   geom_bar(stat = "identity",
@@ -276,21 +277,21 @@ for (i in 1:length(core_plot_df)) {
   # plot_list[[length(plot_list) + 1]] <- bar_plot
   }
 
-  # if (i == 3) {
-  #   temp$percentage[4] <- "43%"
-  # }
-  # if (i == 4) {
-  #   temp$percentage[3] <- "35%"
-  # }
-  # if (i == 6) {
-  #   temp$percentage[6] <- "26%"
-  # }
+  if (i == 3) {
+    temp$percentage[4] <- "43%"
+  }
+  if (i == 4) {
+    temp$percentage[3] <- "35%"
+  }
+  if (i == 6) {
+    temp$percentage[6] <- "26%"
+  }
   
 
   bar_plot <- ggplot(data = temp, aes(x = item, y = count)) +
     geom_bar(stat = "identity",
              width = 0.5,
-             fill = "seagreen3") +
+             fill = "steelblue") +
     geom_text(
       aes(label = percentage),
       # vjust = 0.5,
@@ -328,7 +329,7 @@ final_plot <- ggarrange(plotlist = plot_list,
                         nrow = 2,
                         ncol = 3)
 # filename <- "Figure1_without_percentage.pdf"
-filename <- "Figure1_proposal_comments_only.pdf"
+filename <- "Figure1.pdf"
 full_path <- file.path(plot_dir, filename)
 ggsave(
   full_path,
@@ -443,6 +444,7 @@ corrplot(
   mar = c(0, 0, 1, 0)
 )
 ```
+
 ```{r, echo=FALSE}
 library(ggcorrplot)
 
@@ -478,5 +480,86 @@ ggplot(melt(mat), aes(Var2, Var1, fill=value)) +
                  geom_tile() +
                  scale_fill_gradient(limits=c(0,3), low="white") +
                  geom_text( aes(label=value))
+```
+
+
+```{r, echo=FALSE}
+
+root_dir <- getwd()
+project_directory <- dirname(root_dir)
+data_dir <- file.path(project_directory, 'curated-data')
+plot_dir <- file.path(project_directory, 'Plots')
+data_file_name <- 'AllData.csv'
+curated_data_dir <- file.path(project_directory, 'curated-data')
+Data <- read.csv(file.path(data_dir, data_file_name), stringsAsFactors = FALSE)
+# colnames(Data)
+Data <- Data[,c("P_Disrupted_Research", "P_Disrupted_Sleep", "P_Disrupted_Diet", "P_Disrupted_PA", "P_Disrupted_IR")]
+
+colnames(Data) <- c("RR", "Sleep", "Diet", "Physical Activity", "Interpersonal Relationships")
+
+
+
+Data_Melt <-
+  melt(Data[, c("RR",
+                "Sleep",
+                "Diet",
+                "Physical Activity",
+                "Interpersonal Relationships")])
+
+Data_Melt_count <- Data_Melt %>% 
+  group_by(variable, value) %>% 
+  summarise(n = n())
+
+Data_Melt_count <- Data_Melt_count[complete.cases(Data_Melt_count), ]
+Data_Melt_count$value <- as.factor(Data_Melt_count$value)
+```
+
+
+```{r, echo=FALSE}
+library(ggplot2)
+
+figure5 <-
+  ggplot(Data_Melt_count, aes(fill = value, y = n, x = variable)) +
+  geom_bar(stat = "identity",
+           position = position_stack(reverse = TRUE),
+           colour = "black") +
+  scale_fill_manual(values = c("#0000FF", "#e0ffff", "#FFFFFF", "#FFC0CB", "#FF0000")) +
+  theme_bw() +
+  theme(
+    panel.grid = element_blank(),
+    legend.position = "top",
+    legend.title = element_blank(),
+    axis.text.x = element_text(face = "bold", size = 9),
+    axis.text.y = element_text(face = "bold", size = 9)
+  ) +
+  labs(x = element_blank(),
+       y = element_blank()) +
+  scale_x_discrete(
+    limits = c(
+      "Diet",
+      "Interpersonal Relationships",
+      "Physical Activity",
+      "Sleep",
+      "RR"
+    ),
+    labels = c(
+      "Diet",
+      "Interpersonal\nRelationships",
+      "Physical Activity",
+      "Sleep",
+      "RR"
+    )
+  ) 
+
+figure5
+filename <- "Figure5.pdf"
+full_path <- file.path(plot_dir, filename)
+ggsave(
+  full_path,
+  figure5,
+  width = 8.5,
+  height = 5.5,
+  units = "in"
+)
 ```
 
