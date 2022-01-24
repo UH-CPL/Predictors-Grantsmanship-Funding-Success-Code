@@ -511,24 +511,36 @@ Data_Melt_count <- Data_Melt %>%
   summarise(n = n())
 
 Data_Melt_count <- Data_Melt_count[complete.cases(Data_Melt_count), ]
+
+library(dplyr)
+Data_Melt_count <- Data_Melt_count %>%
+    group_by(variable) %>%
+    mutate(countT= sum(n)) %>%
+    group_by(variable, add=TRUE) %>%
+    mutate(per=paste0(round(100*n/countT,2)))
 Data_Melt_count$value <- as.factor(Data_Melt_count$value)
+Data_Melt_count$per <- as.numeric(Data_Melt_count$per)
+
 ```
+
+
 
 
 ```{r, echo=FALSE}
 library(ggplot2)
 
 figure5 <-
-  ggplot(Data_Melt_count, aes(fill = value, y = n, x = variable)) +
+  ggplot(Data_Melt_count, aes(fill = value, y = per, x = variable)) +
   geom_bar(stat = "identity",
            position = position_stack(reverse = TRUE),
            colour = "black") +
-  scale_fill_manual(values = c("#0000FF", "#e0ffff", "#FFFFFF", "#FFC0CB", "#FF0000")) +
+  scale_fill_manual("No Disruption",values = c("#0000FF", "#e0ffff", "#FFFFFF", "#FFC0CB", "#FF0000"), labels = c("", "", "", "", "Extreme Disruption")) +
   theme_bw() +
   theme(
     panel.grid = element_blank(),
     legend.position = "top",
-    legend.title = element_blank(),
+    legend.text = element_text(face = "bold", color = "black", size = 9),
+    legend.title = element_text(face = "bold", color = "black", size = 9),
     axis.text.x = element_text(face = "bold", size = 9),
     axis.text.y = element_text(face = "bold", size = 9)
   ) +
@@ -544,15 +556,15 @@ figure5 <-
     ),
     labels = c(
       "Diet",
-      "Interpersonal\nRelationships",
-      "Physical Activity",
+      "Interpersonal\n       Relationships",
+      "Physical\n       Activity",
       "Sleep",
-      "RR"
+      "Regular\n             Research"
     )
   ) 
 
 figure5
-filename <- "Figure5.pdf"
+filename <- "Figure6.pdf"
 full_path <- file.path(plot_dir, filename)
 ggsave(
   full_path,

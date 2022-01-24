@@ -475,10 +475,10 @@ sectionA_plots <-
 
     
     if (item == "FA" | item == "H" | item == "NP") {
-      y_title = bquote( ~ italic("P"[.(paste0(suff, configuration))]))
+      y_title = bquote( ~ italic("S"^.(paste0(suff, configuration))))
       y_text = element_text(face = "bold", size = axis_text_size)
           if (configuration == "FF"){
-            y_title = bquote( ~ italic("P"[.(paste0(suff, ""))]))
+            y_title = bquote( ~ italic("S"^.(paste0(suff, ""))))
       
     }
     } else{
@@ -581,7 +581,7 @@ continous_features_plots <-
            clr) {
     
     axis_text_size <- 8
-    y_title = bquote( ~ italic("P"[.(paste0(suff, configuration))]))
+    y_title = bquote( ~ italic("S"^.(paste0(suff, configuration))))
     
     y_text = element_text(face = "bold")
     
@@ -833,7 +833,7 @@ SectionB_draw_dummy_plot <-
   function(plot_title, y_title, configuration, suff) {
     
     axis_text_size <- 8
-    y_title = bquote( ~ italic("P"[.(paste0(suff, configuration))]))
+    y_title = bquote( ~ italic("S"^.(paste0(suff, configuration))))
     dummy_plot <- ggplot(dummy_df, aes(x = x, y = y, group = group)) +
       geom_line(scale = 0.9, color = "white") +
       theme_bw() +
@@ -894,7 +894,7 @@ SectionC_draw_dummy_plot <-
     }
     
     if (plot_title == "Trait Anxiety") {
-      y_title = bquote(~ italic("P"[.(configuration)]))
+      y_title = bquote(~ italic("S"^.(configuration)))
     }
     if (plot_title != "Trait Anxiety") {
       y_title = element_blank()
@@ -1201,6 +1201,7 @@ Research_tactics <- plot_grid(plot_A_75, plot_A_FF, nrow = 2)
 # Research_tactics
 
 Research_tactics <- plot_grid(Research_tactics, legend, nrow = 2, rel_heights = c(1, .05))
+# Research_tactics
 ```
 
 
@@ -1275,7 +1276,7 @@ final_plot <-
 
 
 
-filename <- "Figure3.pdf"
+filename <- "Figure3_.pdf"
 full_path <- file.path(plot_dir, filename)
 ggsave(
   full_path,
@@ -1316,7 +1317,7 @@ FFS50_plots <-
     Data <- filter(Data, Conf == configuration & Features == item)
     
         if (item == "FA" | item == "H" | item == "NP") {
-      y_title = bquote(~ italic("P"[.("S50$$")]))
+      y_title = bquote(~ italic("S"^.("S50$$")))
       y_text = element_text(face = "bold", size = axis_text_size)
     } else{
       y_title = element_blank()
@@ -1393,7 +1394,7 @@ final_plot <-
 
 final_plot <- plot_grid(final_plot, legend, nrow = 2, rel_heights = c(1, .05))
 
-filename <- "Figure4.pdf"
+filename <- "Figure4_.pdf"
 full_path <- file.path(plot_dir, filename)
 ggsave(
   full_path,

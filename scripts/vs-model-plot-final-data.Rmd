@@ -341,7 +341,8 @@ sectionA_plots <-
     }
     
     if (item == "NP" | item == "H" | item == "TA") {
-      y_title = bquote( ~ italic("P"[.(paste0("G", configuration))]))
+      # y_title = bquote( ~ italic("P"[.(paste0("G", configuration))]))
+      y_title = bquote( ~ italic("S"^.(paste0("G", configuration))))
       y_text = element_text(face = "bold", size = axis_text_size)
     } else{
       y_title = element_blank()
@@ -434,7 +435,8 @@ continous_features_plots <-
            Plot_title,
            configuration, clr) {
     axis_text_size <- 8
-      y_title = bquote(~ italic("P"[.(paste0("G", configuration))]))
+      # y_title = bquote(~ italic("P"[.(paste0("G", configuration))]))
+      y_title = bquote(~ italic("S"^.(paste0("G", configuration))))
       
       y_text = element_text(face = "bold")
     
@@ -642,7 +644,7 @@ SectionA_draw_dummy_plot <- function(plot_title, y_title) {
 
 SectionB_draw_dummy_plot <-
   function(plot_title, y_title, configuration) {
-    y_title = bquote( ~ italic("P"[.(paste0("G", configuration))]))
+    y_title = bquote( ~ italic("S"^.(paste0("G", configuration))))
     dummy_plot <- ggplot(dummy_df, aes(x = x, y = y, group = group)) +
       geom_line(scale = 0.9, color = "white") +
       theme_bw() +
@@ -703,7 +705,7 @@ SectionC_draw_dummy_plot <-
     }
     
     if (plot_title == "Trait Anxiety") {
-      y_title = bquote(~ italic("P"[.(paste0("G", configuration))]))
+      y_title = bquote(~ italic("S"^.(paste0("G", configuration))))
     }
     if (plot_title != "Trait Anxiety") {
       y_title = element_blank()
@@ -1008,7 +1010,7 @@ final_plot <-
 
 
 
-filename <- "Figure2.pdf"
+filename <- "Figure2_.pdf"
 full_path <- file.path(plot_dir, filename)
 ggsave(
   full_path,
