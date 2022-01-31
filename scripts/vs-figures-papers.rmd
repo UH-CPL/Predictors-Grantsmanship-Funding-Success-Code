@@ -541,11 +541,12 @@ figure5 <-
     legend.position = "top",
     legend.text = element_text(face = "bold", color = "black", size = 9),
     legend.title = element_text(face = "bold", color = "black", size = 9),
-    axis.text.x = element_text(face = "bold", size = 9),
-    axis.text.y = element_text(face = "bold", size = 9)
+    axis.text.x = element_text(face = "bold", size = 9,color = "black"),
+    axis.text.y = element_text(face = "bold", size = 9,color = "black"),
+    axis.title.y = element_text(face = "bold", size = 9,color = "black")
   ) +
   labs(x = element_blank(),
-       y = "[ % ]") +
+       y = "Respondents [ % ]") +
   scale_x_discrete(
     limits = c(
       "Diet",

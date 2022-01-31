@@ -53,26 +53,13 @@ StandardPart <-
 ```
 
 ```{r, echo=FALSE}
-# levels(factor(StandardPart$departmental_affiliation))
-
-
 
 for (i in 1:nrow(StandardPart)) {
-
-  # if (final_data$departmental_affiliation[i] == "Other") {
-  #   final_data$departmental_affiliation[i] = final_data$please_write_down_the_depa[i]
-  # }
   if (StandardPart$departmental_affiliation[i] == "Other") {
     StandardPart$departmental_affiliation[i] = StandardPart$please_write_down_the_depa[i]
   }
 
 }
-# 
-# # count(StandardPart$departmental_affiliation)
-# levels(factor(StandardPart$departmental_affiliation))
-
-# levels(factor(StandardPart$please_write_down_the_depa))
-# count(StandardPart$departmental_affiliation)
 ```
 
 
@@ -111,8 +98,6 @@ title_list = c(
   "Timing of conference paper submission",
   "Stress level on conference deadlines wrt regular working days"
 )
-
-# colnames(StandardPart)
 ```
 
 
@@ -385,25 +370,7 @@ for(i in 1:nrow(Core_Questions)){
     Core_Questions$DS[i] = NA
   }
   
-  # if (Core_Questions$DS[i] == "Extremely less") {
-  #   Core_Questions$DS[i] = "DS1"
-  # } else if (Core_Questions$DS[i] == "Significantly less") {
-  #   # Core_Questions$DS[i]=2
-  #   Core_Questions$DS[i] = "DS1"
-  # } else if (Core_Questions$DS[i] == "Same") {
-  #   # Core_Questions$DS[i]=3
-  #   Core_Questions$DS[i] = "DS1"
-  # } else if (Core_Questions$DS[i] == "Significantly  more") {
-  #   # Core_Questions$DS[i]=4
-  #   Core_Questions$DS[i] = "DS2"
-  # } else if (Core_Questions$DS[i] == "Extremely  more") {
-  #   # Core_Questions$DS[i]=5
-  #   Core_Questions$DS[i] = "DS2"
-  # } else {
-  #   Core_Questions$DS[i] = NA
-  # }
-  
-  
+
     if (Core_Questions$ss_level_in_a_fundi[i] == "Extremely less"){
     Core_Questions$ss_level_in_a_fundi[i] = "Significantly less"
   } else if (Core_Questions$ss_level_in_a_fundi[i] == "Significantly less"){
@@ -424,123 +391,6 @@ for(i in 1:nrow(Core_Questions)){
 
 file_name = "Selected_coreQuestions.csv"
 write.csv(Core_Questions,file.path(curated_data_dir, file_name), row.names = FALSE)
-```
-
-
-```{r}
-# for (i in 1:nrow(Core_Questions)) {
-#   #####-------Research Style-------------####################
-#   if (Core_Questions$R_Style[i] == "Hands-off") {
-#     Core_Questions$R_Style[i] = "Hands-off"
-#   } else if (Core_Questions$R_Style[i] == "") {
-#     Core_Questions$R_Style[i] = NA
-#   } else{
-#     Core_Questions$R_Style[i] = "Hands-on"
-#   }
-#   
-#   ##########-----Typical Week working Hours-------------#############
-# 
-#   
-#   if (Core_Questions$NP[i] == "1-2") {
-#     Core_Questions$NP[i] = "NP1"
-#   } else if (Core_Questions$NP[i] == "3-4") {
-#     Core_Questions$NP[i] = "NP2"
-#   } else if (Core_Questions$NP[i] == "5-6") {
-#     Core_Questions$NP[i] = "NP3"
-#   } else if (Core_Questions$NP[i] == "7-9") {
-#     Core_Questions$NP[i] = "NP3"
-#   } else if (Core_Questions$NP[i] == "") {
-#     Core_Questions$NP[i] = NA
-#   } else {
-#     Core_Questions$NP[i] = "NP3"
-#   }
-# 
-#   
-#   
-#   
-#   if (Core_Questions$T[i] == "Minutes before deadline") {
-#     Core_Questions$T[i] = "T1"
-#   } else if (Core_Questions$T[i] == "1-3 hours before deadline") {
-#     Core_Questions$T[i] = "T1"
-#   } else if (Core_Questions$T[i] == "3-6 hours before deadline") {
-#     Core_Questions$T[i] = "T1"
-#   } else if (Core_Questions$T[i] == "1 day before deadline") {
-#     Core_Questions$T[i] = "T2"
-#   } else if (Core_Questions$T[i] == "") {
-#     Core_Questions$T[i] = NA
-#   } else {
-#     Core_Questions$T[i] = "T2"
-#   }
-#   
-#   
-#   if (Core_Questions$DS[i] == "Extremely less") {
-#     Core_Questions$DS[i] = "DS1"
-#   } else if (Core_Questions$DS[i] == "Significantly less") {
-#     # Core_Questions$DS[i]=2
-#     Core_Questions$DS[i] = "DS1"
-#   } else if (Core_Questions$DS[i] == "Same") {
-#     # Core_Questions$DS[i]=3
-#     Core_Questions$DS[i] = "DS1"
-#   } else if (Core_Questions$DS[i] == "Significantly  more") {
-#     # Core_Questions$DS[i]=4
-#     Core_Questions$DS[i] = "DS2"
-#   } else if (Core_Questions$DS[i] == "Extremely  more") {
-#     # Core_Questions$DS[i]=5
-#     Core_Questions$DS[i] = "DS2"
-#   } else {
-#     Core_Questions$DS[i] = NA
-#   }
-#   
-#   if (Core_Questions$FA[i]=="NSF"){
-#     Core_Questions$FA[i]="NSF"
-#   } else if (Core_Questions$FA[i]=="NIH"){
-#     Core_Questions$FA[i]="NIH"
-#   } else if (Core_Questions$FA[i]=="DOE"){
-#     Core_Questions$FA[i]="DOE"
-#   } else if (Core_Questions$FA[i]=="DOD"){
-#     Core_Questions$FA[i]="DOD"
-#   } else if (Core_Questions$FA[i]=="NASA"){
-#     Core_Questions$FA[i]="NASA"
-#   } else if (Core_Questions$FA[i]==""){
-#     Core_Questions$FA[i]=NA
-#   } else{
-#     Core_Questions$FA[i]="Other"
-#   }
-# }
-```
-
-```{r}
-  # levels(factor(Core_Questions$State))
-  # levels(factor(Core_Questions$S_D_E))
-  # levels(factor(Core_Questions$RO_F_EG))
-  # levels(factor(Core_Questions$Deadline_today))
-  # levels(factor(Core_Questions$Workload_today))
-  # levels(factor(Core_Questions$Workplace))
-  # levels(factor(Core_Questions$RS))
-  # levels(factor(Core_Questions$TW_W_H))
-  # levels(factor(Core_Questions$Break))
-  # levels(factor(Core_Questions$Email))
-  # levels(factor(Core_Questions$funding_proposal))
-  # levels(factor(Core_Questions$NP))
-  # levels(factor(Core_Questions$FA))
-  # levels(factor(Core_Questions$Success))
-  # levels(factor(Core_Questions$Com_Proposal))
-  # levels(factor(Core_Questions$L_Of_SR))
-  # levels(factor(Core_Questions$W_WB_PD))
-  # levels(factor(Core_Questions$T))
-  # levels(factor(Core_Questions$DS))
-  # levels(factor(Core_Questions$refereed_conference))
-  # levels(factor(Core_Questions$A_N_Conf_Pap))
-  # levels(factor(Core_Questions$core_rank))
-  # levels(factor(Core_Questions$if_you_submit_manuscripts))
-  # levels(factor(Core_Questions$far_in_advance_do_you))
-  # levels(factor(Core_Questions$length_of_supp))
-  # levels(factor(Core_Questions$in_the_week_leading_to_a_c))
-  # levels(factor(Core_Questions$you_typically_subm))
-  # levels(factor(Core_Questions$ss_level_in_a_fundi))
-  
-  
-  # count(Core_Questions$FA)
 ```
 
 
@@ -635,94 +485,6 @@ Ticks_list <-
        list27,
        list28)
 ```
-
-```{r}
-# ######Test a single core questions
-#   temp <- count(Core_Questions$Workload_today)
-#   colnames(temp) <- c("item", "count")
-#   temp <- temp[!(temp$item == ""),]
-# 
-#  bar_plot <- ggplot(data = temp, aes(x = item, y = count)) +
-#     geom_bar(stat = "identity",
-#              width = 0.5,
-#              fill = "steelblue") +
-#     theme_minimal() +
-#     scale_y_continuous(breaks = seq(0, ylimit, by = 5),
-#                        limits = c(0, ylimit)) +
-#     labs(x = "", y = "Participant count", title = title_list[i - 1]) +
-#     theme(
-#       panel.grid.major = element_blank(),
-#       panel.grid.minor = element_blank(),
-#       plot.title = element_text(hjust = 0.5),
-#       axis.text.x = element_text(
-#         face = "bold",
-#         size = 10 ,
-#         angle = 30,
-#         hjust = 1
-#       ),
-#       axis.text.y = element_text(face = "bold", size = 10)
-#     )+
-#    scale_x_discrete( limits=list[[1]])
-#  
-#  bar_plot
-```
-
-
-<!--```{r, echo=FALSE}
-
-# ylimit= round_any(nrow(Core_Questions), 10,f = ceiling)
-# ylimit= 200
-
-
-plot_list<-list()
-
-for (i in 2:length(Core_Questions)) {
-  ylimit= 250
-  if ((i == 3) | (i == 5) | (i == 8) | (i == 11) |(i == 12) |(i == 14)){
-    ylimit = 400
-  }
-  temp <- count(Core_Questions[i])
-  colnames(temp) <- c("item", "count")
-  temp <- temp[!(temp$item == ""),]
-  temp <- temp[order(temp$count), ]
-
-  bar_plot <- ggplot(data = temp, aes(x = item, y = count)) +
-    geom_bar(stat = "identity",
-             width = 0.5,
-             fill = "steelblue") +
-    theme_bw() +
-    scale_y_continuous(breaks = seq(0, ylimit, by = 50),
-                       limits = c(0, ylimit)) +
-    labs(x = "", y = "Count", title = title_list[i - 1]) +
-    theme(
-      panel.grid.major = element_blank(),
-      panel.grid.minor = element_blank(),
-      plot.title = element_text(hjust = 0.5),
-      axis.text.x = element_text(
-        face = "bold",
-        size = 10 ,
-        angle = 30,
-        hjust = 1
-      ),
-      axis.text.y = element_text(face = "bold", size = 10)
-    )+scale_x_discrete( limits=Ticks_list[[i-1]])
-
-  plot_list[[length(plot_list) + 1]] <- bar_plot
-
-}
-as.character("state_do_you_reside")
-
-plots_act=ggarrange(plotlist = plot_list, nrow = 2, ncol = 1)
-
-for (i in 1:length(plots_act)){
-      final_plot<-plot_grid(plots_act[[i]])
-      filename<-paste("plot",i,".pdf",sep="")
-      full_path<-file.path(plot_dir, filename)
-      ggsave(full_path, final_plot, width = 8.5, height = 11, units = "in")
-      print(final_plot)
-}
-
-```-->
 
 ## Raw version
 ```{r, echo=FALSE}
@@ -859,79 +621,6 @@ Data_CQ <- Core_Questions[,c(13, 16, 9, 10, 18, 20)]
 
 file_name='Selected_Core_Questions.csv'
 write.csv(Data_CQ,file.path(curated_data_dir, file_name), row.names = FALSE)
-```
-
-
-
-
-
-```{r}
-# ylimit= 150
-#   temp <- count(Core_Questions[14])
-#   colnames(temp) <- c("item", "count")
-#   temp <- temp[!(temp$item == ""),]
-#   temp <- temp[order(temp$count), ]
-#   temp <- temp[complete.cases(temp),]
-#   
-# 
-#   bar_plot <- ggplot(data = temp, aes(x = item, y = count)) +
-#     geom_bar(stat = "identity",
-#              width = 0.5,
-#              fill = "steelblue") +
-#     theme_bw() +
-#     scale_y_continuous(breaks = seq(0, ylimit, by = 50),
-#                        limits = c(0, ylimit)) +
-#     labs(x = "", y = "Count", title = "Funding Agencies") +
-#     theme(
-#       panel.grid.major = element_blank(),
-#       panel.grid.minor = element_blank(),
-#       plot.title = element_text(hjust = 0.5),
-#       axis.text.x = element_text(
-#         face = "bold",
-#         size = 10 ,
-#         angle = 30,
-#         hjust = 1
-#       ),
-#       axis.text.y = element_text(face = "bold", size = 10)
-#     )
-#   # +scale_x_discrete( limits=Ticks_list[[i-1]])
-#   
-#   bar_plot
-# 
-#   # plot_list[[length(plot_list) + 1]] <- bar_plot
-#   
-#   temp <- temp %>% 
-#   mutate(
-#     cs = rev(cumsum(rev(count))),
-#     prop = percent(count / sum(count)),
-#     pos = count/2 + lead(cs, 1),
-#     pos = if_else(is.na(pos), count/2, pos))
-# temp$pos[is.na(temp$pos)] <- 1
-# 
-# # temp<-temp[match(order_list[[1]], temp$item),]
-# 
-# pichart <-ggplot(temp, aes(x = "" , y = count, fill = item)) +
-#   geom_col(width = 1) +
-#   coord_polar(theta = "y", start = 0 ) +
-#   scale_fill_brewer(palette = "Set3", direction = -4) +
-#   geom_label_repel(aes(y = pos, label =paste0(item," " ,prop)), data = temp, size=4, show.legend = F, nudge_x = 1) +
-#   theme_void() +
-#   theme(legend.position =  "none", legend.title = element_blank())+
-#   labs(title = "")+
-#   theme(panel.grid.major = element_blank(),panel.grid.minor = element_blank(),plot.title = element_text(hjust = 0.5))
-# 
-# pichart
-# 
-# 
-# 
-# plots_act=ggarrange(bar_plot, pichart, nrow = 2, ncol = 1)
-# 
-#       # final_plot<-plot_grid(plots_act[[i]])
-#       filename<-"FA.pdf"
-#       full_path<-file.path(plot_dir, filename)
-#       ggsave(full_path, plots_act, width = 8.5, height = 11, units = "in")
-#       # print(final_plot)
-
 ```
 
 

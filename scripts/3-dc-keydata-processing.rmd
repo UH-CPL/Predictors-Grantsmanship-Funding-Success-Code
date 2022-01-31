@@ -1,9 +1,9 @@
 ---
-title: "Corelation"
+title: "Key Data processing"
 output:
-  pdf_document: default
   html_document:
     df_print: paged
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -12,6 +12,7 @@ library(ggplot2)
 library(GGally)
 library(reshape2)
 library(plyr)
+library(stringr)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
@@ -22,7 +23,7 @@ project_directory <- dirname(root_dir)
 data_dir <- file.path(project_directory, 'raw-data')
 curated_data_dir <- file.path(project_directory, 'curated-data')
 plot_dir <- file.path(project_directory, 'Plots')
-data_file_name <- 'StandardPart_psychometric.csv'
+data_file_name <- 'Procesed_Psychometric_Data.csv'
 data_file_name_std <- 'StandardPart.csv'
 
 
@@ -106,10 +107,6 @@ Corelation_DF <-
   )
 
 
-# colnames(Corelation_DF)
-# 
-# table(Corelation_DF$FC)
-
 Corelation_DF <- Corelation_DF %>%
   mutate(FC = recode(FC, "Not funded" = 1, "25-1%" = 2, "50-25%" = 3, "75-50%" = 4, "100-75%" = 5, "Fully funded" = 6))
 
@@ -166,7 +163,6 @@ Corelation_DF <- Corelation_DF %>%
   )
 Corelation_DF$State <- Corelation_DF$State_Geo_location
 
-Core_Questions$State <- NULL
 
 ```
 
@@ -235,25 +231,7 @@ for (i in 1:nrow(Corelation_DF)) {
     Corelation_DF$SR[i] = 7
   }
   
-  
-  
-  # if (Corelation_DF$SR[i] == "< 10%") {
-  #   Corelation_DF$SR[i] = 1
-  # } else if (Corelation_DF$SR[i] == "10-20%") {
-  #   Corelation_DF$SR[i] = 2
-  # } else if (Corelation_DF$SR[i] == "20-30%") {
-  #   Corelation_DF$SR[i] = 3
-  # } else if (Corelation_DF$SR[i] == "30-50%") {
-  #   Corelation_DF$SR[i] = 4
-  # } else if (Corelation_DF$SR[i] == "50-75%") {
-  #   Corelation_DF$SR[i] = 5
-  # } else if (Corelation_DF$SR[i] == "75-90%") {
-  #   Corelation_DF$SR[i] = 6
-  # } else if (Corelation_DF$SR[i] == "") {
-  #   Corelation_DF$SR[i] = NA
-  # } else {
-  #   Corelation_DF$SR[i] = 7
-  # }
+
   
   
   
@@ -351,149 +329,60 @@ for (i in 1:nrow(Corelation_DF)) {
   }
 }
 
-# NSF	NIH	NASA	DOD	DHS	DOE	Other
 
-table(Corelation_DF$SR)
+
+Corelation_DF <- Corelation_DF %>%
+  mutate(Rank = recode(Rank, "Professor" = 3, "Assistant Professor" = 1, "Associate Professor" = 2))
 
 cols.num <-  c("RS", "WH", "BF", "NP", "SR", "AP", "AR", "DWH", "T", "DS", "FA")
 Corelation_DF[cols.num] <-  sapply(Corelation_DF[cols.num], as.numeric)
-levels(factor(Corelation_DF$FC))
-
 Corelation_DF$Departmnet <- NULL
 Corelation_DF$State <- NULL
-
+Corelation_DF$Disciplines <- NULL
+Corelation_DF$State_Geo_location <- NULL
 
 ```
 
 
 ```{r, echo=FALSE}
 # file_name = 'KeyData.csv'
-file_name = 'AllKeyData.csv'
+file_name = 'KeyData.csv'
 write.csv(Corelation_DF,
           file.path(curated_data_dir, file_name),
           row.names = FALSE)
 ```
 
-```{r, echo=FALSE}
-
-# supplement_nlp <- Corelation_DF
-# supplement_nlp$SR <- ifelse(test = supplement_nlp$SR == 0, yes = "Unsuccessful", no= "Successful")
-# supplement_nlp$SR <- as.factor(supplement_nlp$SR)
-# 
-# # supplement_nlp$Gender <- Raw_Data$gender
-# # supplement_nlp$Comments <- Raw_Data$please_write_about_any_oth
-# 
-# supplement <- supplement_nlp %>% dplyr::select(Rank, Gender, SR, Comments)
-# 
-# 
-# 
-# file_name = 'Supplement_nlp.csv'
-# write.csv(supplement_nlp,
-#           file.path(curated_data_dir, file_name),
-#           row.names = FALSE)
-
-```
 
 
-```{r, echo=FALSE}
-# Defines function to color according to correlation
-# cor_func <- function(data, mapping, method, symbol, ...) {
-#   x <- eval_data_col(data, mapping$x)
-#   y <- eval_data_col(data, mapping$y)
-#   
-#   corr <- cor(x, y, method = method, use = 'complete.obs')
-#   colFn <- colorRampPalette(c("brown1", "white", "dodgerblue"),
-#                             interpolate = 'spline')
-#   fill <- colFn(100)[findInterval(corr, seq(-1, 1, length = 100))]
-#   
-#   ggally_text(
-#     label = paste(symbol, as.character(round(corr, 2))),
-#     mapping = aes(),
-#     xP = 0.5,
-#     yP = 0.5,
-#     color = 'black',
-#     size = 2.75,
-#     ...
-#   ) +
-#     theme(panel.background = element_rect(fill = fill))
-# }
-# 
-# pm <- ggpairs(
-#   Corelation_DF,
-#   upper = list(continuous = wrap(
-#     cor_func,
-#     # method = 'spearman', symbol = expression('\u03C1 ='))),
-#     method = 'spearman', symbol = expression('')
-#   )),
-#   
-#   lower = list(
-#     continuous = function(data, mapping, ...) {
-#       ggally_smooth_lm(data = data, mapping = mapping) +
-#         theme(panel.background = element_blank())
-#     }
-#   ),
-#   diag = list(
-#     continuous = function(data, mapping, ...) {
-#       ggally_densityDiag(data = data, mapping = mapping) +
-#         theme(panel.background = element_blank())
-#     }
-#   )
-# )
-# 
-# mytheme = theme(
-#   strip.background = element_rect(fill = "white"),
-#   panel.grid.major = element_blank(),
-#   panel.grid.minor = element_blank()
-# )
-# 
-# 
-# Cor_plot <- pm + mytheme
-# filename <- "Corelation_Proposals.pdf"
-# full_path <- file.path(plot_dir, filename)
-# ggsave(
-#   full_path,
-#   Cor_plot,
-#   width = 11,
-#   height = 11,
-#   units = "in"
-# )
-```
-
-```{r}
-# Corelation_DF$H <- Corelation_DF$H + 0.001
-# Corelation_DF$H <- log(Corelation_DF$H)
-```
+<!-- ```{r, echo=FALSE} -->
+<!-- library(corrplot) -->
+<!-- library(superml) -->
 
 
-```{r, echo=FALSE}
-library(corrplot)
-library(superml)
+<!-- rank_factor <- factor(Corelation_DF$Rank) -->
+<!-- Corelation_DF$Rank <- as.numeric(rank_factor) -->
 
+<!-- # Corelation_DF$BR<-factor(Corelation_DF$BR) -->
+<!-- M_proposal <- cor(Corelation_DF[, c(1:26)], use = "complete.obs") -->
+<!-- res1 <- cor.mtest(Corelation_DF[, c(1:26)], conf.level = .95) -->
 
-rank_factor <- factor(Corelation_DF$Rank)
-Corelation_DF$Rank <- as.numeric(rank_factor)
-
-# Corelation_DF$BR<-factor(Corelation_DF$BR)
-M_proposal <- cor(Corelation_DF[, c(1:26)], use = "complete.obs")
-res1 <- cor.mtest(Corelation_DF[, c(1:26)], conf.level = .95)
-
-# significance_plot<-
-corrplot(
-  M_proposal,
-  p.mat = res1$p,
-  method = "color",
-  type = "upper",
-  title = "Psychometrics-core questions correlation on proposals",
-  sig.level = c(.001, .01, .05),
-  pch.cex = .9,
-  diag = FALSE,
-  insig = "label_sig",
-  pch.col = "black",
-  col = colorRampPalette(c("brown1", "white", "dodgerblue"))(200),
-  tl.col = "black",
-  mar = c(0, 0, 1, 0)
-)
-```
+<!-- # significance_plot<- -->
+<!-- corrplot( -->
+<!--   M_proposal, -->
+<!--   p.mat = res1$p, -->
+<!--   method = "color", -->
+<!--   type = "upper", -->
+<!--   title = "Psychometrics-core questions correlation on proposals", -->
+<!--   sig.level = c(.001, .01, .05), -->
+<!--   pch.cex = .9, -->
+<!--   diag = FALSE, -->
+<!--   insig = "label_sig", -->
+<!--   pch.col = "black", -->
+<!--   col = colorRampPalette(c("brown1", "white", "dodgerblue"))(200), -->
+<!--   tl.col = "black", -->
+<!--   mar = c(0, 0, 1, 0) -->
+<!-- ) -->
+<!-- ``` -->
 
 
 

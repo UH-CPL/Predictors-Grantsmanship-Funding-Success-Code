@@ -1,5 +1,5 @@
 ---
-title: "Standard Part Visualization"
+title: "Phychometric Data Processing and Visualization"
 output:
   pdf_document: default
   html_document:
@@ -37,7 +37,7 @@ StandardPart <-
 
 
 
-```{r, echo=FALSE}
+<!--```{r, echo=FALSE}
   temp <- count(StandardPart$faculty_rank)
   colnames(temp) <- c("item", "cou")
   temp <- temp[!(temp$item == ""),]
@@ -96,16 +96,14 @@ faculty_rank<-ggplot(temp, aes(x = "" , y = cou, fill = item)) +
     
   plot = ggarrange(bar_plot, faculty_rank, nrow = 2, ncol = 1)
   
-  filename <- "faculty_rank.pdf"
-  full_path <- file.path(plot_dir, filename)
-  ggsave(full_path,
-         plot,
-         width = 8.5,
-         height = 11,
-         units = "in")
-```
+  # filename <- "faculty_rank.pdf"
+  # full_path <- file.path(plot_dir, filename)
+  # ggsave(full_path,
+  #        plot,
+  #        width = 8.5,
+  #        height = 11,
+  #        units = "in")
 
-```{r, echo=FALSE}
   temp <- count(StandardPart$gender)
   colnames(temp) <- c("item", "cou")
   temp <- temp[!(temp$item == ""),]
@@ -163,20 +161,14 @@ Gender<-ggplot(temp, aes(x = "" , y = cou, fill = item)) +
     
   plot = ggarrange(bar_plot, Gender, nrow = 2, ncol = 1)
   
-  filename <- "Gender.pdf"
-  full_path <- file.path(plot_dir, filename)
-  ggsave(full_path,
-         plot,
-         width = 8.5,
-         height = 11,
-         units = "in")
+  # filename <- "Gender.pdf"
+  # full_path <- file.path(plot_dir, filename)
+  # ggsave(full_path,
+  #        plot,
+  #        width = 8.5,
+  #        height = 11,
+         # units = "in")
   
-```
-
-
-
-
-```{r, echo=FALSE}
   temp <- count(StandardPart$departmental_affiliation)
   colnames(temp) <- c("item", "cou")
   temp <- temp[!(temp$item == ""),]
@@ -235,21 +227,14 @@ Departmnet<-ggplot(temp, aes(x = "" , y = cou, fill = item)) +
     
   plot = ggarrange(bar_plot, Departmnet, nrow = 2, ncol = 1)
   
-  filename <- "Department.pdf"
-  full_path <- file.path(plot_dir, filename)
-  ggsave(full_path,
-         plot,
-         width = 8.5,
-         height = 11,
-         units = "in")
+  # filename <- "Department.pdf"
+  # full_path <- file.path(plot_dir, filename)
+  # ggsave(full_path,
+  #        plot,
+  #        width = 8.5,
+  #        height = 11,
+  #        units = "in")
   
-```
-
-
-
-
-
-```{r, echo=FALSE}
 p <-
   ggplot(data = StandardPart,
          aes(
@@ -326,20 +311,14 @@ hindex = ggarrange(
 
 
 # hindex_final=annotate_figure(hindex, fig.lab = "n=48", fig.lab.face = "bold")
-filename <- "Google_hindex.pdf"
-full_path <- file.path(plot_dir, filename)
-ggsave(full_path,
-       hindex,
-       width = 11,
-       height = 8.5,
-       units = "in")
+# filename <- "Google_hindex.pdf"
+# full_path <- file.path(plot_dir, filename)
+# ggsave(full_path,
+#        hindex,
+#        width = 11,
+#        height = 8.5,
+#        units = "in")
 
-```
-
-
-
-
-```{r, echo=FALSE}
 Draw_WorkDistribotion<-function(Data_Frame, Title, y_title){
   
   plot<-ggplot(Data_Frame,aes(x = factor(record_id),y = value)) + 
@@ -436,9 +415,7 @@ Draw_CISS_Items<-function(Data_Frame, Title){
   return(plot_Ciss_each)
 }
 
-```
 
-```{r, echo=FALSE}
 Draw_alltogether_Items<-function(Data_Frame, Title, y_title){
   plot_alltogether<-ggplot(Data_Frame, aes(x = factor(record_id), fill=variable, y=value)) + 
       geom_bar(position="stack", stat="identity")+
@@ -503,10 +480,7 @@ WD_mean_stacked_barplot<-function(Data_Frame, Title, y_title, ymax){
   # print(plot_disrupted)
   return(bar_plot_error_bar)
 }
-```
 
-
-```{r, echo=FALSE}
 #####################################################################################################################
 Workdistribution_TW <-
   melt(StandardPart[, c(
@@ -551,15 +525,15 @@ tyopical_week <-
     common.legend = TRUE,
     legend = "bottom"
   )
-filename <- "TypicalWeek_WD.pdf"
-full_path <- file.path(plot_dir, filename)
-ggsave(
-  full_path,
-  tyopical_week,
-  width = 11,
-  height = 8.5,
-  units = "in"
-)
+# filename <- "TypicalWeek_WD.pdf"
+# full_path <- file.path(plot_dir, filename)
+# ggsave(
+#   full_path,
+#   tyopical_week,
+#   width = 11,
+#   height = 8.5,
+#   units = "in"
+# )
 # print(Typical_week_work)
 
 
@@ -637,15 +611,15 @@ work_distribution_before_PD <-
     common.legend = TRUE,
     legend = "bottom"
   )
-filename <- "WD_Proposal_Deadline_Week_Before.pdf"
-full_path <- file.path(plot_dir, filename)
-ggsave(
-  full_path,
-  work_distribution_before_PD,
-  width = 11,
-  height = 8.5,
-  units = "in"
-)
+# filename <- "WD_Proposal_Deadline_Week_Before.pdf"
+# full_path <- file.path(plot_dir, filename)
+# ggsave(
+#   full_path,
+#   work_distribution_before_PD,
+#   width = 11,
+#   height = 8.5,
+#   units = "in"
+# )
 #################################################################################################
 
 day_of_proposal_submit <-
@@ -680,15 +654,15 @@ proposal_day_work_distribution <-
     common.legend = TRUE,
     legend = "bottom"
   )
-filename <- "WD_Proposal_Deadline_Day.pdf"
-full_path <- file.path(plot_dir, filename)
-ggsave(
-  full_path,
-  proposal_day_work_distribution,
-  width = 11,
-  height = 8.5,
-  units = "in"
-)
+# filename <- "WD_Proposal_Deadline_Day.pdf"
+# full_path <- file.path(plot_dir, filename)
+# ggsave(
+#   full_path,
+#   proposal_day_work_distribution,
+#   width = 11,
+#   height = 8.5,
+#   units = "in"
+# )
 # print(Typical_week_work)
 ########################################################################################################################
 
@@ -760,15 +734,15 @@ conf_day_work_dist_b4_week <-
     common.legend = TRUE,
     legend = "bottom"
   )
-filename <- "WD_Conferance_Deadline_week_before.pdf"
-full_path <- file.path(plot_dir, filename)
-ggsave(
-  full_path,
-  conf_day_work_dist_b4_week,
-  width = 11,
-  height = 8.5,
-  units = "in"
-)
+# filename <- "WD_Conferance_Deadline_week_before.pdf"
+# full_path <- file.path(plot_dir, filename)
+# ggsave(
+#   full_path,
+#   conf_day_work_dist_b4_week,
+#   width = 11,
+#   height = 8.5,
+#   units = "in"
+# )
 ########################################################################################################
 day_of_paper_submit <-
   Draw_alltogether_Items(Workdistribution_Paper,
@@ -803,20 +777,16 @@ paper_work_distribution <-
     common.legend = TRUE,
     legend = "bottom"
   )
-filename <- "WD_Conferance_Deadline_Day.pdf"
-full_path <- file.path(plot_dir, filename)
-ggsave(
-  full_path,
-  paper_work_distribution,
-  width = 11,
-  height = 8.5,
-  units = "in"
-)
+# filename <- "WD_Conferance_Deadline_Day.pdf"
+# full_path <- file.path(plot_dir, filename)
+# ggsave(
+#   full_path,
+#   paper_work_distribution,
+#   width = 11,
+#   height = 8.5,
+#   units = "in"
+# )
 
-```
-
-
-```{r, echo=FALSE}
 Proposal_Disruption <-
   melt(StandardPart[, c(
     'record_id',
@@ -868,15 +838,15 @@ plot_proposal_disrupted = ggarrange(
   common.legend = TRUE,
   legend = "bottom"
 )
-filename <- "Proposal_Disruption.pdf"
-full_path <- file.path(plot_dir, filename)
-ggsave(
-  full_path,
-  plot_proposal_disrupted,
-  width = 8.5,
-  height = 11,
-  units = "in"
-)
+# filename <- "Proposal_Disruption.pdf"
+# full_path <- file.path(plot_dir, filename)
+# ggsave(
+#   full_path,
+#   plot_proposal_disrupted,
+#   width = 8.5,
+#   height = 11,
+#   units = "in"
+# )
 
 ############################################################################################################################
 
@@ -920,23 +890,17 @@ plot_paper_disrupted = ggarrange(
   common.legend = TRUE,
   legend = "bottom"
 )
-filename <- "Paper_Disruption.pdf"
-full_path <- file.path(plot_dir, filename)
-ggsave(
-  full_path,
-  plot_paper_disrupted,
-  width = 8.5,
-  height = 11,
-  units = "in"
-)
-
-```
+# filename <- "Paper_Disruption.pdf"
+# full_path <- file.path(plot_dir, filename)
+# ggsave(
+#   full_path,
+#   plot_paper_disrupted,
+#   width = 8.5,
+#   height = 11,
+#   units = "in"
+# )
 
 
-
-
-
-```{r, echo=FALSE}
 library(freqtables)
 data_file_name <- 'Selected_Core_Questions.csv'
 curated_data_dir <- file.path(project_directory, 'curated-data')
@@ -1046,16 +1010,156 @@ for (i in 1:length(Data_CQ)) {
 
   
 }
-```
+```-->
 
 
 
-```{r}
-give.n <- function(x) { 
+
+
+```{r, echo=FALSE, warning=FALSE}
+give.n <- function(x) {
   # print(length(x))
   # print(x)
-  return(c(y=-Inf, vjust = -1, label=length(x))) 
+  return(c(
+    y = -Inf,
+    vjust = -1,
+    label = length(x)
+  ))
 }
+
+
+
+Draw_NASA <- function(Data_Frame, Title) {
+  colnames(Data_Frame) <- c("record_id", "value")
+  plot_NASA <-
+    ggplot(Data_Frame, aes(x = factor(record_id), y = value)) +
+    geom_bar(stat = "identity",
+             position = "dodge",
+             fill = "steelblue") +
+    geom_text(
+      aes(label = value),
+      vjust = 1.6,
+      color = "white",
+      position = position_dodge(0.9),
+      size = 3
+    ) +
+    scale_y_continuous(breaks = seq(0, 7, by = 1), limits = c(0, 7)) +
+    theme_bw() +
+    labs(x = "", y = "", title = Title) +
+    theme(
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      plot.title = element_text(hjust = 0.5),
+      axis.text.x = element_blank(),
+      legend.position = "bottom",
+      legend.title = element_blank(),
+      legend.text = element_text(size = 10)
+    )
+  
+  # print(plot_NASA)
+  return(plot_NASA)
+}
+
+
+
+
+Draw_Big_five_plot <- function(Data_Frame, Title) {
+  plot_bfi <- ggplot(Data_Frame, aes(x = factor(Subject), y = Value)) +
+    geom_bar(aes(fill = Title), stat = "identity", position = "dodge") +
+    ylim(0, 10) +
+    theme_minimal() +
+    labs(x = "", y = "Score", title = Title) +
+    theme(
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      plot.title = element_text(hjust = 0.5),
+      axis.text.x = element_blank(),
+      legend.position = "bottom",
+      legend.title = element_blank(),
+      legend.text = element_text(size = 10)
+    ) +
+    scale_fill_discrete(
+      name = "variable",
+      labels = c(
+        "Extraversion",
+        "Agreeableness",
+        "Conscientiousness",
+        "Neuroticism",
+        "Openness"
+      )
+    )
+  
+  # print(plot_bfi)
+  return(plot_bfi)
+  
+}
+
+
+
+Draw_BFI_Items <- function(Data_Frame, Title) {
+  # colnames(Data_Frame)<-c("Subject", "value")
+  plot_Bfi_each <-
+    ggplot(Data_Frame, aes(x = factor(Subject), y = Value)) +
+    geom_bar(stat = "identity",
+             position = "dodge",
+             fill = "steelblue") +
+    geom_text(
+      aes(label = Value),
+      vjust = 1.6,
+      color = "white",
+      position = position_dodge(0.9),
+      size = 3
+    ) +
+    scale_y_continuous(breaks = seq(0, 10, by = 1), limits = c(0, 10)) +
+    theme_bw() +
+    labs(x = "", y = "", title = Title) +
+    theme(
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      plot.title = element_text(hjust = 0.5),
+      axis.text.x = element_blank(),
+      legend.position = "bottom",
+      legend.title = element_blank(),
+      legend.text = element_text(size = 10)
+    )
+  
+  # print(plot_Bfi_each)
+  return(plot_Bfi_each)
+}
+
+
+
+Draw_CISS_Items <- function(Data_Frame, Title) {
+  # colnames(Data_Frame)<-c("Subject", "value")
+  plot_Ciss_each <-
+    ggplot(Data_Frame, aes(x = factor(Record_ID), y = Sum)) +
+    geom_bar(stat = "identity",
+             position = "dodge",
+             fill = "steelblue") +
+    geom_text(
+      aes(label = Sum),
+      vjust = 1.6,
+      color = "white",
+      position = position_dodge(0.9),
+      size = 3
+    ) +
+    scale_y_continuous(breaks = seq(0, 35, by = 7), limits = c(0, 35)) +
+    theme_bw() +
+    labs(x = "", y = "", title = Title) +
+    theme(
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      plot.title = element_text(hjust = 0.5),
+      axis.text.x = element_blank(),
+      legend.position = "bottom",
+      legend.title = element_blank(),
+      legend.text = element_text(size = 10)
+    )
+  
+  # print(plot_Bfi_each)
+  return(plot_Ciss_each)
+}
+
 ```
 
 ```{r, echo=FALSE}
@@ -1108,22 +1212,10 @@ final_plot <-
             ncol = 1,
             rel_heights = c(.03, 1))
 
-filename <- "NASA.pdf"
-full_path <- file.path(plot_dir, filename)
-ggsave(
-  full_path,
-  final_plot,
-  width = 8.5,
-  height = 11,
-  units = "in"
-)
+
 
       
 Nasa_togetehr <- melt(NASA,id.vars =1) 
-# detach("package:ggplot2", unload=TRUE)
-# library(ggplot2)
-
-
 
 nasa_boxplots <-
   ggplot(Nasa_togetehr, aes(
@@ -1137,20 +1229,18 @@ nasa_boxplots <-
   theme(
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
-    plot.title = element_text(hjust = 0.5, size = 7),
-    axis.text.x = element_text(face = "bold", size = 5),
+    plot.title = element_text(hjust = 0.5, size = 10),
+    axis.text.x = element_text(face = "bold", size = 8),
     legend.position = "none",
-    legend.margin = margin(0, 0, 0, 0),
-    legend.box.margin = margin(-5, -5, -5, -5),
     legend.spacing.x = unit(.25, 'cm'),
     legend.title = element_blank(),
     legend.text = element_text(size = 5, face = "bold"),
-    axis.text.y=element_text(size=6, face = "bold")
+    axis.text.y = element_text(size = 8, face = "bold")
   ) + stat_summary(fun.data = give.n,
                    geom = "text",
-                   size = 2) + 
+                   size = 2) +
   
-    guides(
+  guides(
     fill = guide_legend(
       nrow = 1,
       keywidth = 0.15,
@@ -1161,19 +1251,6 @@ nasa_boxplots <-
   )
 nasa_boxplots
 
-
-filename <- "NASA_Boxplots.pdf"
-full_path <- file.path(plot_dir, filename)
-ggsave(
-  full_path,
-  nasa_boxplots,
-  width = 11,
-  height = 8.5,
-  units = "in"
-)
-   
-
- 
 ```
 
 
@@ -1239,7 +1316,7 @@ x_lebel = paste0("\n\n\n", "Mean = ", stat$mean, ",     ", "SD = ", stat$sd, ", 
 trit_boxplot <- ggplot(Trait_Anxiety, aes(x = "", y = Sum)) +
   geom_boxplot(fill='#A4A4A4', color="black") +
   theme_bw() +
-  labs(x = x_lebel, y = "", title = "Trait Anxiety") +
+  labs(x = "", y = "", title = "Trait Anxiety") +
   theme(
     axis.title.x = element_text(size=16),
     panel.grid.major = element_blank(),
@@ -1250,29 +1327,9 @@ trit_boxplot <- ggplot(Trait_Anxiety, aes(x = "", y = Sum)) +
     legend.title = element_blank(),
     axis.text.y = element_text(size=14),
     text = element_text(size = 14)
-  ) +
-  stat_summary(
-    fun.data = give.n,
-    geom = "text",
-    hjust = 0.5,
-    vjust = 0.9,
-    size=6
   )
 trit_boxplot
-# Trait_Anxiety_plots <-
-#   ggarrange(Trait_Anxiety_plot,
-#             trit_boxplot,
-#             nrow = 2,
-#             ncol = 1)
-filename <- paste("Trait.pdf")
-full_path <- file.path(plot_dir, filename)
-ggsave(
-  full_path,
-  trit_boxplot,
-  width = 11,
-  height = 8.5,
-  units = "in"
-)
+
   
  
 ```
@@ -1355,16 +1412,7 @@ extract_bfi_score_each_row <- function(current_subj_df) {
 }
 
 extract_bfi_score <- function() {
-  #bfi_df <- post_survey_df[, c(22, seq(40, 83))]
-  
-  #print_msg(toString(colnames(bfi_df))) ## DO NOT DELETE
   colnames(bfi_df) <- bfi_ques_list
-  #print_msg(colnames(bfi_df)) ## DO NOT DELETE
-  
-  ## Filter out the data for good subject list only 
-  # bfi_df <- bfi_df %>% 
-  #   filter(SubjectID %in% good_subj_list$Subject)
-  # print_msg(paste0('Big Five Inventory Subject no:', nrow(bfi_df)))
   
   invisible(apply(bfi_df, 1, function(each_row) extract_bfi_score_each_row(each_row)))
   # convert_to_csv(bfi_score_df[order(bfi_score_df$Subject),], file.path(survey_data_dir, 'bfi_score.csv'))
@@ -1378,12 +1426,6 @@ extract_bfi_score <- function() {
   bfi_score_df <- bfi_score_df %>%
     dplyr ::select(Subject, Title, Value) %>% 
     mutate(Title = paste0('BFI_', Title)) 
-  
-    # %>% 
-    # spread(Title, Value)
-    # 
-  #psychometric_df <<- merge(psychometric_df, bfi_score_df, by.x='SubjectID', by.y='Subject', all.x=T)
-  # convert_to_csv(psychometric_df, file.path(final_data_dir, 'Questionnaire Data.csv'))
 }
 ```
 
@@ -1502,17 +1544,6 @@ final_plot <-
             ncol = 1,
             rel_heights = c(.03, 1))
 
-filename <- "BFI.pdf"
-full_path <- file.path(plot_dir, filename)
-ggsave(
-  full_path,
-  final_plot,
-  width = 8.5,
-  height = 11,
-  units = "in"
-)
-# print(final_plot)
-
 
 give.n <- function(x) {
   return(data.frame(y = 1,
@@ -1535,15 +1566,15 @@ BFI_boxplots <-
   theme(
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
-    plot.title = element_text(hjust = 0.5, size = 7),
-    axis.text.x = element_text(face = "bold", size = 5),
+    plot.title = element_text(hjust = 0.5, size = 10),
+    axis.text.x = element_text(face = "bold", size = 8),
     legend.position = "none",
-    legend.margin = margin(0, 0, 0, 0),
-    legend.box.margin = margin(-5,-5,-5,-5),
+    # legend.margin = margin(0, 0, 0, 0),
+    # legend.box.margin = margin(-5,-5,-5,-5),
     legend.spacing.x = unit(.25, 'cm'),
     legend.title = element_blank(),
     legend.text = element_text(size = 4, face = "bold"),
-    axis.text.y = element_text(size = 6, face = "bold")
+    axis.text.y = element_text(size = 8, face = "bold")
   ) + stat_summary(fun.data = give.n,
                    geom = "text",
                    size = 2) +
@@ -1571,18 +1602,6 @@ BFI_boxplots <-
   )
 
 BFI_boxplots
-
-# plot_list_grid[[length(plot_list_grid) + 1]] <- BFI_boxplots
-
-filename <- "BFI_boxplots.pdf"
-full_path <- file.path(plot_dir, filename)
-ggsave(
-  full_path,
-  BFI_boxplots,
-  width = 11,
-  height = 8.5,
-  units = "in"
-)
 ```
 
 
@@ -1599,7 +1618,7 @@ Avoidancecoping <-
   Avoidancecoping %>% mutate(Sum  = rowSums(.[2:8]))
 
 Avoidance = Draw_CISS_Items(Avoidancecoping, "Avoidance Coping")
-Avoidance
+
 
 EmotionalCoping  <-
   Ciss[c("Record_ID", "X3", "X5", "X10", "X12", "X14", "X17", "X20")]
@@ -1607,7 +1626,6 @@ EmotionalCoping <-
   EmotionalCoping %>% mutate(Sum  = rowSums(.[2:8]))
 
 Emotional = Draw_CISS_Items(EmotionalCoping, "Emotion-oriented Coping")
-Emotional
 
 TaskCoping  <-
   Ciss[c("Record_ID", "X2", "X6", "X8", "X11", "X13", "X16", "X19")]
@@ -1615,15 +1633,11 @@ TaskCoping <- TaskCoping %>% mutate(Sum  = rowSums(.[2:8]))
 
 
 Task = Draw_CISS_Items(TaskCoping, "Task-oriented Coping")
-Task
 
 
-Ciss=ggarrange(Avoidance,Emotional,Task, nrow = 3, ncol = 1)
-      filename<-"Ciss.pdf"
-      full_path<-file.path(plot_dir, filename)
-      ggsave(full_path, Ciss, width = 8.5, height = 11, units = "in")
 
-      
+
+
     
 CISS_Results <- data.frame(Avoidancecoping$Record_ID,Avoidancecoping$Sum, EmotionalCoping$Sum, TaskCoping$Sum)
 colnames(CISS_Results)<-c("Record_ID", "Avoidance", "Emotion", "Task")
@@ -1653,15 +1667,15 @@ CISS_boxplots <-
   theme(
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
-    plot.title = element_text(hjust = 0.5, size = 7),
-    axis.text.x = element_text(face = "bold", size = 5),
+    plot.title = element_text(hjust = 0.5, size = 10),
+    axis.text.x = element_text(face = "bold", size = 8),
     legend.position = "none",
-    legend.margin = margin(0, 0, 0, 0),
-    legend.box.margin = margin(-5,-5,-5,-5),
+    # legend.margin = margin(0, 0, 0, 0),
+    # legend.box.margin = margin(-5,-5,-5,-5),
     legend.spacing.x = unit(.5, 'cm'),
     legend.title = element_blank(),
     legend.text = element_text(size = 5),
-    axis.text.y = element_text(size = 6, face = "bold")
+    axis.text.y = element_text(size = 8, face = "bold")
   ) + stat_summary(fun.data = give.n,
                    geom = "text",
                    size = 2) +
@@ -1675,117 +1689,7 @@ CISS_boxplots <-
 
 CISS_boxplots
 
-filename <- "Ciss_boxplots.pdf"
-full_path <- file.path(plot_dir, filename)
-ggsave(
-  full_path,
-  CISS_boxplots,
-  width = 11,
-  height = 8.5,
-  units = "in"
-)
 ``` 
-
-
-
-```{r, echo=FALSE}
-# library(wordcloud)
-# library(RColorBrewer)
-# library(wordcloud2)
-# library(tm)
-# library(ggwordcloud)
-# # data_file_name<-'world_cloud_stressful.csv'
-# data_file_name_std<-'world_cloud.csv'
-# 
-# 
-# # Stressful<-read.csv(file.path(curated_data_dir,data_file_name),stringsAsFactors = FALSE)
-# Stressful<-read.csv(file.path(curated_data_dir,data_file_name_std),stringsAsFactors = FALSE)
-# 
-# Stressful$item=tolower(Stressful$item)
-# set.seed(1234)
-# 
-# 
-# set.seed(42)
-# wc <- ggplot(Stressful, aes(label = item, size = count, color = factor(sample.int(10, nrow(Stressful), replace = TRUE)))) +
-#   geom_text_wordcloud_area() +
-#   scale_size_area(max_size = 24) +
-#   theme_minimal()
-# 
-# wc
-```
-
-```{r, echo=FALSE}
-# plot_list_grid[[length(plot_list_grid) + 1]] <- BFI_boxplots
-# plot_list_grid[[length(plot_list_grid) + 1]] <- CISS_boxplots
-# plot_list_grid[[length(plot_list_grid) + 1]] <- nasa_boxplots
-# plot_list_grid[[length(plot_list_grid) + 1]] <- wc
-
-barplots <- ggarrange(plotlist = plot_list_grid, nrow = 3, ncol = 2)
-box_plots <- ggarrange(BFI_boxplots, nasa_boxplots, CISS_boxplots, nrow = 3, ncol = 1)
-
-final_plot<-plot_grid(barplots, box_plots, ncol = 2,   rel_widths = c(2, 1))
-# 
-# final_plot <- ggarrange(plotlist = plot_list_grid, nrow = 3, ncol = 3)
-
-full_path<-file.path(plot_dir,"Grid_plot_final.pdf",sep="")
-  ggsave(full_path, final_plot, width = 8.5, height = 5.5, units = "in")
-```
-
-```{r}
-# 
-# plot_with_annotation <- function(plot_list, letter_list){
-#   plot_list_grid_annot <- list()
-#   
-#   for (item in 1:10){
-#     plot <- arrangeGrob(plot_list[item],
-#               top = textGrob(
-#                 toupper(paste0(letter_list[item])),
-#                 x = unit(0, "npc"),
-#                 y = unit(1, "npc"),
-#                 vjust = 2,
-#                 hjust = -1.5,
-#                 just = c("left", "top"),
-#                 gp = gpar(
-#                   col = "black",
-#                   fontsize = 22,
-#                   fontface = "bold"
-#                 )
-#               ))
-#     
-#     plot_grid(plot)
-#     
-#     plot_list_grid_annot[[length(plot_list_grid_annot) + 1]] <- plot_grid(plot)
-#     
-#   }
-#   
-#   return(plot_list_grid_annot)
-# }
-# 
-# letter_list <-c("A", "B", "C", "D", "E", "F", "G", "H", "I", "J")
-# 
-# final_list =  plot_with_annotation(plot_list_grid, letter_list)
-# 
-# finla_plot = ggarrange(plotlist = final_list, nrow = 5, ncol = 2)
-# 
-# 
-# 
-# plot <-
-#   arrangeGrob(wc,
-#               top = textGrob(
-#                 toupper(paste0("A")),
-#                 x = unit(0, "npc"),
-#                 y = unit(1, "npc"),
-#                 vjust = 2,
-#                 hjust = -1.5,
-#                 just = c("left", "top"),
-#                 gp = gpar(
-#                   col = "black",
-#                   fontsize = 22,
-#                   fontface = "bold"
-#                 )
-#               ))
-# plot_grid(plot)
-```
 
 
 
@@ -1818,183 +1722,9 @@ Psychometric$Task_oriented_Coping<-CISS_Results$Task
 colnames(Psychometric)<- c("Rank", "Mental", "Physical", "Temporal", "Performance", "Effort", "Frustration", "NASA","Trait", "Extraversion", "Agreeableness", "Conscientiousness", "Neuroticism", "Openness", "Avoidance", "Emotion", "Task")
 
 
-file_name='StandardPart_psychometric.csv'
+file_name='Procesed_Psychometric_Data.csv'
 write.csv(Psychometric,file.path(curated_data_dir, file_name), row.names = FALSE)
 ```
 
-
-
-
-
-
-
-```{r, echo=FALSE}
-
-Psychometric$h_index <- StandardPart$google_scholar_h_index
-DF_Quant_Stat <- cbind(Psychometric, StandardPart[,c(17:20, 33:36, 38:41, 45:49, 58:61, 63:66, 70:74)])
-
-
-DF_Quant_Stat <- DF_Quant_Stat  %>% dplyr::rename(
-  
-  "Percentage of research in a typical week" = "ti_research",  ## Typical week Research
-  "Percentage of teaching in a typical week" = "ti_teaching",  ## Typical week Research
-  "Percentage of admin work in a typical week" = "ti_administration",  ## Typical week Research
-  "Percentage of service outreach in a typical week" = "ti_service_outreach",  ## Typical week Research
-  
-  "Percentage of research a week before proposal deadline" = "week_research",  ## Research percentage a week before Proposal
-  "Percentage of teaching a week before proposal deadline" = "week_teaching",  ## Research percentage a week before Proposal
-  "Percentage of admin work a week before proposal deadline" = "week_administration",  ## Research percentage a week before Proposal
-  "Percentage of service outreach a week before proposal deadline" = "week_service_outreach",  ## Research percentage a week before Proposal
-
-  "Percentage of research on proposal deadline day" = "proposal_research",
-  "Percentage of teaching on proposal deadline day" = "proposal_teaching",
-  "Percentage of admin work on proposal deadline day" = "proposal_administration",
-  "Percentage of service outreach on proposal deadline day" = "proposal_service_outreach",
-  
-  "Disruption of research on proposal deadline" = "disrupted_part",
-  "Disruption of sleep on proposal deadline" = "my_sleep",
-  "Disruption of diet on proposal deadline" = "my_diet",
-  "Disruption of physical activity on proposal deadline" = "my_physical_activity",
-  "Disruption of interpersonal relationship on proposal deadline" = "my_interpersonal_relations",
-  
-  "Percentage of research a week before conference deadline" = "research",
-  "Percentage of teaching a week before conference deadline" = "teaching",
-  "Percentage of admin work a week before conference deadline" = "administration",
-  "Percentage of service outreach a week before conference deadline" = "serviceoutreach",
-
-  "Percentage of research on conference deadline day" = "research1",
-  "Percentage of teaching on conference deadline day" = "teaching1",
-  "Percentage of admin work on conference deadline day" = "administration1",
-  "Percentage of service outreach on conference deadline day" = "service_outreach1",
-
-  "Disruption of research on conference deadline" = "disrupted_conf",
-  "Disruption of sleep on conference deadline" = "my_sleep2",
-  "Disruption of diet on conference deadline" = "diet2",
-  "Disruption of physical activity on conference deadline" = "physical_activity2",
-  "Disruption of interpersonal relationship on conference deadline" = "interpersonal_relations2")
-```
-
-
-
-
-```{r, echo=FALSE}
-
-give.n <- function(x) { 
-  # print(length(x))
-  # print(x)
-  return(c(y=-Inf, vjust = -1, label=length(x))) 
-} 
-stat_summary(fun.data = give.n, geom = "text", size = 6)
-
-
-# Psychometric[2]
-
-
-for (col_index in 2:ncol(DF_Quant_Stat)) {
-  col = as.numeric(unlist(DF_Quant_Stat[col_index]))
-  stat = DF_Quant_Stat %>% summarise(
-    mean = round(mean(col, na.rm=TRUE), 2),
-    sd = round(sd(col, na.rm=TRUE)),
-    median = median(col, na.rm=TRUE),
-    max = max(col, na.rm=TRUE),
-    min = min(col, na.rm=TRUE)
-  )
-  
-  x_lebel = 
-    paste0(
-    "\n\n\n",
-    "Mean = ",
-    stat$mean,
-    ",     ",
-    "SD = ",
-    stat$sd,
-    ",     ",
-    "Median = ",
-    stat$median,
-    ",     ",
-    "Min = ",
-    stat$min,
-    ",     ",
-    "Max = ",
-    stat$max
-  )
-  
-  boxplot_with_stat <-
-    ggplot(DF_Quant_Stat, aes(x = "", y = col)) +
-    geom_boxplot(fill = '#A4A4A4', color = "black") +
-    theme_bw() +
-    labs(x = x_lebel,
-         y = "",
-         title = colnames(DF_Quant_Stat[col_index])) +
-    theme(
-      axis.title.x = element_text(size = 18),
-      panel.grid.major = element_blank(),
-      panel.grid.minor = element_blank(),
-      plot.title = element_text(hjust = 0.5),
-      axis.text.x = element_blank(),
-      legend.position = "bottom",
-      legend.title = element_blank(),
-      axis.text.y = element_text(size = 18),
-      text = element_text(size = 16)
-    ) + stat_summary(fun.data = give.n, geom = "text", size = 6)
-  
-  filename <- paste("boxplot_with_stat", col_index, ".pdf", sep = "")
-  full_path <- file.path(plot_dir, filename)
-  ggsave(
-    full_path,
-    boxplot_with_stat,
-    width = 8.5,
-    height = 11,
-    units = "in"
-  )
-} 
-```
-
-
-
-<!--```{r}
-col_index =2
-
-col = as.numeric(unlist(Psychometric[col_index]))
-stat = Psychometric %>% summarise(mean= round(mean(col), 2), sd = round(sd(col)), median = median(col), max = max(col), min = min(col))
-
-  x_lebel = paste0(
-    
-    "Mean = ",
-    stat$mean,
-    ",     ",
-    "SD = ",
-    stat$sd,
-    ",     ",
-    "Median = ",
-    stat$median,
-    ",     ",
-    "Min = ",
-    stat$min,
-    ",     ",
-    "Max = ",
-    stat$max
-  )
-  
-  boxplot_with_stat <-
-    ggplot(Psychometric, aes(x = "", y = col)) +
-    geom_boxplot(fill = '#A4A4A4', color = "black") +
-    theme_bw() +
-    labs(x = x_lebel,
-         y = "",
-         title = colnames(Psychometric[col_index])) +
-    theme(
-      axis.title.x = element_text(size = 16),
-      panel.grid.major = element_blank(),
-      panel.grid.minor = element_blank(),
-      plot.title = element_text(hjust = 0.5),
-      axis.text.x = element_blank(),
-      axis.text.y = element_text(size = 14),
-      text = element_text(size = 14)
-    ) +
-stat_summary(fun.data = give.n, geom = "text", size = 6)
-
-boxplot_with_stat
-```-->
 
 

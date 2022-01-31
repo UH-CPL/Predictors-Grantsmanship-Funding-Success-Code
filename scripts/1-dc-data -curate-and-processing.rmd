@@ -1,9 +1,9 @@
 ---
-# title: "DataPreprocessing"
+# title: "Data Preprocessing"
 output:
-  pdf_document: default
   html_document:
     df_print: paged
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -224,6 +224,7 @@ final_data<- final_data[final_data$funding_proposal !="No",]
 
 ```{r, echo=FALSE}
 # View(final_data)
+final_data$email <- NULL
 file_name='StandardPart.csv'
 write.csv(final_data,file.path(curated_data_dir, file_name), row.names = FALSE)
 ```
@@ -375,7 +376,6 @@ final_data <- final_data  %>% dplyr::rename(
 # final_data$email <- NULL
 file_name='AllData.csv'
 write.csv(final_data,file.path(curated_data_dir, file_name), row.names = FALSE)
-
 print(paste("The number of rows", nrow(final_data)))
 ```
 
@@ -396,93 +396,93 @@ print(paste("The number of rows", nrow(final_data)))
 
 
 ```{r, echo=FALSE}
-final_data$P_ID <- paste0("P_", 1:403)
-final_data <- final_data %>%
-  mutate(
-    S_G30 = recode(
-      P_SR,
-      "< 10%" = 0,
-      "10-20%" = 0,
-      "20-30%" = 0,
-      "30-50%" = 1,
-      "50-75%" = 1,
-      "75-90%" = 1,
-      "> 90%" = 1
-    )
-  ) %>%
-  mutate(
-    S_G50 = recode(
-      P_SR,
-      "< 10%" = 0,
-      "10-20%" = 0,
-      "20-30%" = 0,
-      "30-50%" = 0,
-      "50-75%" = 1,
-      "75-90%" = 1,
-      "> 90%" = 1
-    )
-  ) %>%
-  mutate(
-    S_F75 = recode(
-      Research_Funded_By_External_Grants,
-      "Not funded" = 0,
-      "25-1%" = 0,
-      "50-25%" = 0,
-      "75-50%" = 0,
-      "100-75%" = 1,
-      "Fully funded" = 1
-    )
-  ) %>%
-  mutate(
-    S_FF = recode(
-      Research_Funded_By_External_Grants,
-      "Not funded" = 0,
-      "25-1%" = 0,
-      "50-25%" = 0,
-      "75-50%" = 0,
-      "100-75%" = 0,
-      "Fully funded" = 1
-    )
-  ) %>%
-  mutate(S_G50FF = case_when(S_G50 == 1 & S_FF == 1 ~ 1, TRUE ~ 0))
-
-
-Q_Q_DF <- subset(final_data, select=c("P_ID", "S_G30", "S_G50", "S_F75", "S_FF", "S_G50FF", "About_Proposal_Deadline"))
-Q_Q_DF$WC <- sapply(Q_Q_DF$About_Proposal_Deadline, function(x) length(unlist(strsplit(as.character(x), "\\W+"))))
-Q_Q_DF <- Q_Q_DF %>% mutate(Comment = case_when(WC != 0 ~ 1, TRUE ~ 0))
-
-
-
-
-
-Q_Q_DF_comment_only  <-
-  filter(Q_Q_DF, About_Proposal_Deadline != "")
-
-Q_Q_DF_comment_only <- subset(Q_Q_DF_comment_only, 
-    P_ID != 'P_100' &
-      P_ID != 'P_122' &
-      P_ID != 'P_123' &
-      P_ID != 'P_182' &
-      P_ID != 'P_210' & 
-      P_ID != 'P_377' & 
-      P_ID != 'P_384'
-  )
-
-
-# library("xlsx")
-data_file_name <- 'Reviewed_file.xlsm'
-# Q_Q_freefomat<-read.xlsx(file.path(curated_data_dir,data_file_name),stringsAsFactors = FALSE)
-Q_Q_freefomat<-read.xlsx(file.path(curated_data_dir,data_file_name))
-
-QQ_Bridge <- merge(Q_Q_DF_comment_only, Q_Q_freefomat, by = c("P_ID", "S_G30", "S_G50", "S_F75", "S_FF", "S_G50FF"), all.x = TRUE)
-
-QQ_Bridge$About_Proposal_Deadline.x<- NULL
-QQ_Bridge$About_Proposal_Deadline.y<- NULL
-
-
-
-
-file_name='QQ_Bridge.csv'
-write.csv(QQ_Bridge,file.path(curated_data_dir, file_name), row.names = FALSE)
+# final_data$P_ID <- paste0("P_", 1:403)
+# final_data <- final_data %>%
+#   mutate(
+#     S_G30 = recode(
+#       P_SR,
+#       "< 10%" = 0,
+#       "10-20%" = 0,
+#       "20-30%" = 0,
+#       "30-50%" = 1,
+#       "50-75%" = 1,
+#       "75-90%" = 1,
+#       "> 90%" = 1
+#     )
+#   ) %>%
+#   mutate(
+#     S_G50 = recode(
+#       P_SR,
+#       "< 10%" = 0,
+#       "10-20%" = 0,
+#       "20-30%" = 0,
+#       "30-50%" = 0,
+#       "50-75%" = 1,
+#       "75-90%" = 1,
+#       "> 90%" = 1
+#     )
+#   ) %>%
+#   mutate(
+#     S_F75 = recode(
+#       Research_Funded_By_External_Grants,
+#       "Not funded" = 0,
+#       "25-1%" = 0,
+#       "50-25%" = 0,
+#       "75-50%" = 0,
+#       "100-75%" = 1,
+#       "Fully funded" = 1
+#     )
+#   ) %>%
+#   mutate(
+#     S_FF = recode(
+#       Research_Funded_By_External_Grants,
+#       "Not funded" = 0,
+#       "25-1%" = 0,
+#       "50-25%" = 0,
+#       "75-50%" = 0,
+#       "100-75%" = 0,
+#       "Fully funded" = 1
+#     )
+#   ) %>%
+#   mutate(S_G50FF = case_when(S_G50 == 1 & S_FF == 1 ~ 1, TRUE ~ 0))
+# 
+# 
+# Q_Q_DF <- subset(final_data, select=c("P_ID", "S_G30", "S_G50", "S_F75", "S_FF", "S_G50FF", "About_Proposal_Deadline"))
+# Q_Q_DF$WC <- sapply(Q_Q_DF$About_Proposal_Deadline, function(x) length(unlist(strsplit(as.character(x), "\\W+"))))
+# Q_Q_DF <- Q_Q_DF %>% mutate(Comment = case_when(WC != 0 ~ 1, TRUE ~ 0))
+# 
+# 
+# 
+# 
+# 
+# Q_Q_DF_comment_only  <-
+#   filter(Q_Q_DF, About_Proposal_Deadline != "")
+# 
+# Q_Q_DF_comment_only <- subset(Q_Q_DF_comment_only, 
+#     P_ID != 'P_100' &
+#       P_ID != 'P_122' &
+#       P_ID != 'P_123' &
+#       P_ID != 'P_182' &
+#       P_ID != 'P_210' & 
+#       P_ID != 'P_377' & 
+#       P_ID != 'P_384'
+#   )
+# 
+# 
+# # library("xlsx")
+# data_file_name <- 'Reviewed_file.xlsm'
+# # Q_Q_freefomat<-read.xlsx(file.path(curated_data_dir,data_file_name),stringsAsFactors = FALSE)
+# Q_Q_freefomat<-read.xlsx(file.path(curated_data_dir,data_file_name))
+# 
+# QQ_Bridge <- merge(Q_Q_DF_comment_only, Q_Q_freefomat, by = c("P_ID", "S_G30", "S_G50", "S_F75", "S_FF", "S_G50FF"), all.x = TRUE)
+# 
+# QQ_Bridge$About_Proposal_Deadline.x<- NULL
+# QQ_Bridge$About_Proposal_Deadline.y<- NULL
+# 
+# 
+# 
+# 
+# file_name='QQ_Bridge.csv'
+# write.csv(QQ_Bridge,file.path(curated_data_dir, file_name), row.names = FALSE)
 ```
 
