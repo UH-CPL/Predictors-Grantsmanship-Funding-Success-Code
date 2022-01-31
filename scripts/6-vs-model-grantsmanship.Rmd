@@ -1,6 +1,8 @@
 ---
 title: "Grantsmanship Models"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -1010,7 +1012,7 @@ final_plot <-
 
 
 
-filename <- "Figure2_.pdf"
+filename <- "Figure2.pdf"
 full_path <- file.path(plot_dir, filename)
 ggsave(
   full_path,

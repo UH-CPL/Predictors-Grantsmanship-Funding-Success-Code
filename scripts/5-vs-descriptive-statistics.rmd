@@ -1,5 +1,5 @@
 ---
-title: "Descriptive Statistics"
+title: "Descriptive Statistics Visulaization (Figure1 and Figure5 )"
 output:
   pdf_document: default
   html_document: default
@@ -7,24 +7,12 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(dplyr)
 library(freqtables)
-library(plotrix)
-library(plotly)
 library(tools)
 library(plotrix)
 library(plotly)
 library(grid)
-library(gridExtra)
-library(ggpubr)
-library(cowplot)
-library(reshape2)
-library(plyr)
-library(ggplot2)
 library(dplyr)
-library(plotrix)
-library(plotly)
-library(grid)
 library(gridExtra)
 library(ggpubr)
 library(cowplot)
@@ -35,45 +23,27 @@ library(ggrepel)
 library(forcats)
 library(scales)
 library(stringr)
-library(superml)
 ```
 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, warning=FALSE}
 root_dir <- getwd()
 project_directory <- dirname(root_dir)
 data_dir <- file.path(project_directory, 'curated-data')
 plot_dir <- file.path(project_directory, 'Plots')
-data_file_name <- 'Selected_coreQuestions.csv'
+# data_file_name <- 'Selected_coreQuestions.csv'
+data_file_name <- 'CoreQuestions.csv'
 curated_data_dir <- file.path(project_directory, 'curated-data')
 Data <-
   read.csv(file.path(data_dir, data_file_name), stringsAsFactors = FALSE)
 ```
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, warning=FALSE}
 Data <- Data[,c("FR", "Gender", "Departmnet", "State", "TW_W_H", "TW_Research", "RO_F_EG")]
 
-## for the comments only
-# Data <- filter(Data, Comments != "")
-# Data <- Data[,c("FR", "Gender", "Departmnet", "State", "TW_W_H", "TW_Research", "RO_F_EG", "Comments")]
-
-# colnames(Data)
-# Data <- subset(Data, Comments != "Your survey was comprehensive" & 
-#                Comments != "No ideas" & 
-#                Comments != "n/a" & 
-#                Comments != "None." &
-#                Comments != "None  " &
-#                Comments != "No comment" &
-#                Comments != "The questions don't really make sense in my case. I don't think the questionnaire was thought through well.")
-# 
-# Data$Comments <- NULL
 Data <- Data %>%
   mutate(FR = recode(FR, "Assistant Professor" = "FR1", "Associate Professor" = "FR2", "Professor" = "FR3" ))
-# count(Data$State)
-
 Data$TW_Research <- as.factor(Data$TW_Research)
-
-
 Data <- Data %>%
   mutate(TWR = recode(TW_Research, "0" = "0-20", "10" = "0-20", "20" = "0-20", "70" = "70-90", "80" = "70-90",  "90" = "70-90")) %>% 
   mutate(EG = recode(RO_F_EG, "1-25%" = "1-25", "25-50%" = "25-50", "50-75%" = "50-75", "75-100%" = "75-100", "Fully funded" = "FF",  "Not funded" = "NF"))
@@ -81,14 +51,12 @@ Data <- Data %>%
 ```
 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, warning=FALSE}
 Natural_Sciences = '^Applied Math$|^Chemistry and Biochemistry$|^Oceanography$|^Environmental Studies$|^Chemistry$|^Physics$|^Geosciences$|^Mathematics$'
 CIS = '^Informatics$|^Information$|^Information and Logistics Technology$|^Information Science$|^Computer Science$|^Scientific Computing$'
 Engineering = '^Engineering / Learning Sciences$|^Management$|^Statistical Sciences and Operations Research$|^Technology$|^Engineering$'
 Biomedical_Sciences = '^Health$|^Health and Human Performance$|^HHP$|^Neurobiology$|^Neuroscience$|^Optometry$|^Pharmacological and Pharmaceutical Sciences$|^Pharmacy$|^Vision Science$|^Biology$|^Medicine$|^Pharmacy $'
 Behavioral_Sciences = '^Political Science$|^Sociology$|^Psychology$|^Speech, Language, and Hearing$|^Political Science $|^Communication Studies$'
-
-
 
 
 
@@ -108,26 +76,19 @@ Data <- Data %>%
     )
   )
 
-# count(Data$Disciplines)
-
 ```
 
 
 
-```{r, echo=FALSE}
-# colnames(Data)
+```{r, echo=FALSE, warning=FALSE}
 core_plot_df <- Data[,c("Gender", "Disciplines", "State", "TW_W_H", "TWR", "EG")]
-
-
 core_plot_df <- core_plot_df %>%
   mutate(TWR = recode(TWR, "0-20" = "< 20", "70-90" = "> 70", "100" = "> 70"))
-
-table(core_plot_df$TWR)
 ```
 
 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, warning=FALSE}
 list_gender = c("Female", "Male")
 list0 = c("BIO", "BEHAV", "ENG", "CIS", "NAT")
 list1 = c("East", "West", "Midwest", "South")
@@ -151,60 +112,11 @@ title_list <- c("Gender Distribution", "Disciplinary Distribution", "Geographic 
 
 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, warning=FALSE}
 percent <- function(x, digits = 0, format = "f", ...) {
   paste0(formatC(100 * x, format = format, digits = digits, ...), "%")
 }
 ```
-
-
-```{r, echo=FALSE, warning=FALSE}
-
-
-# plot_list <- list()
-# 
-# FR_Gender <- Data[, c("FR", "Gender")]
-# count(FR_Gender$Gender)
-# 
-# percentage_table <- ddply(data.frame(table(FR_Gender)), .(Gender))
-# percentage_table <-
-#   percentage_table %>% mutate(prop = (Freq / sum(Freq)))
-# 
-# percentage_table$percent <- percent((percentage_table$prop)) 
-# 
-# percentage_table$percent[6] <- "37%"
-#   
-# Gender_FR <-
-#   ggplot(percentage_table, aes(x = Gender, y = Freq, fill = Gender)) + geom_bar(stat = "identity") +
-#   facet_grid( ~ FR) +
-#   geom_text(
-#     aes(y = Freq, label = percent),
-#     vjust = -0.10,
-#     color = "black",
-#     size = 2.5,
-#     face = "bold"
-#   ) +
-#   theme(
-#     axis.title.y = element_text(
-#       size = 8,
-#       face = "bold",
-#       colour = "black"
-#     ),
-#     panel.grid.major = element_blank(),
-#     panel.grid.minor = element_blank(),
-#     legend.position = 'none',
-#     plot.title = element_text(hjust = 0.5, size = 10),
-#     axis.text.x = element_text(face = "bold", size = 7),
-#     axis.text.y = element_text(face = "bold", size = 7),
-#     strip.text = element_text(size = 6, face = "bold")
-#   ) +
-#   labs(x = "", y = "Count", title = "Gender per Faculty Rank")
-# # Gender_FR
-# 
-#  
-# plot_list[[length(plot_list) + 1]] <- Gender_FR
-```
-
 
 
 ```{r, echo=FALSE, warning=FALSE}
@@ -242,40 +154,7 @@ for (i in 1:length(core_plot_df)) {
   if (i == 1) {
     temp$percentage[2] <- "67.5%"
     temp$percentage[1] <- "32.5%"
-    
-  #   bar_plot <- ggplot(data = temp, aes(x = reorder(item, -count, decreasing = FALSE), count)) +
-  #   geom_bar(stat = "identity",
-  #            width = 0.5,
-  #            fill = "steelblue") +
-  #   geom_text(
-  #     aes(label = percentage),
-  #     # vjust = 0.5,
-  #     vjust = -0.25,
-  #     color = "black",
-  #     # angle = 90,
-  #     size = 2.5,
-  #     face = "bold"
-  #   ) +
-  #   theme_bw() +
-  #   scale_y_continuous(breaks = seq(0, ylimit, by = 50),
-  #                      limits = c(0, ylimit)) +
-  #   labs(x = "", y = y_title, title = title_list[i]) +
-  #   theme(
-  #     axis.title.y = element_text(
-  #       size = 8,
-  #       face = "bold",
-  #       colour = "black"
-  #     ),
-  #     panel.grid.major = element_blank(),
-  #     panel.grid.minor = element_blank(),
-  #     plot.title = element_text(hjust = 0.5, size = 10),
-  #     axis.text.x = element_text(face = "bold", size = 7),
-  #     axis.text.y = element_text(face = "bold", size = 7)
-  #   ) + scale_x_discrete(limits = Ticks_list[[i]])
-  # # print(bar_plot)
-  # 
-  # plot_list[[length(plot_list) + 1]] <- bar_plot
-  }
+     }
 
   if (i == 3) {
     temp$percentage[4] <- "43%"
@@ -317,7 +196,7 @@ for (i in 1:length(core_plot_df)) {
       axis.text.x = element_text(face = "bold", size = 7),
       axis.text.y = element_text(face = "bold", size = 7)
     ) + scale_x_discrete(limits = Ticks_list[[i]])
-  print(bar_plot)
+  # print(bar_plot)
 
   plot_list[[length(plot_list) + 1]] <- bar_plot
   
@@ -328,7 +207,6 @@ for (i in 1:length(core_plot_df)) {
 final_plot <- ggarrange(plotlist = plot_list,
                         nrow = 2,
                         ncol = 3)
-# filename <- "Figure1_without_percentage.pdf"
 filename <- "Figure1.pdf"
 full_path <- file.path(plot_dir, filename)
 ggsave(
@@ -343,152 +221,10 @@ ggsave(
 
 
 ```{r, echo=FALSE, warning=FALSE}
-
-
-# FR1 <- FR_Gender %>% filter(FR == "FR1")
-# 
-# print(
-#   "=======================FR1 or Assistant Professo================================"
-# )
-# print(FR1 %>% freq_table(FR1[2]))
-# 
-# print(
-#   "=======================FR2 or Associate Professor==============================="
-# )
-# 
-# FR2 <- FR_Gender %>% filter(FR == "FR2")
-# 
-# print(FR2 %>% freq_table(FR2[2]))
-# 
-# 
-# print(
-#   "=======================FR3 or Professor========================================"
-# )
-# FR3 <- FR_Gender %>% filter(FR == "FR3")
-# print(FR3 %>% freq_table(FR3[2]))
-# 
-
-
-
-
-# core_plot_df$FR <- Data$FR
-# core_plot_df$Gender <- Data$Gender
-# title_list <- c("Faculty Rank", "Gender", "Disciplinary Distribution", "Geographic Distribution", "Weekly Workload [hrs]",  "Research Load [%]", "Funding Coverage [%]")
-# 
-# 
-# core_plot_df = core_plot_df[,c("FR", "Gender", "Disciplines", "State", "TW_W_H", "TWR", "EG")]
-# 
-# print(
-#   "======================= Gender Distribution on FR================================"
-# )
-# 
-# print(core_plot_df %>% freq_table(core_plot_df, core_plot_df$Gender))
-# 
-# for (i in 1:length(core_plot_df)) {
-#   print(paste("========================", title_list[i],"========================"))
-#   print(core_plot_df %>% freq_table(core_plot_df[i]))
-# 
-# }
-```
-
-
-
-
-```{r, echo=FALSE}
-file_name='QQ_Bridge.csv'
-QQ <-  read.csv(file.path(curated_data_dir, file_name), stringsAsFactors = FALSE)
-
-drops <- c("P_ID", "Comment")
-QQ <- QQ[ , !(names(QQ) %in% drops)]
-
-# table(c(QQ$NA1, QQ$NA2), QQ$S_G30)
-
-melt(QQ)
-
-
-mdata <- melt(QQ, id=c("S_G30", "S_G50", "S_F75", "S_FF", "S_G50FF"))
-mdata_group <- mdata %>% group_by(variable) %>% summarise(B = count(variable))
-table(QQ$IS2)
-```
-
-```{r, echo=FALSE}
-
-library(corrplot)
-library(RColorBrewer)
-M <-cor(QQ, use = "complete.obs")
-corrplot(M, type="upper", order="hclust", col=brewer.pal(n=8, name="RdYlBu"))
-```
-
-
-
-
-```{r, echo=FALSE}
-
-M_proposal <- cor(QQ, use = "complete.obs")
-res1 <- cor.mtest(QQ, conf.level = .95)
-
-# significance_plot<-
-corrplot(
-  M_proposal,
-  p.mat = res1$p,
-  method = "color",
-  type = "upper",
-  # title = "Q-Q Correlation",
-  sig.level = c(.001, .01, .05),
-  pch.cex = .9,
-  diag = FALSE,
-  insig = "label_sig",
-  pch.col = "black",
-  col = colorRampPalette(c("brown1", "white", "dodgerblue"))(200),
-  tl.col = "black",
-  mar = c(0, 0, 1, 0)
-)
-```
-
-```{r, echo=FALSE}
-library(ggcorrplot)
-
-
-QQ_Cor<- ggcorrplot(M_proposal, hc.order = TRUE, type = "lower",
-   outline.col = "white",
-   ggtheme = ggplot2::theme_gray,
-   colors = c("#6D9EC1", "white", "#E46726")) + ggtitle("Q-Q Correlation")+ theme(plot.title = element_text(hjust = 0.5))
-QQ_Cor
-```
-
-
-
-```{r, echo=FALSE}
-
-dat <- read.table(text="A   B   C   D
-A1   a   v   a
-A2   v   v   a
-A3   a   a   a", header=TRUE)
-
-
-library(plyr)
-library(ggplot2)
-library(reshape2)
-
-# transform your data 
-mat <- rbind.fill.matrix(apply(QQ[-1], 1, function(i) t(as.matrix(table(i)))))
-mat[is.na(mat)] <- 0
-rownames(mat) <- colnames(QQ)
-
-# plot   
-ggplot(melt(mat), aes(Var2, Var1, fill=value)) + 
-                 geom_tile() +
-                 scale_fill_gradient(limits=c(0,3), low="white") +
-                 geom_text( aes(label=value))
-```
-
-
-```{r, echo=FALSE}
-
-root_dir <- getwd()
-project_directory <- dirname(root_dir)
-data_dir <- file.path(project_directory, 'curated-data')
-plot_dir <- file.path(project_directory, 'Plots')
+# root_dir <- getwd()
+# project_directory <- dirname(root_dir)
+# data_dir <- file.path(project_directory, 'curated-data')
+# plot_dir <- file.path(project_directory, 'Plots')
 data_file_name <- 'AllData.csv'
 curated_data_dir <- file.path(project_directory, 'curated-data')
 Data <- read.csv(file.path(data_dir, data_file_name), stringsAsFactors = FALSE)
@@ -507,12 +243,10 @@ Data_Melt <-
                 "Interpersonal Relationships")])
 
 Data_Melt_count <- Data_Melt %>% 
-  group_by(variable, value) %>% 
-  summarise(n = n())
+  group_by(variable, value)  %>% 
+  dplyr::summarise(n = n())
 
 Data_Melt_count <- Data_Melt_count[complete.cases(Data_Melt_count), ]
-
-library(dplyr)
 Data_Melt_count <- Data_Melt_count %>%
     group_by(variable) %>%
     mutate(countT= sum(n)) %>%
@@ -526,7 +260,7 @@ Data_Melt_count$per <- as.numeric(Data_Melt_count$per)
 
 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, warning=FALSE}
 library(ggplot2)
 
 figure5 <-
@@ -565,7 +299,7 @@ figure5 <-
   ) 
 
 figure5
-filename <- "Figure6.pdf"
+filename <- "Figure5.pdf"
 full_path <- file.path(plot_dir, filename)
 ggsave(
   full_path,

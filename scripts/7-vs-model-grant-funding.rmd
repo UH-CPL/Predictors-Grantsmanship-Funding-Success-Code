@@ -1,8 +1,8 @@
 ---
 title: "Grant Funding Record Models"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -945,25 +945,6 @@ SectionC_draw_dummy_plot <-
     # dummy_plot
   }
 
-# draw_dummy_plot_blank_title <- function(plot_title) {
-#   dummy_plot <- ggplot(dummy_df, aes(x=x, y=y, group=group)) + 
-#     geom_line(scale = 0.9) +
-#     # theme_minimal() +
-#     theme(
-#       plot.title = element_blank(),
-#       axis.title.x=element_text(),
-#         axis.text.x=element_blank(),
-#         axis.ticks.x=element_blank(),
-#         axis.title.y=element_blank(),
-#         axis.text.y=element_blank(),
-#         axis.ticks.y=element_blank(),
-#         panel.grid.major = element_blank(),
-#         panel.grid.minor = element_blank()) + labs(title =  plot_title, x= "")
-#     
-#   return(dummy_plot)
-#   dummy_plot
-# }
-
 ```
 
 
@@ -1207,21 +1188,6 @@ Research_tactics <- plot_grid(Research_tactics, legend, nrow = 2, rel_heights = 
 
 
 ```{r, echo=FALSE, warning=FALSE}
-# plot1 = continous_features_plots(BEmodel_25, "H", H_actual, "h-index", 25)
-# plot2 <- SectionA_draw_dummy_plot("Research Style", "")
-# 
-# 
-# plot3 = continous_features_plots(BEmodel_50, "H", H_actual, "h-index", 50)
-# plot4 <- SectionA_draw_dummy_plot("", "")
-# 
-# plot5 = continous_features_plots(BEmodel_75, "H", H_actual, "h-index", 75)
-# RS_color = c("gray", blue)
-# plot6 = sectionA_plots(Model_Data, "RS", RS_actual, "", "75", RS_color)
-
-
-
-
-
 plot5 = continous_features_plots(BEmodel_75, "H", H_actual, "h-index", 75, "$", blue)
 RS_color = c("gray", blue)
 plot6 = sectionA_plots(Model_Data, "RS", RS_actual, "Research Style", "75", RS_color, "F")
@@ -1249,15 +1215,7 @@ sectionC <- plot_grid(plot2, plot3, nrow = 2, ncol = 1)
 
 ```{r, echo=FALSE, warning=FALSE}
 section_BC <- plot_grid(sectionB, sectionC, rel_widths = c(2, 1), ncol = 2, labels = c("b", "c"))
-# section_BC
 
-# final_plot <- plot_grid(Research_tactics, section_BC, nrow = 2, labels = c("a", "")) + annotation_custom(grid.polygon(
-#     c(0, 0.5, 1, 0.67, 0.67),
-#     c(0.5, 0.5, 0.5, 0, 0.5),
-#     id = c(1, 1, 1, 2, 2),
-#     gp = gpar(lwd = 1.5)
-#   ))
-# final_plot
 
 
 final_plot <-
@@ -1405,24 +1363,3 @@ ggsave(
 )
 
 ```
-
-
-<!-- ```{r, echo=FALSE} -->
-<!-- plt = plot_model(BEmodel_FFSR50, -->
-<!--                  type = "pred", -->
-<!--                  terms = "TWR") + -->
-<!--   geom_line(aes(color="TWR"), size =1)+ -->
-<!--   geom_smooth( method = "pred")+ -->
-<!--   # scale_color_manual(values = c("red")) + -->
-<!--   # scale_fill_manual(values = c("green")) + -->
-<!--   geom_vline( -->
-<!--     xintercept = 42.08437, -->
-<!--     linetype = "dashed", -->
-<!--     color = "gray", -->
-<!--     size = 1 -->
-<!--   ) + -->
-<!--   theme_bw()+ theme(legend.position = "none") -->
-
-<!-- plt -->
-<!-- ``` -->
-

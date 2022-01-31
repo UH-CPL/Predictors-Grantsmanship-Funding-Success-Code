@@ -1,9 +1,9 @@
 ---
-title: "Core Questions"
+title: "Core Questions Processing"
 output:
-  pdf_document: default
   html_document:
     df_print: paged
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -191,7 +191,7 @@ Core_Questions <-
   )
 
 
-levels(factor(Core_Questions$State))
+# levels(factor(Core_Questions$State))
 
 East = 'Connecticut|Maryland|Massachusetts|^New Jersey$|^New York$|Pennsylvania|^Virginia$|^North Carolina$'
 Midwest = 'Illinois|Michigan|Minnesota|Ohio|Wisconsin'
@@ -216,7 +216,7 @@ Core_Questions$States_ewns <- NULL
 
 
 ```{r, echo=FALSE}
-count(Core_Questions$Break)
+# count(Core_Questions$Break)
 for(i in 1:nrow(Core_Questions)){
   
   #######---------Salary depends of external grants------------#################
@@ -389,12 +389,12 @@ for(i in 1:nrow(Core_Questions)){
 }
 
 
-file_name = "Selected_coreQuestions.csv"
+file_name = "CoreQuestions.csv"
 write.csv(Core_Questions,file.path(curated_data_dir, file_name), row.names = FALSE)
 ```
 
 
-```{r, echo=FALSE}
+<!--```{r, echo=FALSE}
 
 list1 = c("East", "West", "Midwest", "South")
 list2 = c("Two months", "Three months", "Other")
@@ -484,10 +484,8 @@ Ticks_list <-
        list26,
        list27,
        list28)
-```
 
-## Raw version
-```{r, echo=FALSE}
+
 plot_list <- list()
 
 for (i in 2:length(Core_Questions)) {
@@ -611,23 +609,10 @@ for (i in 1:length(plots_act)) {
   # temp2 = Core_Questions %>% freq_table(Core_Questions$R_Style)
   # temp2 = temp2[, c(2, 8, 9)]
   # temp2<-temp2  %>%  dplyr::rename( Item="cat", LCI="lcl", UCI="ucl")
-```
-
-
-
-
-```{r}
 Data_CQ <- Core_Questions[,c(13, 16, 9, 10, 18, 20)]
 
 file_name='Selected_Core_Questions.csv'
 write.csv(Data_CQ,file.path(curated_data_dir, file_name), row.names = FALSE)
-```
-
-
-
-
-## Funding_WRT_NP
-```{r, echo=FALSE}
 
 library(ggplot2)
 Funding_WRT_NP <- ggplot(Core_Questions, aes(x = RO_F_EG)) + geom_histogram(stat = "count") +
@@ -660,9 +645,6 @@ ggsave(
   height = 5.5,
   units = "in"
 )
-```
-
-```{r, echo=FALSE}
 
 Funding_NP <-Core_Questions[, c("RO_F_EG", "NP")]
 NP<- c("NP1", "NP2", "NP3")
@@ -725,9 +707,6 @@ ggsave(
   units = "in"
 )
   
-```
-
-```{r, echo=FALSE}
 
 
 
@@ -818,9 +797,6 @@ ggsave(
   units = "in"
 )
   
-```
-
-```{r, echo=FALSE}
 library(ggplot2)
 RS_NP <- ggplot(Core_Questions, aes(x = RS)) + geom_histogram(stat = "count") +
   facet_grid( ~ NP) +
@@ -907,5 +883,5 @@ ggsave(
   height = 5.5,
   units = "in"
 )
-```
+```-->
 
