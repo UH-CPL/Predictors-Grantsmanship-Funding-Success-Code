@@ -1,5 +1,5 @@
 # **Predictors of grantsmanship and funding success for U.S. researchers**
-
+This repository contains the R scripts to curate, validate, and generate the final model and visualization from the raw data collected via a nationwide survey on Proposal Deadlines.
 
 ## Getting Started
 
