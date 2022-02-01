@@ -18,11 +18,18 @@ Packages are available on CRAN and can be installed using a simple call to `inst
 **Data Curation (dc)** 
 
 - 1-dc-data -curate-and-processing.rmd
+	- Curate the raw data from readcap and generate processed data file named AllData.csv
 - 2-dc-process-phychometrics.rmd
-- 3-dc-keydata-processing.rmd
-- 4-dc-corequestions-processing.rmd
+ 	- Process the phychometrics data and create the finals scores
+- 3-dc-corequestions-processing.rmd
+	- Process the core questions related to proposal deadlines
+- 4-dc-keydata-processing.rmd
+	- Transforms the data for the final model
 
 **Validation Scripts (vs)**
  - 5-vs-descriptive-statistics.rmd
+ 	- Generates the descriptive statistics plot from the data
  - 6-vs-model-grantsmanship.Rmd
+ 	- Produce the grantsmanship models and the visualization
  - 7-vs-model-grant-funding.rmd
+  	- Produce the grant funding and the combinrd grantsmanship+grant funding models and the visualization
